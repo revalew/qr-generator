@@ -27,7 +27,6 @@ class ClipboardTester:
         self.setup_ui()
         self.load_test_image()
 
-
     def setup_ui(self):
         # Environment info
         info_frame = tk.Frame(self.root, bg='#f0f0f0')
@@ -41,8 +40,9 @@ class ClipboardTester:
         if not self.wayland_session and not self.x11_session:
             env_text += "Unknown"
 
-        tk.Label(info_frame, text=env_text, font=('Arial', 10, 'bold'),
-                 bg='#f0f0f0').pack()
+        tk.Label(
+            info_frame, text=env_text, font=('Arial', 10, 'bold'), bg='#f0f0f0'
+        ).pack()
 
         # Canvas for image
         self.canvas = tk.Canvas(self.root, width=400, height=300, bg='white')
@@ -52,8 +52,9 @@ class ClipboardTester:
         self.create_test_buttons()
 
         # Results area
-        self.results_text = tk.Text(self.root, height=12, wrap=tk.WORD,
-                                    font=('Consolas', 9))
+        self.results_text = tk.Text(
+            self.root, height=12, wrap=tk.WORD, font=('Consolas', 9)
+        )
         self.results_text.pack(fill=tk.BOTH, expand=True, padx=10, pady=5)
 
         # Scrollbar for results
@@ -69,40 +70,57 @@ class ClipboardTester:
         # Row 1: tkinter tests
         row1 = tk.Frame(button_frame)
         row1.pack(pady=2)
-        tk.Label(row1, text="tkinter Tests:", font=('Arial', 9, 'bold')).pack(side=tk.LEFT, padx=5)
-        tk.Button(row1, text="Your Code (Broken)", command=self.test_your_code,
-                  bg='#ffcccc').pack(side=tk.LEFT, padx=2)
-        tk.Button(row1, text="Base64 Text", command=self.test_base64_text,
-                  bg='#ffffcc').pack(side=tk.LEFT, padx=2)
-        tk.Button(row1, text="Text Only", command=self.test_text_only,
-                  bg='#ccffcc').pack(side=tk.LEFT, padx=2)
+        tk.Label(row1, text="tkinter Tests:", font=('Arial', 9, 'bold')).pack(
+            side=tk.LEFT, padx=5
+        )
+        tk.Button(
+            row1, text="Your Code (Broken)", command=self.test_your_code, bg='#ffcccc'
+        ).pack(side=tk.LEFT, padx=2)
+        tk.Button(
+            row1, text="Base64 Text", command=self.test_base64_text, bg='#ffffcc'
+        ).pack(side=tk.LEFT, padx=2)
+        tk.Button(
+            row1, text="Text Only", command=self.test_text_only, bg='#ccffcc'
+        ).pack(side=tk.LEFT, padx=2)
 
         # Row 2: Wayland tests
         row2 = tk.Frame(button_frame)
         row2.pack(pady=2)
-        tk.Label(row2, text="Wayland Tests:", font=('Arial', 9, 'bold')).pack(side=tk.LEFT, padx=5)
-        tk.Button(row2, text="wl-copy Image", command=self.test_wl_copy,
-                  bg='#ccccff').pack(side=tk.LEFT, padx=2)
-        tk.Button(row2, text="wl-paste Check", command=self.test_wl_paste,
-                  bg='#ccccff').pack(side=tk.LEFT, padx=2)
+        tk.Label(row2, text="Wayland Tests:", font=('Arial', 9, 'bold')).pack(
+            side=tk.LEFT, padx=5
+        )
+        tk.Button(
+            row2, text="wl-copy Image", command=self.test_wl_copy, bg='#ccccff'
+        ).pack(side=tk.LEFT, padx=2)
+        tk.Button(
+            row2, text="wl-paste Check", command=self.test_wl_paste, bg='#ccccff'
+        ).pack(side=tk.LEFT, padx=2)
 
         # Row 3: X11 tests
         row3 = tk.Frame(button_frame)
         row3.pack(pady=2)
-        tk.Label(row3, text="X11 Tests:", font=('Arial', 9, 'bold')).pack(side=tk.LEFT, padx=5)
-        tk.Button(row3, text="xclip Image", command=self.test_xclip,
-                  bg='#ffccff').pack(side=tk.LEFT, padx=2)
-        tk.Button(row3, text="xclip Check", command=self.test_xclip_check,
-                  bg='#ffccff').pack(side=tk.LEFT, padx=2)
+        tk.Label(row3, text="X11 Tests:", font=('Arial', 9, 'bold')).pack(
+            side=tk.LEFT, padx=5
+        )
+        tk.Button(row3, text="xclip Image", command=self.test_xclip, bg='#ffccff').pack(
+            side=tk.LEFT, padx=2
+        )
+        tk.Button(
+            row3, text="xclip Check", command=self.test_xclip_check, bg='#ffccff'
+        ).pack(side=tk.LEFT, padx=2)
 
         # Row 4: Utility tests
         row4 = tk.Frame(button_frame)
         row4.pack(pady=2)
-        tk.Label(row4, text="Utilities:", font=('Arial', 9, 'bold')).pack(side=tk.LEFT, padx=5)
-        tk.Button(row4, text="Check Tools", command=self.check_available_tools,
-                  bg='#ccffff').pack(side=tk.LEFT, padx=2)
-        tk.Button(row4, text="Clear Results", command=self.clear_results,
-                  bg='#f0f0f0').pack(side=tk.LEFT, padx=2)
+        tk.Label(row4, text="Utilities:", font=('Arial', 9, 'bold')).pack(
+            side=tk.LEFT, padx=5
+        )
+        tk.Button(
+            row4, text="Check Tools", command=self.check_available_tools, bg='#ccffff'
+        ).pack(side=tk.LEFT, padx=2)
+        tk.Button(
+            row4, text="Clear Results", command=self.clear_results, bg='#f0f0f0'
+        ).pack(side=tk.LEFT, padx=2)
 
     def load_test_image(self):
         try:
@@ -114,6 +132,7 @@ class ClipboardTester:
                 self.image = Image.new('RGB', (300, 200), 'navy')
                 # Add some "stars"
                 import random
+
                 pixels = self.image.load()
                 for _ in range(30):
                     x, y = random.randint(0, 299), random.randint(0, 199)
@@ -169,8 +188,12 @@ class ClipboardTester:
     def setup_context_menu(self):
         """Add right-click context menu"""
         self.context_menu = tk.Menu(self.root, tearoff=0)
-        self.context_menu.add_command(label="Select All (Ctrl+A)", command=self.select_all)
-        self.context_menu.add_command(label="Copy (Ctrl+C)", command=self.copy_selection)
+        self.context_menu.add_command(
+            label="Select All (Ctrl+A)", command=self.select_all
+        )
+        self.context_menu.add_command(
+            label="Copy (Ctrl+C)", command=self.copy_selection
+        )
         self.context_menu.add_separator()
         self.context_menu.add_command(label="Clear Results", command=self.clear_results)
 
@@ -202,7 +225,9 @@ class ClipboardTester:
             # Your clipboard line (will fail)
             try:
                 self.root.clipboard_clear()
-                self.root.clipboard_append(image_buffer, type="image/png", format="image/png")
+                self.root.clipboard_append(
+                    image_buffer, type="image/png", format="image/png"
+                )
                 self.log("❌ This line should fail...")
             except Exception as e:
                 self.log(f"❌ clipboard_append failed: {e}")
@@ -289,9 +314,9 @@ class ClipboardTester:
 
             # Use wl-copy to copy image
             with open(temp_file, 'rb') as f:
-                result = subprocess.run([
-                    'wl-copy', '--type', 'image/png'
-                ], stdin=f, capture_output=True)
+                result = subprocess.run(
+                    ['wl-copy', '--type', 'image/png'], stdin=f, capture_output=True
+                )
 
             if result.returncode == 0:
                 self.log("✅ wl-copy succeeded!")
@@ -311,8 +336,9 @@ class ClipboardTester:
 
         try:
             # Check available types
-            result = subprocess.run(['wl-paste', '--list-types'],
-                                    capture_output=True, text=True)
+            result = subprocess.run(
+                ['wl-paste', '--list-types'], capture_output=True, text=True
+            )
             if result.returncode == 0:
                 types = result.stdout.strip().split('\n')
                 self.log(f"✅ Available clipboard types: {types}")
@@ -346,10 +372,18 @@ class ClipboardTester:
             self.image.save(temp_file)
 
             # Use xclip to copy image
-            result = subprocess.run([
-                'xclip', '-selection', 'clipboard',
-                '-t', 'image/png', '-i', temp_file
-            ], capture_output=True)
+            result = subprocess.run(
+                [
+                    'xclip',
+                    '-selection',
+                    'clipboard',
+                    '-t',
+                    'image/png',
+                    '-i',
+                    temp_file,
+                ],
+                capture_output=True,
+            )
 
             if result.returncode == 0:
                 self.log("✅ xclip succeeded!")
@@ -369,9 +403,11 @@ class ClipboardTester:
 
         try:
             # Check available targets
-            result = subprocess.run([
-                'xclip', '-selection', 'clipboard', '-o', '-t', 'TARGETS'
-            ], capture_output=True, text=True)
+            result = subprocess.run(
+                ['xclip', '-selection', 'clipboard', '-o', '-t', 'TARGETS'],
+                capture_output=True,
+                text=True,
+            )
 
             if result.returncode == 0:
                 targets = result.stdout.strip().split('\n')
@@ -413,7 +449,9 @@ class ClipboardTester:
         self.log(f"\n📊 Environment:")
         self.log(f"   WAYLAND_DISPLAY: {os.environ.get('WAYLAND_DISPLAY', 'not set')}")
         self.log(f"   DISPLAY: {os.environ.get('DISPLAY', 'not set')}")
-        self.log(f"   XDG_SESSION_TYPE: {os.environ.get('XDG_SESSION_TYPE', 'not set')}")
+        self.log(
+            f"   XDG_SESSION_TYPE: {os.environ.get('XDG_SESSION_TYPE', 'not set')}"
+        )
 
 
 def main():

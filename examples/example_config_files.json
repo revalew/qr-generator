@@ -1,275 +1,275 @@
 {
-  "business_professional": {
-    "description": "Professional business card QR code configuration",
-    "preset": "vcard",
-    "theme": "Rounded Corners",
-    "color_mask": "Solid Fill",
-    "size": 400,
-    "border": 4,
-    "error_correction": "M",
-    "fg_color": "#1a365d",
-    "bg_color": "#ffffff",
-    "use_image": true,
-    "image_path": "company_logo.png",
-    "image_size": 20,
-    "image_bg": "custom",
-    "image_bg_color": "#f8f9fa",
-    "image_padding": 12,
-    "content": "BEGIN:VCARD\nVERSION:3.0\nFN:John Smith\nORG:Tech Solutions Inc.\nTITLE:Senior Developer\nTEL:+1-555-123-4567\nEMAIL:john.smith@techsolutions.com\nURL:https://techsolutions.com\nEND:VCARD"
-  },
-
-  "wifi_hotspot": {
-    "description": "WiFi sharing QR code for coffee shop or office",
-    "preset": "wifi",
-    "theme": "Circular",
-    "color_mask": "Radial Gradient",
-    "size": 350,
-    "border": 3,
-    "error_correction": "L",
-    "fg_color": "#8B4513",
-    "bg_color": "#F5DEB3",
-    "use_image": false,
-    "content": "WIFI:T:WPA;S:CoffeeShop_Guest;P:welcome123;H:false;"
-  },
-
-  "website_marketing": {
-    "description": "Website promotion with modern styling",
-    "preset": "url",
-    "theme": "Gapped Squares",
-    "color_mask": "Square Gradient",
-    "size": 500,
-    "border": 6,
-    "error_correction": "Q",
-    "fg_color": "#2d3748",
-    "bg_color": "#edf2f7",
-    "use_image": true,
-    "image_path": "website_icon.png",
-    "image_size": 25,
-    "image_bg": "match",
-    "image_padding": 15,
-    "content": "https://myawesome-website.com"
-  },
-
-  "contact_support": {
-    "description": "Customer support contact QR code",
-    "preset": "email",
-    "theme": "Classic Squares",
-    "color_mask": "Horizontal Gradient",
-    "size": 300,
-    "border": 4,
-    "error_correction": "M",
-    "fg_color": "#0066cc",
-    "bg_color": "#f0f8ff",
-    "use_image": false,
-    "content": "mailto:support@company.com?subject=Customer Support Request&body=Hello, I need assistance with..."
-  },
-
-  "event_invitation": {
-    "description": "Event invitation with artistic styling",
-    "preset": "general",
-    "theme": "Vertical Bars",
-    "color_mask": "Vertical Gradient",
-    "size": 450,
-    "border": 5,
-    "error_correction": "H",
-    "fg_color": "#6b46c1",
-    "bg_color": "#f3e8ff",
-    "use_image": true,
-    "image_path": "event_logo.png",
-    "image_size": 30,
-    "image_bg": "custom",
-    "image_bg_color": "#ffffff",
-    "image_padding": 20,
-    "content": "🎉 You're Invited!\n\nTech Conference 2024\nDate: March 15, 2024\nLocation: Convention Center\nTime: 9:00 AM - 5:00 PM\n\nRegister at: https://techconf2024.com\nCode: EARLY2024"
-  },
-
-  "restaurant_menu": {
-    "description": "Restaurant digital menu QR code",
-    "preset": "url",
-    "theme": "Rounded Corners",
-    "color_mask": "Radial Gradient",
-    "size": 400,
-    "border": 4,
-    "error_correction": "M",
-    "fg_color": "#dc2626",
-    "bg_color": "#fef2f2",
-    "use_image": true,
-    "image_path": "restaurant_logo.png",
-    "image_size": 25,
-    "image_bg": "match",
-    "image_padding": 10,
-    "content": "https://restaurant-menu.com/table-12"
-  },
-
-  "social_media": {
-    "description": "Social media profile QR code",
-    "preset": "url",
-    "theme": "Circular",
-    "color_mask": "Square Gradient",
-    "size": 350,
-    "border": 3,
-    "error_correction": "L",
-    "fg_color": "#1da1f2",
-    "bg_color": "#ffffff",
-    "use_image": true,
-    "image_path": "profile_pic.png",
-    "image_size": 35,
-    "image_bg": "none",
-    "image_padding": 0,
-    "content": "https://twitter.com/username"
-  },
-
-  "payment_request": {
-    "description": "Payment request QR code",
-    "preset": "general",
-    "theme": "Classic Squares",
-    "color_mask": "Solid Fill",
-    "size": 300,
-    "border": 4,
-    "error_correction": "Q",
-    "fg_color": "#059669",
-    "bg_color": "#ecfdf5",
-    "use_image": false,
-    "content": "Payment Request\n\nAmount: $50.00\nFor: Consulting Services\nPayPal: payments@freelancer.com\nVenmo: @freelancer\n\nReference: INV-2024-001"
-  },
-
-  "app_download": {
-    "description": "Mobile app download QR code",
-    "preset": "url",
-    "theme": "Gapped Squares",
-    "color_mask": "Horizontal Gradient",
-    "size": 400,
-    "border": 5,
-    "error_correction": "M",
-    "fg_color": "#7c3aed",
-    "bg_color": "#f5f3ff",
-    "use_image": true,
-    "image_path": "app_icon.png",
-    "image_size": 30,
-    "image_bg": "custom",
-    "image_bg_color": "#ffffff",
-    "image_padding": 15,
-    "content": "https://apps.apple.com/app/myawesomeapp"
-  },
-
-  "emergency_contact": {
-    "description": "Emergency contact information",
-    "preset": "vcard",
-    "theme": "Classic Squares",
-    "color_mask": "Solid Fill",
-    "size": 350,
-    "border": 6,
-    "error_correction": "H",
-    "fg_color": "#dc2626",
-    "bg_color": "#ffffff",
-    "use_image": false,
-    "content": "BEGIN:VCARD\nVERSION:3.0\nFN:Emergency Contact\nTEL:+1-911\nTEL:+1-555-HOSPITAL\nNOTE:In case of emergency\nEND:VCARD"
-  },
-
-  "batch_examples": {
-    "description": "Examples for batch generation",
-    "csv_example": [
-      {
-        "content": "https://company.com/product1",
-        "filename": "product1_qr",
-        "theme": "rounded",
-        "color_mask": "radial",
+    "business_professional": {
+        "description": "Professional business card QR code configuration",
+        "preset": "vcard",
+        "theme": "Rounded Corners",
+        "color_mask": "Solid Fill",
+        "size": 400,
+        "border": 4,
+        "error_correction": "M",
         "fg_color": "#1a365d",
         "bg_color": "#ffffff",
-        "size": 400
-      },
-      {
-        "content": "WIFI:T:WPA;S:Office_WiFi;P:securepass123;H:false;",
-        "filename": "office_wifi",
-        "theme": "circular",
-        "color_mask": "horizontal",
+        "use_image": true,
+        "image_path": "company_logo.png",
+        "image_size": 20,
+        "image_bg": "custom",
+        "image_bg_color": "#f8f9fa",
+        "image_padding": 12,
+        "content": "BEGIN:VCARD\nVERSION:3.0\nFN:John Smith\nORG:Tech Solutions Inc.\nTITLE:Senior Developer\nTEL:+1-555-123-4567\nEMAIL:john.smith@techsolutions.com\nURL:https://techsolutions.com\nEND:VCARD"
+    },
+
+    "wifi_hotspot": {
+        "description": "WiFi sharing QR code for coffee shop or office",
+        "preset": "wifi",
+        "theme": "Circular",
+        "color_mask": "Radial Gradient",
+        "size": 350,
+        "border": 3,
+        "error_correction": "L",
+        "fg_color": "#8B4513",
+        "bg_color": "#F5DEB3",
+        "use_image": false,
+        "content": "WIFI:T:WPA;S:CoffeeShop_Guest;P:welcome123;H:false;"
+    },
+
+    "website_marketing": {
+        "description": "Website promotion with modern styling",
+        "preset": "url",
+        "theme": "Gapped Squares",
+        "color_mask": "Square Gradient",
+        "size": 500,
+        "border": 6,
+        "error_correction": "Q",
         "fg_color": "#2d3748",
         "bg_color": "#edf2f7",
-        "size": 350
-      },
-      {
-        "content": "mailto:sales@company.com?subject=Product Inquiry",
-        "filename": "sales_contact",
-        "theme": "classic",
-        "color_mask": "solid",
+        "use_image": true,
+        "image_path": "website_icon.png",
+        "image_size": 25,
+        "image_bg": "match",
+        "image_padding": 15,
+        "content": "https://myawesome-website.com"
+    },
+
+    "contact_support": {
+        "description": "Customer support contact QR code",
+        "preset": "email",
+        "theme": "Classic Squares",
+        "color_mask": "Horizontal Gradient",
+        "size": 300,
+        "border": 4,
+        "error_correction": "M",
         "fg_color": "#0066cc",
+        "bg_color": "#f0f8ff",
+        "use_image": false,
+        "content": "mailto:support@company.com?subject=Customer Support Request&body=Hello, I need assistance with..."
+    },
+
+    "event_invitation": {
+        "description": "Event invitation with artistic styling",
+        "preset": "general",
+        "theme": "Vertical Bars",
+        "color_mask": "Vertical Gradient",
+        "size": 450,
+        "border": 5,
+        "error_correction": "H",
+        "fg_color": "#6b46c1",
+        "bg_color": "#f3e8ff",
+        "use_image": true,
+        "image_path": "event_logo.png",
+        "image_size": 30,
+        "image_bg": "custom",
+        "image_bg_color": "#ffffff",
+        "image_padding": 20,
+        "content": "🎉 You're Invited!\n\nTech Conference 2024\nDate: March 15, 2024\nLocation: Convention Center\nTime: 9:00 AM - 5:00 PM\n\nRegister at: https://techconf2024.com\nCode: EARLY2024"
+    },
+
+    "restaurant_menu": {
+        "description": "Restaurant digital menu QR code",
+        "preset": "url",
+        "theme": "Rounded Corners",
+        "color_mask": "Radial Gradient",
+        "size": 400,
+        "border": 4,
+        "error_correction": "M",
+        "fg_color": "#dc2626",
+        "bg_color": "#fef2f2",
+        "use_image": true,
+        "image_path": "restaurant_logo.png",
+        "image_size": 25,
+        "image_bg": "match",
+        "image_padding": 10,
+        "content": "https://restaurant-menu.com/table-12"
+    },
+
+    "social_media": {
+        "description": "Social media profile QR code",
+        "preset": "url",
+        "theme": "Circular",
+        "color_mask": "Square Gradient",
+        "size": 350,
+        "border": 3,
+        "error_correction": "L",
+        "fg_color": "#1da1f2",
         "bg_color": "#ffffff",
-        "size": 300
-      }
-    ]
-  },
+        "use_image": true,
+        "image_path": "profile_pic.png",
+        "image_size": 35,
+        "image_bg": "none",
+        "image_padding": 0,
+        "content": "https://twitter.com/username"
+    },
 
-  "color_combinations": {
-    "description": "Recommended color combinations",
-    "professional": {
-      "fg_color": "#1a365d",
-      "bg_color": "#ffffff",
-      "description": "Navy blue on white - professional and readable"
+    "payment_request": {
+        "description": "Payment request QR code",
+        "preset": "general",
+        "theme": "Classic Squares",
+        "color_mask": "Solid Fill",
+        "size": 300,
+        "border": 4,
+        "error_correction": "Q",
+        "fg_color": "#059669",
+        "bg_color": "#ecfdf5",
+        "use_image": false,
+        "content": "Payment Request\n\nAmount: $50.00\nFor: Consulting Services\nPayPal: payments@freelancer.com\nVenmo: @freelancer\n\nReference: INV-2024-001"
     },
-    "modern_tech": {
-      "fg_color": "#2d3748",
-      "bg_color": "#edf2f7",
-      "description": "Dark gray on light gray - modern and sleek"
-    },
-    "vibrant": {
-      "fg_color": "#7c3aed",
-      "bg_color": "#f5f3ff",
-      "description": "Purple on lavender - eye-catching"
-    },
-    "nature": {
-      "fg_color": "#059669",
-      "bg_color": "#ecfdf5",
-      "description": "Green on mint - natural and calming"
-    },
-    "warm": {
-      "fg_color": "#dc2626",
-      "bg_color": "#fef2f2",
-      "description": "Red on pink - warm and inviting"
-    },
-    "ocean": {
-      "fg_color": "#0066cc",
-      "bg_color": "#f0f8ff",
-      "description": "Blue on light blue - ocean theme"
-    },
-    "sunset": {
-      "fg_color": "#ea580c",
-      "bg_color": "#fff7ed",
-      "description": "Orange on cream - sunset theme"
-    },
-    "forest": {
-      "fg_color": "#166534",
-      "bg_color": "#f0fdf4",
-      "description": "Dark green on light green - forest theme"
-    }
-  },
 
-  "usage_guidelines": {
-    "size_recommendations": {
-      "business_cards": "300-400px",
-      "posters": "500-800px",
-      "digital_displays": "400-600px",
-      "print_materials": "600-1000px",
-      "mobile_screens": "300-500px"
+    "app_download": {
+        "description": "Mobile app download QR code",
+        "preset": "url",
+        "theme": "Gapped Squares",
+        "color_mask": "Horizontal Gradient",
+        "size": 400,
+        "border": 5,
+        "error_correction": "M",
+        "fg_color": "#7c3aed",
+        "bg_color": "#f5f3ff",
+        "use_image": true,
+        "image_path": "app_icon.png",
+        "image_size": 30,
+        "image_bg": "custom",
+        "image_bg_color": "#ffffff",
+        "image_padding": 15,
+        "content": "https://apps.apple.com/app/myawesomeapp"
     },
-    "error_correction_guide": {
-      "L": "~7% recovery - Use for perfect printing conditions",
-      "M": "~15% recovery - General purpose (recommended)",
-      "Q": "~25% recovery - Use with image overlays or when damage expected",
-      "H": "~30% recovery - Maximum reliability, emergency contacts"
+
+    "emergency_contact": {
+        "description": "Emergency contact information",
+        "preset": "vcard",
+        "theme": "Classic Squares",
+        "color_mask": "Solid Fill",
+        "size": 350,
+        "border": 6,
+        "error_correction": "H",
+        "fg_color": "#dc2626",
+        "bg_color": "#ffffff",
+        "use_image": false,
+        "content": "BEGIN:VCARD\nVERSION:3.0\nFN:Emergency Contact\nTEL:+1-911\nTEL:+1-555-HOSPITAL\nNOTE:In case of emergency\nEND:VCARD"
     },
-    "image_overlay_tips": {
-      "size": "Keep under 30% for best readability",
-      "format": "PNG with transparency works best",
-      "contrast": "Ensure good contrast with QR background",
-      "padding": "Use 10-20px padding for logos",
-      "background": "Match QR background or use custom color"
+
+    "batch_examples": {
+        "description": "Examples for batch generation",
+        "csv_example": [
+            {
+                "content": "https://company.com/product1",
+                "filename": "product1_qr",
+                "theme": "rounded",
+                "color_mask": "radial",
+                "fg_color": "#1a365d",
+                "bg_color": "#ffffff",
+                "size": 400
+            },
+            {
+                "content": "WIFI:T:WPA;S:Office_WiFi;P:securepass123;H:false;",
+                "filename": "office_wifi",
+                "theme": "circular",
+                "color_mask": "horizontal",
+                "fg_color": "#2d3748",
+                "bg_color": "#edf2f7",
+                "size": 350
+            },
+            {
+                "content": "mailto:sales@company.com?subject=Product Inquiry",
+                "filename": "sales_contact",
+                "theme": "classic",
+                "color_mask": "solid",
+                "fg_color": "#0066cc",
+                "bg_color": "#ffffff",
+                "size": 300
+            }
+        ]
     },
-    "theme_selection": {
-      "classic": "Traditional, most compatible with older scanners",
-      "rounded": "Modern look, good balance of style and compatibility",
-      "circular": "Artistic, may have issues with some scanners",
-      "gapped": "Unique appearance, good for branding",
-      "bars": "Distinctive patterns, artistic applications"
+
+    "color_combinations": {
+        "description": "Recommended color combinations",
+        "professional": {
+            "fg_color": "#1a365d",
+            "bg_color": "#ffffff",
+            "description": "Navy blue on white - professional and readable"
+        },
+        "modern_tech": {
+            "fg_color": "#2d3748",
+            "bg_color": "#edf2f7",
+            "description": "Dark gray on light gray - modern and sleek"
+        },
+        "vibrant": {
+            "fg_color": "#7c3aed",
+            "bg_color": "#f5f3ff",
+            "description": "Purple on lavender - eye-catching"
+        },
+        "nature": {
+            "fg_color": "#059669",
+            "bg_color": "#ecfdf5",
+            "description": "Green on mint - natural and calming"
+        },
+        "warm": {
+            "fg_color": "#dc2626",
+            "bg_color": "#fef2f2",
+            "description": "Red on pink - warm and inviting"
+        },
+        "ocean": {
+            "fg_color": "#0066cc",
+            "bg_color": "#f0f8ff",
+            "description": "Blue on light blue - ocean theme"
+        },
+        "sunset": {
+            "fg_color": "#ea580c",
+            "bg_color": "#fff7ed",
+            "description": "Orange on cream - sunset theme"
+        },
+        "forest": {
+            "fg_color": "#166534",
+            "bg_color": "#f0fdf4",
+            "description": "Dark green on light green - forest theme"
+        }
+    },
+
+    "usage_guidelines": {
+        "size_recommendations": {
+            "business_cards": "300-400px",
+            "posters": "500-800px",
+            "digital_displays": "400-600px",
+            "print_materials": "600-1000px",
+            "mobile_screens": "300-500px"
+        },
+        "error_correction_guide": {
+            "L": "~7% recovery - Use for perfect printing conditions",
+            "M": "~15% recovery - General purpose (recommended)",
+            "Q": "~25% recovery - Use with image overlays or when damage expected",
+            "H": "~30% recovery - Maximum reliability, emergency contacts"
+        },
+        "image_overlay_tips": {
+            "size": "Keep under 30% for best readability",
+            "format": "PNG with transparency works best",
+            "contrast": "Ensure good contrast with QR background",
+            "padding": "Use 10-20px padding for logos",
+            "background": "Match QR background or use custom color"
+        },
+        "theme_selection": {
+            "classic": "Traditional, most compatible with older scanners",
+            "rounded": "Modern look, good balance of style and compatibility",
+            "circular": "Artistic, may have issues with some scanners",
+            "gapped": "Unique appearance, good for branding",
+            "bars": "Distinctive patterns, artistic applications"
+        }
     }
-  }
 }

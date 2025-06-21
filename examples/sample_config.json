@@ -1,11 +1,11 @@
 {
-  "preset": "url",
-  "theme": "Rounded Corners",
-  "color_mask": "Radial Gradient",
-  "size": 400,
-  "border": 4,
-  "error_correction": "M",
-  "fg_color": "#1a365d",
-  "bg_color": "#ffffff",
-  "content": "https://example.com"
+    "preset": "url",
+    "theme": "Rounded Corners",
+    "color_mask": "Radial Gradient",
+    "size": 400,
+    "border": 4,
+    "error_correction": "M",
+    "fg_color": "#1a365d",
+    "bg_color": "#ffffff",
+    "content": "https://example.com"
 }

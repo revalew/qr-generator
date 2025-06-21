@@ -6,55 +6,55 @@ A comprehensive GUI application for creating styled QR codes with advanced featu
 
 ### **Visual Styling**
 
-- **Themes**: Classic squares, rounded corners, circles, gapped squares, vertical/horizontal bars
+-   **Themes**: Classic squares, rounded corners, circles, gapped squares, vertical/horizontal bars
 
-- **Color Effects**: Solid colors, radial gradients, square gradients, horizontal/vertical gradients, image-based color masks
+-   **Color Effects**: Solid colors, radial gradients, square gradients, horizontal/vertical gradients, image-based color masks
 
-- **Custom Colors**: Full hex color support with color picker
+-   **Custom Colors**: Full hex color support with color picker
 
-- **Size Control**: 100-1000px with precise border control
+-   **Size Control**: 100-1000px with precise border control
 
-- **Error Correction**: L, M, Q, H levels for different reliability needs
+-   **Error Correction**: L, M, Q, H levels for different reliability needs
 
 ### **Content Types**
 
-- **General Text**: Any plain text content
+-   **General Text**: Any plain text content
 
-- **URLs**: Websites with automatic protocol detection
+-   **URLs**: Websites with automatic protocol detection
 
-- **WiFi Credentials**: SSID, password, security type, hidden networks
+-   **WiFi Credentials**: SSID, password, security type, hidden networks
 
-- **Business Cards**: vCard format with name, organization, phone, email, website
+-   **Business Cards**: vCard format with name, organization, phone, email, website
 
-- **Email**: Pre-filled mailto links with subject and body
+-   **Email**: Pre-filled mailto links with subject and body
 
-- **Phone Numbers**: Direct dial links
+-   **Phone Numbers**: Direct dial links
 
-- **SMS**: Pre-filled text messages
+-   **SMS**: Pre-filled text messages
 
 ### **Image Overlays**
 
-- **Logo Integration**: Add center logos or images
+-   **Logo Integration**: Add center logos or images
 
-- **Flexible Sizing**: 5-50% of QR code size
+-   **Flexible Sizing**: 5-50% of QR code size
 
-- **Background Options**: Match QR, custom color, or transparent
+-   **Background Options**: Match QR, custom color, or transparent
 
-- **Padding Control**: Precise spacing around images
+-   **Padding Control**: Precise spacing around images
 
-- **URL Support**: Load images from local files or web URLs
+-   **URL Support**: Load images from local files or web URLs
 
 ### **Advanced Features**
 
-- **Configuration Management**: Save and load custom presets
+-   **Configuration Management**: Save and load custom presets
 
-- **Batch Generation**: Create multiple QR codes from CSV/JSON files with full styling support
+-   **Batch Generation**: Create multiple QR codes from CSV/JSON files with full styling support
 
-- **QR Scanning**: Decode QR codes from image files (optional)
+-   **QR Scanning**: Decode QR codes from image files (optional)
 
-- **Universal Clipboard**: Works across Windows, macOS, Linux with multiple fallback methods
+-   **Universal Clipboard**: Works across Windows, macOS, Linux with multiple fallback methods
 
-- **Export Formats**: PNG, JPEG, BMP
+-   **Export Formats**: PNG, JPEG, BMP
 
 ## Quick Start
 
@@ -165,21 +165,21 @@ python qr_utils.py samples --all
 
 Create CSV files with these columns:
 
-- `content`: The QR code content *(required)*
+-   `content`: The QR code content _(required)_
 
-- `filename`: Output filename *(optional)*
+-   `filename`: Output filename _(optional)_
 
-- `theme`: rounded, circular, classic, gapped, vertical_bars, horizontal_bars *(optional)*
+-   `theme`: rounded, circular, classic, gapped, vertical*bars, horizontal_bars *(optional)\_
 
-- `color_mask`: solid, radial, square, horizontal, vertical, image *(optional)*
+-   `color_mask`: solid, radial, square, horizontal, vertical, image _(optional)_
 
-- `fg_color`: Foreground color in hex (e.g., #000000) *(optional)*
+-   `fg_color`: Foreground color in hex (e.g., #000000) _(optional)_
 
-- `bg_color`: Background color in hex (e.g., #FFFFFF) *(optional)*
+-   `bg_color`: Background color in hex (e.g., #FFFFFF) _(optional)_
 
-- `size`: Output size in pixels *(optional)*
+-   `size`: Output size in pixels _(optional)_
 
-- `error_correction`: L, M, Q, H *(optional)*
+-   `error_correction`: L, M, Q, H _(optional)_
 
 **Example CSV:**
 
@@ -213,101 +213,101 @@ qr-generator/
 
 ### **Theme Selection**
 
-- **Classic**: Traditional squares, maximum compatibility
+-   **Classic**: Traditional squares, maximum compatibility
 
-- **Rounded**: Modern look with rounded corners
+-   **Rounded**: Modern look with rounded corners
 
-- **Circular**: Artistic circles, may have scanner limitations
+-   **Circular**: Artistic circles, may have scanner limitations
 
-- **Gapped**: Unique spaced squares for branding
+-   **Gapped**: Unique spaced squares for branding
 
-- **Vertical/Horizontal Bars**: Linear patterns for artistic effect
+-   **Vertical/Horizontal Bars**: Linear patterns for artistic effect
 
 ### **Color Combinations**
 
-- **Professional**: Navy (#1a365d) on white (#ffffff)
+-   **Professional**: Navy (#1a365d) on white (#ffffff)
 
-- **Modern**: Dark gray (#2d3748) on light gray (#edf2f7)
+-   **Modern**: Dark gray (#2d3748) on light gray (#edf2f7)
 
-- **Vibrant**: Purple (#7c3aed) on lavender (#f5f3ff)
+-   **Vibrant**: Purple (#7c3aed) on lavender (#f5f3ff)
 
-- **Nature**: Green (#059669) on mint (#ecfdf5)
+-   **Nature**: Green (#059669) on mint (#ecfdf5)
 
-- **Ocean**: Blue (#0066cc) on light blue (#f0f8ff)
+-   **Ocean**: Blue (#0066cc) on light blue (#f0f8ff)
 
 ### **Error Correction Levels**
 
-- **L (~7%)**: Perfect printing conditions
+-   **L (~7%)**: Perfect printing conditions
 
-- **M (~15%)**: General purpose (recommended)
+-   **M (~15%)**: General purpose (recommended)
 
-- **Q (~25%)**: Image overlays or damage expected
+-   **Q (~25%)**: Image overlays or damage expected
 
-- **H (~30%)**: Maximum reliability, emergency use
+-   **H (~30%)**: Maximum reliability, emergency use
 
 ### **Size Recommendations**
 
-- **Business Cards**: 300-400px
+-   **Business Cards**: 300-400px
 
-- **Posters**: 500-800px
+-   **Posters**: 500-800px
 
-- **Digital Displays**: 400-600px
+-   **Digital Displays**: 400-600px
 
-- **Print Materials**: 600-1000px
+-   **Print Materials**: 600-1000px
 
-- **Mobile Screens**: 300-500px
+-   **Mobile Screens**: 300-500px
 
 ## **Dependencies & Installation**
 
 ### **Core Dependencies (Required)**
 
-- Python 3.7+
+-   Python 3.7+
 
-- qrcode[pil] - QR code generation
+-   qrcode[pil] - QR code generation
 
-- Pillow - Image processing
+-   Pillow - Image processing
 
 ### **Optional Dependencies**
 
-- **pyperclip** - Enhanced clipboard support
+-   **pyperclip** - Enhanced clipboard support
 
-- **opencv-python-headless** - QR code scanning
+-   **opencv-python-headless** - QR code scanning
 
-- **pyzbar** - QR code decoding
+-   **pyzbar** - QR code decoding
 
 ### **Linux System Dependencies**
 
 The setup script will automatically detect and offer to install:
 
-- **python3-tk** - GUI framework (required)
+-   **python3-tk** - GUI framework (required)
 
-- **xclip/xsel** - Clipboard support
+-   **xclip/xsel** - Clipboard support
 
-- **libzbar0** - QR scanning library
+-   **libzbar0** - QR scanning library
 
 ### **Troubleshooting**
 
 **Clipboard not working:**
 
-- The app includes multiple fallback methods
+-   The app includes multiple fallback methods
 
-- Works on all platforms without extra setup
+-   Works on all platforms without extra setup
 
 **QR scanning not available:**
 
-- Run: `pip install opencv-python-headless pyzbar`
+-   Run: `pip install opencv-python-headless pyzbar`
 
-- Linux: Setup script will offer to install `libzbar0`
+-   Linux: Setup script will offer to install `libzbar0`
 
 **GUI not showing on Linux:**
 
-- Setup script will offer to install `python3-tk`
+-   Setup script will offer to install `python3-tk`
 
 **Package installation fails:**
 
-- Try Python 3.11 or 3.12 instead of 3.13
+-   Try Python 3.11 or 3.12 instead of 3.13
 
-- Some packages may not be available for the latest Python
+-   Some packages may not be available for the latest Python
 
 ## **Examples**
 
@@ -345,6 +345,6 @@ Size: 500px
 
 ## **Support**
 
-- Check the `examples/` folder for sample configurations
-- Run `python qr_utils.py --help` for command line help
-- The setup script handles most installation issues automatically
+-   Check the `examples/` folder for sample configurations
+-   Run `python qr_utils.py --help` for command line help
+-   The setup script handles most installation issues automatically

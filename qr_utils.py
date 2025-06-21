@@ -13,14 +13,19 @@ from typing import List, Dict, Any
 import qrcode
 from qrcode.image.styledpil import StyledPilImage
 from qrcode.image.styles.moduledrawers import (
-    RoundedModuleDrawer, CircleModuleDrawer, SquareModuleDrawer
+    RoundedModuleDrawer,
+    CircleModuleDrawer,
+    SquareModuleDrawer,
 )
 
 # Import color masks if available
 try:
     from qrcode.image.styles.colormasks import (
-        SolidFillColorMask, SquareGradiantColorMask, RadialGradiantColorMask,
-        HorizontalGradiantColorMask, VerticalGradiantColorMask
+        SolidFillColorMask,
+        SquareGradiantColorMask,
+        RadialGradiantColorMask,
+        HorizontalGradiantColorMask,
+        VerticalGradiantColorMask,
     )
 
     COLOR_MASKS_AVAILABLE = True
@@ -50,7 +55,7 @@ class QRBatchGenerator:
             'theme': 'classic',
             'color_mask': 'solid',
             'fg_color': '#000000',
-            'bg_color': '#FFFFFF'
+            'bg_color': '#FFFFFF',
         }
 
     def load_config(self, config_file: str) -> None:
@@ -78,7 +83,7 @@ class QRBatchGenerator:
         hex_color = hex_color.lstrip('#')
         if len(hex_color) == 3:
             hex_color = ''.join(c * 2 for c in hex_color)
-        return tuple(int(hex_color[i:i + 2], 16) for i in (0, 2, 4))
+        return tuple(int(hex_color[i : i + 2], 16) for i in (0, 2, 4))
 
     def get_enhanced_color_mask(self, config):
         """Enhanced color mask with proper RGB conversion and all types"""
@@ -90,36 +95,26 @@ class QRBatchGenerator:
         bg_color = self.hex_to_rgb(config.get('bg_color', '#FFFFFF'))
 
         # Create intermediate colors for gradients
-        mid_color = tuple(
-            int((fg + bg) / 2) for fg, bg in zip(fg_color, bg_color)
-        )
+        mid_color = tuple(int((fg + bg) / 2) for fg, bg in zip(fg_color, bg_color))
 
         try:
             if mask_type == 'solid':
                 return SolidFillColorMask(front_color=fg_color, back_color=bg_color)
             elif mask_type == 'radial':
                 return RadialGradiantColorMask(
-                    back_color=bg_color,
-                    center_color=mid_color,
-                    edge_color=fg_color
+                    back_color=bg_color, center_color=mid_color, edge_color=fg_color
                 )
             elif mask_type == 'square':
                 return SquareGradiantColorMask(
-                    back_color=bg_color,
-                    center_color=mid_color,
-                    edge_color=fg_color
+                    back_color=bg_color, center_color=mid_color, edge_color=fg_color
                 )
             elif mask_type == 'horizontal':
                 return HorizontalGradiantColorMask(
-                    back_color=bg_color,
-                    left_color=mid_color,
-                    right_color=fg_color
+                    back_color=bg_color, left_color=mid_color, right_color=fg_color
                 )
             elif mask_type == 'vertical':
                 return VerticalGradiantColorMask(
-                    back_color=bg_color,
-                    top_color=mid_color,
-                    bottom_color=fg_color
+                    back_color=bg_color, top_color=mid_color, bottom_color=fg_color
                 )
             elif mask_type == 'image':
                 # ImageColorMask support
@@ -127,14 +122,23 @@ class QRBatchGenerator:
                 if image_path:
                     try:
                         from qrcode.image.styles.colormasks import ImageColorMask
+
                         mask_image = self.load_image_from_path_or_url(image_path)
-                        return ImageColorMask(back_color=bg_color, color_mask_image=mask_image)
+                        return ImageColorMask(
+                            back_color=bg_color, color_mask_image=mask_image
+                        )
                     except ImportError:
-                        print(f"Warning: ImageColorMask not available, using solid fill")
-                        return SolidFillColorMask(front_color=fg_color, back_color=bg_color)
+                        print(
+                            f"Warning: ImageColorMask not available, using solid fill"
+                        )
+                        return SolidFillColorMask(
+                            front_color=fg_color, back_color=bg_color
+                        )
                     except Exception as e:
                         print(f"Warning: Failed to load mask image: {e}")
-                        return SolidFillColorMask(front_color=fg_color, back_color=bg_color)
+                        return SolidFillColorMask(
+                            front_color=fg_color, back_color=bg_color
+                        )
                 else:
                     return SolidFillColorMask(front_color=fg_color, back_color=bg_color)
         except Exception as e:
@@ -171,7 +175,9 @@ class QRBatchGenerator:
                 background = Image.new('RGB', (bg_size, bg_size), bg_color)
 
                 # Handle transparency in overlay
-                if overlay.mode in ('RGBA', 'LA') or (overlay.mode == 'P' and 'transparency' in overlay.info):
+                if overlay.mode in ('RGBA', 'LA') or (
+                    overlay.mode == 'P' and 'transparency' in overlay.info
+                ):
                     background.paste(overlay, (padding, padding), overlay)
                 else:
                     background.paste(overlay, (padding, padding))
@@ -183,7 +189,10 @@ class QRBatchGenerator:
                 overlay = overlay.convert('RGBA')
 
             qr_image = qr_image.convert('RGBA')
-            overlay_pos = ((qr_size - overlay.size[0]) // 2, (qr_size - overlay.size[1]) // 2)
+            overlay_pos = (
+                (qr_size - overlay.size[0]) // 2,
+                (qr_size - overlay.size[1]) // 2,
+            )
             qr_image.paste(overlay, overlay_pos, overlay)
 
             return qr_image.convert('RGB')
@@ -192,7 +201,9 @@ class QRBatchGenerator:
             print(f"Warning: Failed to add image overlay: {e}")
             return qr_image
 
-    def generate_from_csv(self, csv_file: str, output_dir: str = "./exports/batch_output") -> None:
+    def generate_from_csv(
+        self, csv_file: str, output_dir: str = "./exports/batch_output"
+    ) -> None:
         """Enhanced CSV generation with full feature support"""
         Path(output_dir).mkdir(parents=True, exist_ok=True)
 
@@ -236,26 +247,40 @@ class QRBatchGenerator:
                             'image_bg': ('image_bg', str, 'match'),
                             'image_bg_color': ('image_bg_color', str, '#FFFFFF'),
                             'image_padding': ('image_padding', int, 10),
-                            'mask_image_path': ('mask_image_path', str, '')
+                            'mask_image_path': ('mask_image_path', str, ''),
                         }
 
-                        for csv_key, (config_key, converter, default) in config_mapping.items():
+                        for csv_key, (
+                            config_key,
+                            converter,
+                            default,
+                        ) in config_mapping.items():
                             if csv_key in row and row[csv_key]:
                                 try:
                                     if converter == bool:
-                                        value = row[csv_key].lower() in ['true', '1', 'yes', 'on']
+                                        value = row[csv_key].lower() in [
+                                            'true',
+                                            '1',
+                                            'yes',
+                                            'on',
+                                        ]
                                     else:
                                         value = converter(row[csv_key])
                                     row_config[config_key] = value
                                 except (ValueError, TypeError):
-                                    print(f"⚠️  Row {i + 1}: Invalid {csv_key} value '{row[csv_key]}', using default")
+                                    print(
+                                        f"⚠️  Row {i + 1}: Invalid {csv_key} value '{row[csv_key]}', using default"
+                                    )
                                     row_config[config_key] = default
 
                         # Generate QR code
                         qr_image = self.generate_qr_code(content, row_config)
 
                         # Save image
-                        output_path = Path(output_dir) / f"{filename}.{row_config['format'].lower()}"
+                        output_path = (
+                            Path(output_dir)
+                            / f"{filename}.{row_config['format'].lower()}"
+                        )
                         qr_image.save(output_path)
 
                         print(f"✅ Row {i + 1}: Generated {output_path.name}")
@@ -268,12 +293,18 @@ class QRBatchGenerator:
                 print(f"   Total rows: {total_rows}")
                 print(f"   Successful: {success_count}")
                 print(f"   Failed: {total_rows - success_count}")
-                print(f"   Success rate: {(success_count / total_rows) * 100:.1f}%" if total_rows > 0 else "   No rows processed")
+                print(
+                    f"   Success rate: {(success_count / total_rows) * 100:.1f}%"
+                    if total_rows > 0
+                    else "   No rows processed"
+                )
 
         except Exception as e:
             print(f"❌ Error reading CSV file: {e}")
 
-    def generate_from_json(self, json_file: str, output_dir: str = "./exports/batch_output") -> None:
+    def generate_from_json(
+        self, json_file: str, output_dir: str = "./exports/batch_output"
+    ) -> None:
         """Enhanced JSON generation with full feature support"""
         Path(output_dir).mkdir(parents=True, exist_ok=True)
 
@@ -308,7 +339,10 @@ class QRBatchGenerator:
                     qr_image = self.generate_qr_code(content, item_config)
 
                     # Save image
-                    output_path = Path(output_dir) / f"{filename}.{item_config.get('format', 'PNG').lower()}"
+                    output_path = (
+                        Path(output_dir)
+                        / f"{filename}.{item_config.get('format', 'PNG').lower()}"
+                    )
                     qr_image.save(output_path)
 
                     print(f"✅ Item {i + 1}: Generated {output_path.name}")
@@ -321,12 +355,18 @@ class QRBatchGenerator:
             print(f"   Total items: {total_items}")
             print(f"   Successful: {success_count}")
             print(f"   Failed: {total_items - success_count}")
-            print(f"   Success rate: {(success_count / total_items) * 100:.1f}%" if total_items > 0 else "   No items processed")
+            print(
+                f"   Success rate: {(success_count / total_items) * 100:.1f}%"
+                if total_items > 0
+                else "   No items processed"
+            )
 
         except Exception as e:
             print(f"❌ Error reading JSON file: {e}")
 
-    def generate_qr_code(self, content: str, config: Dict[str, Any] = None) -> Image.Image:
+    def generate_qr_code(
+        self, content: str, config: Dict[str, Any] = None
+    ) -> Image.Image:
         """Generate a single QR code with enhanced configuration support"""
         if config is None:
             config = self.config
@@ -336,12 +376,14 @@ class QRBatchGenerator:
             'L': qrcode.constants.ERROR_CORRECT_L,
             'M': qrcode.constants.ERROR_CORRECT_M,
             'Q': qrcode.constants.ERROR_CORRECT_Q,
-            'H': qrcode.constants.ERROR_CORRECT_H
+            'H': qrcode.constants.ERROR_CORRECT_H,
         }
 
         qr = qrcode.QRCode(
             version=1,
-            error_correction=error_levels.get(config.get('error_correction', 'M'), qrcode.constants.ERROR_CORRECT_M),
+            error_correction=error_levels.get(
+                config.get('error_correction', 'M'), qrcode.constants.ERROR_CORRECT_M
+            ),
             box_size=10,
             border=config.get('border', 4),
         )
@@ -365,7 +407,7 @@ class QRBatchGenerator:
                     module_drawer=RoundedModuleDrawer(),
                     color_mask=color_mask,
                     fill_color=fg_color,
-                    back_color=bg_color
+                    back_color=bg_color,
                 )
             elif theme == 'circular':
                 qr_image = qr.make_image(
@@ -373,17 +415,18 @@ class QRBatchGenerator:
                     module_drawer=CircleModuleDrawer(),
                     color_mask=color_mask,
                     fill_color=fg_color,
-                    back_color=bg_color
+                    back_color=bg_color,
                 )
             elif theme == 'gapped':
                 try:
                     from decimal import Decimal
+
                     qr_image = qr.make_image(
                         image_factory=StyledPilImage,
                         module_drawer=SquareModuleDrawer(size_ratio=Decimal(0.8)),
                         color_mask=color_mask,
                         fill_color=fg_color,
-                        back_color=bg_color
+                        back_color=bg_color,
                     )
                 except Exception:
                     # Fallback if SquareModuleDrawer doesn't support size_ratio
@@ -392,16 +435,20 @@ class QRBatchGenerator:
                         module_drawer=SquareModuleDrawer(),
                         color_mask=color_mask,
                         fill_color=fg_color,
-                        back_color=bg_color
+                        back_color=bg_color,
                     )
             elif theme in ['vertical_bars', 'horizontal_bars']:
                 try:
                     # Try to import advanced drawers
                     if theme == 'vertical_bars':
                         from qrcode.image.styles.moduledrawers import VerticalBarsDrawer
+
                         drawer = VerticalBarsDrawer()
                     else:
-                        from qrcode.image.styles.moduledrawers import HorizontalBarsDrawer
+                        from qrcode.image.styles.moduledrawers import (
+                            HorizontalBarsDrawer,
+                        )
+
                         drawer = HorizontalBarsDrawer()
 
                     qr_image = qr.make_image(
@@ -409,7 +456,7 @@ class QRBatchGenerator:
                         module_drawer=drawer,
                         color_mask=color_mask,
                         fill_color=fg_color,
-                        back_color=bg_color
+                        back_color=bg_color,
                     )
                 except ImportError:
                     print(f"Warning: {theme} not available, using classic theme")
@@ -418,17 +465,19 @@ class QRBatchGenerator:
                             image_factory=StyledPilImage,
                             color_mask=color_mask,
                             fill_color=fg_color,
-                            back_color=bg_color
+                            back_color=bg_color,
                         )
                     else:
-                        qr_image = qr.make_image(fill_color=fg_color, back_color=bg_color)
+                        qr_image = qr.make_image(
+                            fill_color=fg_color, back_color=bg_color
+                        )
             else:  # classic or unknown
                 if color_mask:
                     qr_image = qr.make_image(
                         image_factory=StyledPilImage,
                         color_mask=color_mask,
                         fill_color=fg_color,
-                        back_color=bg_color
+                        back_color=bg_color,
                     )
                 else:
                     qr_image = qr.make_image(fill_color=fg_color, back_color=bg_color)
@@ -458,6 +507,7 @@ class QRScanner:
         """Check if OpenCV is available"""
         try:
             import cv2
+
             return True
         except ImportError:
             return False
@@ -466,6 +516,7 @@ class QRScanner:
         """Check if pyzbar is available"""
         try:
             import pyzbar
+
             return True
         except ImportError:
             return False
@@ -501,8 +552,8 @@ class QRScanner:
                         'x': obj.rect.left,
                         'y': obj.rect.top,
                         'width': obj.rect.width,
-                        'height': obj.rect.height
-                    }
+                        'height': obj.rect.height,
+                    },
                 }
                 results.append(result)
                 print(f"Found QR code: {data}")
@@ -515,21 +566,18 @@ class QRScanner:
 
     def analyze_content_type(self, content: str) -> Dict[str, Any]:
         """Analyze QR content and determine type"""
-        analysis = {
-            'content': content,
-            'type': 'text',
-            'details': {}
-        }
+        analysis = {'content': content, 'type': 'text', 'details': {}}
 
         if content.startswith(('http://', 'https://')):
             analysis['type'] = 'url'
             try:
                 from urllib.parse import urlparse
+
                 parsed = urlparse(content)
                 analysis['details'] = {
                     'domain': parsed.netloc,
                     'path': parsed.path,
-                    'secure': content.startswith('https://')
+                    'secure': content.startswith('https://'),
                 }
             except:
                 pass
@@ -597,7 +645,7 @@ def create_sample_csv_enhanced():
             'image_size': 25,
             'image_bg': 'custom',
             'image_bg_color': '#f8f9fa',
-            'image_padding': 15
+            'image_padding': 15,
         },
         {
             'content': 'WIFI:T:WPA;S:CoffeeShop;P:password123;H:false;',
@@ -607,7 +655,7 @@ def create_sample_csv_enhanced():
             'fg_color': '#8B4513',
             'bg_color': '#F5DEB3',
             'size': 350,
-            'border': 3
+            'border': 3,
         },
         {
             'content': 'mailto:contact@company.com?subject=Hello&body=Thanks for visiting!',
@@ -616,7 +664,7 @@ def create_sample_csv_enhanced():
             'color_mask': 'solid',
             'fg_color': '#1f4e79',
             'bg_color': '#ffffff',
-            'size': 300
+            'size': 300,
         },
         {
             'content': 'BEGIN:VCARD\nVERSION:3.0\nFN:John Doe\nORG:Tech Company\nTEL:+1-555-123-4567\nEMAIL:john@company.com\nEND:VCARD',
@@ -625,14 +673,26 @@ def create_sample_csv_enhanced():
             'color_mask': 'square',
             'fg_color': '#2c3e50',
             'bg_color': '#ecf0f1',
-            'error_correction': 'Q'
-        }
+            'error_correction': 'Q',
+        },
     ]
 
     fieldnames = [
-        'content', 'filename', 'theme', 'color_mask', 'fg_color', 'bg_color',
-        'size', 'error_correction', 'border', 'use_image', 'image_path',
-        'image_size', 'image_bg', 'image_bg_color', 'image_padding'
+        'content',
+        'filename',
+        'theme',
+        'color_mask',
+        'fg_color',
+        'bg_color',
+        'size',
+        'error_correction',
+        'border',
+        'use_image',
+        'image_path',
+        'image_size',
+        'image_bg',
+        'image_bg_color',
+        'image_padding',
     ]
 
     with open('enhanced_batch.csv', 'w', newline='', encoding='utf-8') as f:
@@ -656,7 +716,7 @@ def create_sample_json_enhanced():
             'fg_color': '#24292e',
             'bg_color': '#ffffff',
             'size': 500,
-            'error_correction': 'M'
+            'error_correction': 'M',
         },
         {
             'content': 'tel:+1-800-555-0199',
@@ -664,7 +724,7 @@ def create_sample_json_enhanced():
             'theme': 'circular',
             'color_mask': 'radial',
             'fg_color': '#0066cc',
-            'bg_color': '#f0f8ff'
+            'bg_color': '#f0f8ff',
         },
         {
             'content': 'sms:+1-555-123-4567?body=Thanks for your service!',
@@ -672,8 +732,8 @@ def create_sample_json_enhanced():
             'theme': 'classic',
             'color_mask': 'horizontal',
             'fg_color': '#228B22',
-            'bg_color': '#F0FFF0'
-        }
+            'bg_color': '#F0FFF0',
+        },
     ]
 
     with open('enhanced_batch.json', 'w', encoding='utf-8') as f:
@@ -687,7 +747,6 @@ def create_config_template():
     config_template = {
         "description": "QR Code Generator Configuration Template",
         "version": "2.0",
-
         "defaults": {
             "size": 400,
             "border": 4,
@@ -696,31 +755,27 @@ def create_config_template():
             "theme": "classic",
             "color_mask": "solid",
             "fg_color": "#000000",
-            "bg_color": "#FFFFFF"
+            "bg_color": "#FFFFFF",
         },
-
         "themes": {
             "classic": "Traditional square modules",
             "rounded": "Rounded corner modules",
             "circular": "Circular modules",
-            "gapped": "Squares with gaps between them"
+            "gapped": "Squares with gaps between them",
         },
-
         "color_masks": {
             "solid": "Single solid color",
             "radial": "Radial gradient from center",
             "square": "Square gradient pattern",
             "horizontal": "Horizontal gradient",
-            "vertical": "Vertical gradient"
+            "vertical": "Vertical gradient",
         },
-
         "error_correction_levels": {
             "L": "~7% error recovery",
             "M": "~15% error recovery (recommended)",
             "Q": "~25% error recovery",
-            "H": "~30% error recovery"
+            "H": "~30% error recovery",
         },
-
         "example_batch_entry": {
             "content": "https://example.com",
             "filename": "example_qr",
@@ -729,8 +784,8 @@ def create_config_template():
             "fg_color": "#1a365d",
             "bg_color": "#ffffff",
             "size": 400,
-            "error_correction": "M"
-        }
+            "error_correction": "M",
+        },
     }
 
     with open('config_template.json', 'w', encoding='utf-8') as f:
@@ -747,21 +802,35 @@ def main():
     # Batch generation commands
     batch_parser = subparsers.add_parser('batch', help='Batch generate QR codes')
     batch_parser.add_argument('input_file', help='Input CSV or JSON file')
-    batch_parser.add_argument('--output', '-o', default='./exports/batch_output', help='Output directory')
+    batch_parser.add_argument(
+        '--output', '-o', default='./exports/batch_output', help='Output directory'
+    )
     batch_parser.add_argument('--config', '-c', help='Configuration file')
 
     # Enhanced scanning commands
     scan_parser = subparsers.add_parser('scan', help='Scan and analyze QR codes')
     scan_parser.add_argument('--file', '-f', required=True, help='Image file to scan')
-    scan_parser.add_argument('--analyze', '-a', action='store_true', help='Analyze content type')
+    scan_parser.add_argument(
+        '--analyze', '-a', action='store_true', help='Analyze content type'
+    )
     scan_parser.add_argument('--output', '-o', help='Save analysis to file')
 
     # Sample generation commands
-    sample_parser = subparsers.add_parser('samples', help='Create sample and template files')
-    sample_parser.add_argument('--csv', action='store_true', help='Create enhanced sample CSV')
-    sample_parser.add_argument('--json', action='store_true', help='Create enhanced sample JSON')
-    sample_parser.add_argument('--config', action='store_true', help='Create configuration template')
-    sample_parser.add_argument('--all', action='store_true', help='Create all sample files')
+    sample_parser = subparsers.add_parser(
+        'samples', help='Create sample and template files'
+    )
+    sample_parser.add_argument(
+        '--csv', action='store_true', help='Create enhanced sample CSV'
+    )
+    sample_parser.add_argument(
+        '--json', action='store_true', help='Create enhanced sample JSON'
+    )
+    sample_parser.add_argument(
+        '--config', action='store_true', help='Create configuration template'
+    )
+    sample_parser.add_argument(
+        '--all', action='store_true', help='Create all sample files'
+    )
 
     args = parser.parse_args()
 

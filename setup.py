@@ -46,11 +46,17 @@ class QRGeneratorInstaller:
         """Run command with error handling"""
         try:
             if isinstance(command, str):
-                result = subprocess.run(command, shell=True, check=True,
-                                        capture_output=capture_output, text=True)
+                result = subprocess.run(
+                    command,
+                    shell=True,
+                    check=True,
+                    capture_output=capture_output,
+                    text=True,
+                )
             else:
-                result = subprocess.run(command, check=True,
-                                        capture_output=capture_output, text=True)
+                result = subprocess.run(
+                    command, check=True, capture_output=capture_output, text=True
+                )
             return True, result
         except subprocess.CalledProcessError as e:
             print(f"❌ {description} failed: {e}")
@@ -66,11 +72,17 @@ class QRGeneratorInstaller:
         print(f"Python Version: {version.major}.{version.minor}.{version.micro}")
 
         if version.major < 3 or (version.major == 3 and version.minor < 7):
-            self.print_error(f"Python 3.7+ required, found {version.major}.{version.minor}")
+            self.print_error(
+                f"Python 3.7+ required, found {version.major}.{version.minor}"
+            )
             return False
         elif version.major == 3 and version.minor >= 13:
-            self.print_warning(f"Python 3.{version.minor} detected - some packages may not be available")
-            self.print_warning("Consider using Python 3.11 or 3.12 for best compatibility")
+            self.print_warning(
+                f"Python 3.{version.minor} detected - some packages may not be available"
+            )
+            self.print_warning(
+                "Consider using Python 3.11 or 3.12 for best compatibility"
+            )
 
         self.print_success("Python version is compatible")
         return True
@@ -82,7 +94,7 @@ class QRGeneratorInstaller:
         # Check available disk space
         try:
             disk_usage = shutil.disk_usage(self.project_dir)
-            free_gb = disk_usage.free / (1024 ** 3)
+            free_gb = disk_usage.free / (1024**3)
             if free_gb < 1:
                 self.print_warning(f"Low disk space: {free_gb:.1f}GB available")
             else:
@@ -94,10 +106,13 @@ class QRGeneratorInstaller:
         if self.system == "Linux":
             print("Checking Linux-specific requirements...")
             # Check for tkinter
-            success, _ = self.run_command([self.python_exe, "-c", "import tkinter"],
-                                          "tkinter check")
+            success, _ = self.run_command(
+                [self.python_exe, "-c", "import tkinter"], "tkinter check"
+            )
             if not success:
-                self.print_warning("tkinter not available - install with: sudo apt-get install python3-tk")
+                self.print_warning(
+                    "tkinter not available - install with: sudo apt-get install python3-tk"
+                )
             else:
                 self.print_success("tkinter available")
 
@@ -117,8 +132,10 @@ class QRGeneratorInstaller:
                 self.print_success("Using existing virtual environment")
                 return True
 
-        success, _ = self.run_command([self.python_exe, "-m", "venv", str(self.venv_path)],
-                                      "virtual environment creation")
+        success, _ = self.run_command(
+            [self.python_exe, "-m", "venv", str(self.venv_path)],
+            "virtual environment creation",
+        )
         if success:
             self.print_success("Virtual environment created")
             return True
@@ -146,8 +163,10 @@ class QRGeneratorInstaller:
         """Step 5: Upgrade pip"""
         self.print_step(5, "Upgrading pip")
 
-        success, _ = self.run_command([str(self.venv_python), "-m", "pip", "install", "--upgrade", "pip"],
-                                      "pip upgrade")
+        success, _ = self.run_command(
+            [str(self.venv_python), "-m", "pip", "install", "--upgrade", "pip"],
+            "pip upgrade",
+        )
         if success:
             self.print_success("pip upgraded")
             return True
@@ -157,15 +176,14 @@ class QRGeneratorInstaller:
         """Step 6: Install core packages"""
         self.print_step(6, "Installing Core Packages")
 
-        core_packages = [
-            "qrcode[pil]==7.4.2",
-            "Pillow>=10.0.0"
-        ]
+        core_packages = ["qrcode[pil]==7.4.2", "Pillow>=10.0.0"]
 
         for package in core_packages:
             print(f"Installing {package}...")
-            success, _ = self.run_command([str(self.venv_python), "-m", "pip", "install", package],
-                                          f"{package} installation")
+            success, _ = self.run_command(
+                [str(self.venv_python), "-m", "pip", "install", package],
+                f"{package} installation",
+            )
             if success:
                 self.print_success(f"{package} installed")
             else:
@@ -181,21 +199,27 @@ class QRGeneratorInstaller:
         optional_packages = [
             ("pyperclip==1.8.2", "Clipboard functionality"),
             ("opencv-python-headless>=4.8.0", "QR scanning"),
-            ("pyzbar>=0.1.9", "QR scanning")
+            ("pyzbar>=0.1.9", "QR scanning"),
         ]
 
         installed_count = 0
         for package, description in optional_packages:
             print(f"Installing {package} ({description})...")
-            success, result = self.run_command([str(self.venv_python), "-m", "pip", "install", package],
-                                               f"{package} installation")
+            success, result = self.run_command(
+                [str(self.venv_python), "-m", "pip", "install", package],
+                f"{package} installation",
+            )
             if success:
                 self.print_success(f"{package} installed")
                 installed_count += 1
             else:
-                self.print_warning(f"Failed to install {package} - {description} will not be available")
+                self.print_warning(
+                    f"Failed to install {package} - {description} will not be available"
+                )
 
-        print(f"📊 {installed_count}/{len(optional_packages)} optional packages installed")
+        print(
+            f"📊 {installed_count}/{len(optional_packages)} optional packages installed"
+        )
         self.print_success("Optional packages installation completed")
         return True
 
@@ -219,8 +243,8 @@ class QRGeneratorInstaller:
                     'python3-tk': 'GUI framework (required for application)',
                     'xclip': 'Primary clipboard support',
                     'xsel': 'Alternative clipboard support',
-                    'libzbar0': 'QR code scanning library'
-                }
+                    'libzbar0': 'QR code scanning library',
+                },
             },
             'dnf': {
                 'check_cmd': ['which', 'dnf'],
@@ -230,8 +254,8 @@ class QRGeneratorInstaller:
                     'tkinter': 'GUI framework (required for application)',
                     'xclip': 'Primary clipboard support',
                     'xsel': 'Alternative clipboard support',
-                    'zbar': 'QR code scanning library'
-                }
+                    'zbar': 'QR code scanning library',
+                },
             },
             'pacman': {
                 'check_cmd': ['which', 'pacman'],
@@ -241,8 +265,8 @@ class QRGeneratorInstaller:
                     'tk': 'GUI framework (required for application)',
                     'xclip': 'Primary clipboard support',
                     'xsel': 'Alternative clipboard support',
-                    'zbar': 'QR code scanning library'
-                }
+                    'zbar': 'QR code scanning library',
+                },
             },
             'zypper': {
                 'check_cmd': ['which', 'zypper'],
@@ -252,9 +276,9 @@ class QRGeneratorInstaller:
                     'python3-tkinter': 'GUI framework (required for application)',
                     'xclip': 'Primary clipboard support',
                     'xsel': 'Alternative clipboard support',
-                    'libzbar0': 'QR code scanning library'
-                }
-            }
+                    'libzbar0': 'QR code scanning library',
+                },
+            },
         }
 
         # Find available package manager
@@ -266,7 +290,9 @@ class QRGeneratorInstaller:
                 break
 
         if not detected_pm:
-            self.print_warning("No supported package manager found (apt-get, dnf, pacman, zypper)")
+            self.print_warning(
+                "No supported package manager found (apt-get, dnf, pacman, zypper)"
+            )
             self.print_warning("You may need to install dependencies manually:")
             self.print_warning("- GUI framework: python3-tk/tkinter")
             self.print_warning("- Clipboard: xclip, xsel")
@@ -286,18 +312,26 @@ class QRGeneratorInstaller:
         print(f"\n⚠️  This requires sudo access to install system packages.")
 
         # Ask user preference
-        install_choice = input("\nInstall system dependencies? (Y/n/individual): ").strip().lower()
+        install_choice = (
+            input("\nInstall system dependencies? (Y/n/individual): ").strip().lower()
+        )
 
         if install_choice == 'n':
-            self.print_warning("System dependencies not installed - some features may be limited")
+            self.print_warning(
+                "System dependencies not installed - some features may be limited"
+            )
             return True
 
         # Update package database first
         if install_choice in ['y', 'yes', '', 'individual', 'i']:
             print(f"🔄 Updating package database...")
-            success, _ = self.run_command(pm_config['update_cmd'], "package database update", capture_output=False)
+            success, _ = self.run_command(
+                pm_config['update_cmd'], "package database update", capture_output=False
+            )
             if not success:
-                self.print_warning("Package database update failed, continuing anyway...")
+                self.print_warning(
+                    "Package database update failed, continuing anyway..."
+                )
 
         installed_count = 0
 
@@ -307,39 +341,56 @@ class QRGeneratorInstaller:
                 is_required = 'required' in desc.lower()
                 status = "REQUIRED" if is_required else "OPTIONAL"
 
-                user_choice = input(f"\nInstall {pkg} ({status})? {desc} (Y/n): ").strip().lower()
+                user_choice = (
+                    input(f"\nInstall {pkg} ({status})? {desc} (Y/n): ").strip().lower()
+                )
 
                 if user_choice in ['y', 'yes', '']:
                     print(f"Installing {pkg}...")
-                    success, _ = self.run_command(pm_config['install_cmd'] + [pkg],
-                                                  f"{pkg} installation", capture_output=False)
+                    success, _ = self.run_command(
+                        pm_config['install_cmd'] + [pkg],
+                        f"{pkg} installation",
+                        capture_output=False,
+                    )
                     if success:
                         self.print_success(f"{pkg} installed successfully")
                         installed_count += 1
                     else:
                         self.print_error(f"Failed to install {pkg}")
                         if is_required:
-                            self.print_warning("This may cause issues with the application")
+                            self.print_warning(
+                                "This may cause issues with the application"
+                            )
                 else:
                     self.print_warning(f"Skipped {pkg}")
                     if is_required:
-                        self.print_warning("Application may not work properly without this package")
+                        self.print_warning(
+                            "Application may not work properly without this package"
+                        )
 
         else:
             # Install all at once
             all_packages = list(packages.keys())
             print(f"Installing all packages: {', '.join(all_packages)}")
-            success, _ = self.run_command(pm_config['install_cmd'] + all_packages,
-                                          "system dependencies installation", capture_output=False)
+            success, _ = self.run_command(
+                pm_config['install_cmd'] + all_packages,
+                "system dependencies installation",
+                capture_output=False,
+            )
             if success:
                 installed_count = len(all_packages)
                 self.print_success(f"All {installed_count} system packages installed")
             else:
-                self.print_error("Batch installation failed, trying individual installation...")
+                self.print_error(
+                    "Batch installation failed, trying individual installation..."
+                )
                 # Fallback to individual installation
                 for pkg, desc in packages.items():
-                    success, _ = self.run_command(pm_config['install_cmd'] + [pkg],
-                                                  f"{pkg} installation", capture_output=False)
+                    success, _ = self.run_command(
+                        pm_config['install_cmd'] + [pkg],
+                        f"{pkg} installation",
+                        capture_output=False,
+                    )
                     if success:
                         installed_count += 1
                         self.print_success(f"{pkg} installed")
@@ -352,11 +403,15 @@ class QRGeneratorInstaller:
         if installed_count == len(packages):
             self.print_success("All system dependencies installed successfully")
         elif installed_count > 0:
-            self.print_success(f"Partial installation completed ({installed_count}/{len(packages)})")
+            self.print_success(
+                f"Partial installation completed ({installed_count}/{len(packages)})"
+            )
             self.print_warning("Some features may be limited")
         else:
             self.print_warning("No system dependencies installed")
-            self.print_warning("The application will work but with reduced functionality")
+            self.print_warning(
+                "The application will work but with reduced functionality"
+            )
 
         return True
 
@@ -367,12 +422,23 @@ class QRGeneratorInstaller:
         requirements_file = self.project_dir / "requirements.txt"
 
         if not requirements_file.exists():
-            self.print_warning("requirements.txt not found, installing core packages manually")
+            self.print_warning(
+                "requirements.txt not found, installing core packages manually"
+            )
             return self.install_core_packages_manual()
 
         print("📋 Installing packages from requirements.txt...")
-        success, result = self.run_command([str(self.venv_python), "-m", "pip", "install", "-r", str(requirements_file)],
-                                           "requirements.txt installation")
+        success, result = self.run_command(
+            [
+                str(self.venv_python),
+                "-m",
+                "pip",
+                "install",
+                "-r",
+                str(requirements_file),
+            ],
+            "requirements.txt installation",
+        )
 
         if success:
             self.print_success("All pip packages installed successfully")
@@ -382,13 +448,14 @@ class QRGeneratorInstaller:
             test_imports = [
                 ("qrcode", "QR code generation"),
                 ("PIL", "Image processing"),
-                ("tkinter", "GUI framework")
+                ("tkinter", "GUI framework"),
             ]
 
             working_features = []
             for module, feature in test_imports:
-                success, _ = self.run_command([str(self.venv_python), "-c", f"import {module}"],
-                                              f"{module} test")
+                success, _ = self.run_command(
+                    [str(self.venv_python), "-c", f"import {module}"], f"{module} test"
+                )
                 if success:
                     working_features.append(feature)
                     self.print_success(f"{feature} working")
@@ -404,15 +471,14 @@ class QRGeneratorInstaller:
 
     def install_core_packages_manual(self):
         """Fallback manual installation of core packages"""
-        core_packages = [
-            "qrcode[pil]==7.4.2",
-            "Pillow>=10.0.0"
-        ]
+        core_packages = ["qrcode[pil]==7.4.2", "Pillow>=10.0.0"]
 
         for package in core_packages:
             print(f"Installing {package}...")
-            success, _ = self.run_command([str(self.venv_python), "-m", "pip", "install", package],
-                                          f"{package} installation")
+            success, _ = self.run_command(
+                [str(self.venv_python), "-m", "pip", "install", package],
+                f"{package} installation",
+            )
             if success:
                 self.print_success(f"{package} installed")
             else:
@@ -465,7 +531,7 @@ mailto:contact@example.com,email_contact,classic,solid,#1f4e79,#ffffff,300"""
                 "color_mask": "vertical",
                 "fg_color": "#24292e",
                 "bg_color": "#ffffff",
-                "size": 500
+                "size": 500,
             }
         ]
 
@@ -484,7 +550,7 @@ mailto:contact@example.com,email_contact,classic,solid,#1f4e79,#ffffff,300"""
             "error_correction": "M",
             "fg_color": "#1a365d",
             "bg_color": "#ffffff",
-            "content": "https://example.com"
+            "content": "https://example.com",
         }
 
         config_path = self.project_dir / "examples" / "sample_config.json"
@@ -503,12 +569,14 @@ mailto:contact@example.com,email_contact,classic,solid,#1f4e79,#ffffff,300"""
             ("tkinter", "GUI framework"),
             ("qrcode", "QR code generation"),
             ("PIL", "Image processing"),
-            ("json", "JSON handling")
+            ("json", "JSON handling"),
         ]
 
         for module, description in test_imports:
-            success, _ = self.run_command([str(self.venv_python), "-c", f"import {module}"],
-                                          f"{module} import test")
+            success, _ = self.run_command(
+                [str(self.venv_python), "-c", f"import {module}"],
+                f"{module} import test",
+            )
             if success:
                 self.print_success(f"{description} working")
             else:
@@ -526,8 +594,9 @@ img = qr.make_image(fill_color='black', back_color='white')
 print('QR generation successful')
 """
 
-        success, _ = self.run_command([str(self.venv_python), "-c", qr_test_code],
-                                      "QR generation test")
+        success, _ = self.run_command(
+            [str(self.venv_python), "-c", qr_test_code], "QR generation test"
+        )
         if success:
             self.print_success("QR generation working")
         else:
@@ -561,7 +630,7 @@ echo "Activating QR Generator environment..."
 source "{self.venv_path}/bin/activate"
 echo "Environment activated! You can now run:"
 echo "  python qr_generator.py"
-echo "  python launcher.py" 
+echo "  python launcher.py"
 echo "  python qr_utils.py --help"
 exec bash
 """
@@ -627,7 +696,9 @@ cd "{self.project_dir}"
         print("  exports/                    - Your generated QR codes")
 
         if self.success_count < self.total_steps:
-            print(f"\n⚠️  Some steps had issues. Run 'python troubleshoot.py' for diagnosis.")
+            print(
+                f"\n⚠️  Some steps had issues. Run 'python troubleshoot.py' for diagnosis."
+            )
 
         print(f"\n🎯 Quick Test:")
         print("  Run the launcher and create your first QR code!")

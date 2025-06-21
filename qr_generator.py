@@ -9,14 +9,20 @@ from tkinter import ttk, filedialog, messagebox, colorchooser
 import qrcode
 from qrcode.image.styledpil import StyledPilImage
 from qrcode.image.styles.moduledrawers import (
-    RoundedModuleDrawer, CircleModuleDrawer, SquareModuleDrawer
+    RoundedModuleDrawer,
+    CircleModuleDrawer,
+    SquareModuleDrawer,
 )
 
 # Import color masks including ImageColorMask
 try:
     from qrcode.image.styles.colormasks import (
-        SolidFillColorMask, SquareGradiantColorMask, RadialGradiantColorMask,
-        HorizontalGradiantColorMask, VerticalGradiantColorMask, ImageColorMask
+        SolidFillColorMask,
+        SquareGradiantColorMask,
+        RadialGradiantColorMask,
+        HorizontalGradiantColorMask,
+        VerticalGradiantColorMask,
+        ImageColorMask,
     )
 
     COLOR_MASKS_AVAILABLE = True
@@ -24,8 +30,11 @@ try:
 except ImportError:
     try:
         from qrcode.image.styles.colormasks import (
-            SolidFillColorMask, SquareGradiantColorMask, RadialGradiantColorMask,
-            HorizontalGradiantColorMask, VerticalGradiantColorMask
+            SolidFillColorMask,
+            SquareGradiantColorMask,
+            RadialGradiantColorMask,
+            HorizontalGradiantColorMask,
+            VerticalGradiantColorMask,
         )
 
         COLOR_MASKS_AVAILABLE = True
@@ -35,7 +44,10 @@ except ImportError:
         IMAGE_COLOR_MASK_AVAILABLE = False
 
 try:
-    from qrcode.image.styles.moduledrawers import VerticalBarsDrawer, HorizontalBarsDrawer
+    from qrcode.image.styles.moduledrawers import (
+        VerticalBarsDrawer,
+        HorizontalBarsDrawer,
+    )
 
     ADVANCED_DRAWERS = True
 except ImportError:
@@ -142,12 +154,17 @@ class QRCodeGenerator:
             ("Business Card", "vcard"),
             ("Email", "email"),
             ("Phone Number", "phone"),
-            ("SMS", "sms")
+            ("SMS", "sms"),
         ]
 
         for text, value in presets:
-            ttk.Radiobutton(preset_frame, text=text, variable=self.preset_var,
-                            value=value, command=self.on_preset_change).pack(anchor=tk.W)
+            ttk.Radiobutton(
+                preset_frame,
+                text=text,
+                variable=self.preset_var,
+                value=value,
+                command=self.on_preset_change,
+            ).pack(anchor=tk.W)
 
         # Dynamic content area
         self.content_frame = ttk.LabelFrame(parent, text="Content Details", padding=10)
@@ -203,7 +220,9 @@ class QRCodeGenerator:
 
         ttk.Label(self.content_frame, text="Password:").pack(anchor=tk.W)
         self.wifi_password = tk.StringVar()
-        pwd_entry = ttk.Entry(self.content_frame, textvariable=self.wifi_password, show="*")
+        pwd_entry = ttk.Entry(
+            self.content_frame, textvariable=self.wifi_password, show="*"
+        )
         pwd_entry.pack(fill=tk.X, pady=(5, 10))
         pwd_entry.bind('<Control-a>', self.select_all_text)
 
@@ -211,12 +230,20 @@ class QRCodeGenerator:
         self.wifi_security = tk.StringVar(value="WPA")
         security_frame = ttk.Frame(self.content_frame)
         security_frame.pack(fill=tk.X, pady=(5, 10))
-        ttk.Radiobutton(security_frame, text="WPA/WPA2", variable=self.wifi_security, value="WPA").pack(side=tk.LEFT)
-        ttk.Radiobutton(security_frame, text="WEP", variable=self.wifi_security, value="WEP").pack(side=tk.LEFT)
-        ttk.Radiobutton(security_frame, text="None", variable=self.wifi_security, value="").pack(side=tk.LEFT)
+        ttk.Radiobutton(
+            security_frame, text="WPA/WPA2", variable=self.wifi_security, value="WPA"
+        ).pack(side=tk.LEFT)
+        ttk.Radiobutton(
+            security_frame, text="WEP", variable=self.wifi_security, value="WEP"
+        ).pack(side=tk.LEFT)
+        ttk.Radiobutton(
+            security_frame, text="None", variable=self.wifi_security, value=""
+        ).pack(side=tk.LEFT)
 
         self.wifi_hidden = tk.BooleanVar()
-        ttk.Checkbutton(self.content_frame, text="Hidden Network", variable=self.wifi_hidden).pack(anchor=tk.W)
+        ttk.Checkbutton(
+            self.content_frame, text="Hidden Network", variable=self.wifi_hidden
+        ).pack(anchor=tk.W)
 
         # Bind events
         self.wifi_ssid.trace('w', self.on_content_change)
@@ -256,7 +283,13 @@ class QRCodeGenerator:
         url_entry.bind('<Control-a>', self.select_all_text)
 
         # Bind events
-        for var in [self.vcard_name, self.vcard_org, self.vcard_phone, self.vcard_email, self.vcard_url]:
+        for var in [
+            self.vcard_name,
+            self.vcard_org,
+            self.vcard_phone,
+            self.vcard_email,
+            self.vcard_url,
+        ]:
             var.trace('w', self.on_content_change)
 
     def create_email_form(self):
@@ -309,11 +342,15 @@ class QRCodeGenerator:
             ("Circles", "circular"),
             ("Gapped Squares", "gapped"),
             ("Vertical Bars", "vertical_bars"),
-            ("Horizontal Bars", "horizontal_bars")
+            ("Horizontal Bars", "horizontal_bars"),
         ]
 
-        theme_combo = ttk.Combobox(theme_frame, textvariable=self.theme_var,
-                                   values=[theme[0] for theme in themes], state="readonly")
+        theme_combo = ttk.Combobox(
+            theme_frame,
+            textvariable=self.theme_var,
+            values=[theme[0] for theme in themes],
+            state="readonly",
+        )
         theme_combo.pack(fill=tk.X)
         theme_combo.bind('<<ComboboxSelected>>', self.on_style_change)
 
@@ -335,15 +372,19 @@ class QRCodeGenerator:
                 ("Radial Gradient", "radial"),
                 ("Square Gradient", "square"),
                 ("Horizontal Gradient", "horizontal"),
-                ("Vertical Gradient", "vertical")
+                ("Vertical Gradient", "vertical"),
             ]
 
             # Add ImageColorMask option if available
             if IMAGE_COLOR_MASK_AVAILABLE:
                 color_masks.append(("Image Color Mask", "image"))
 
-            color_mask_combo = ttk.Combobox(color_mask_frame, textvariable=self.color_mask_var,
-                                            values=[mask[0] for mask in color_masks], state="readonly")
+            color_mask_combo = ttk.Combobox(
+                color_mask_frame,
+                textvariable=self.color_mask_var,
+                values=[mask[0] for mask in color_masks],
+                state="readonly",
+            )
             color_mask_combo.pack(fill=tk.X)
             color_mask_combo.bind('<<ComboboxSelected>>', self.on_style_change)
 
@@ -351,18 +392,24 @@ class QRCodeGenerator:
             self.color_mask_reverse_map = {mask[1]: mask[0] for mask in color_masks}
 
             # Image Color Mask settings (only show if ImageColorMask is selected)
-            self.image_mask_frame = ttk.LabelFrame(parent, text="Image Color Mask Settings", padding=10)
+            self.image_mask_frame = ttk.LabelFrame(
+                parent, text="Image Color Mask Settings", padding=10
+            )
 
             ttk.Label(self.image_mask_frame, text="Mask Image Path:").pack(anchor=tk.W)
             self.mask_image_path_var = tk.StringVar()
             mask_path_frame = ttk.Frame(self.image_mask_frame)
             mask_path_frame.pack(fill=tk.X, pady=(5, 0))
 
-            mask_path_entry = ttk.Entry(mask_path_frame, textvariable=self.mask_image_path_var)
+            mask_path_entry = ttk.Entry(
+                mask_path_frame, textvariable=self.mask_image_path_var
+            )
             mask_path_entry.pack(side=tk.LEFT, fill=tk.X, expand=True)
             mask_path_entry.bind('<Control-a>', self.select_all_text)
 
-            ttk.Button(mask_path_frame, text="Browse", command=self.browse_mask_image).pack(side=tk.RIGHT, padx=(5, 0))
+            ttk.Button(
+                mask_path_frame, text="Browse", command=self.browse_mask_image
+            ).pack(side=tk.RIGHT, padx=(5, 0))
 
             self.mask_image_path_var.trace('w', self.on_style_change)
 
@@ -382,8 +429,12 @@ class QRCodeGenerator:
         fg_color_frame = ttk.Frame(fg_frame)
         fg_color_frame.pack(side=tk.RIGHT)
 
-        self.fg_color_btn = tk.Button(fg_color_frame, width=3, bg=self.fg_color.get(),
-                                      command=lambda: self.choose_color(self.fg_color, self.fg_color_btn))
+        self.fg_color_btn = tk.Button(
+            fg_color_frame,
+            width=3,
+            bg=self.fg_color.get(),
+            command=lambda: self.choose_color(self.fg_color, self.fg_color_btn),
+        )
         self.fg_color_btn.pack(side=tk.RIGHT, padx=(5, 0))
 
         # fg_entry = ttk.Entry(fg_color_frame, textvariable=self.fg_color, width=8)
@@ -401,8 +452,12 @@ class QRCodeGenerator:
         bg_color_frame = ttk.Frame(bg_frame)
         bg_color_frame.pack(side=tk.RIGHT)
 
-        self.bg_color_btn = tk.Button(bg_color_frame, width=3, bg=self.bg_color.get(),
-                                      command=lambda: self.choose_color(self.bg_color, self.bg_color_btn))
+        self.bg_color_btn = tk.Button(
+            bg_color_frame,
+            width=3,
+            bg=self.bg_color.get(),
+            command=lambda: self.choose_color(self.bg_color, self.bg_color_btn),
+        )
         self.bg_color_btn.pack(side=tk.RIGHT, padx=(5, 0))
 
         self.bg_entry = ttk.Entry(bg_color_frame, textvariable=self.bg_color, width=8)
@@ -410,7 +465,9 @@ class QRCodeGenerator:
         self.bg_entry.bind('<KeyRelease>', self.on_color_change)
         self.bg_entry.bind('<Control-a>', self.select_all_text)
 
-        self.color_info_label = ttk.Label(color_frame, text="", foreground='gray', font=('Arial', 8))
+        self.color_info_label = ttk.Label(
+            color_frame, text="", foreground='gray', font=('Arial', 8)
+        )
         self.color_info_label.pack(anchor=tk.W, pady=(5, 0))
 
         # Size settings
@@ -425,8 +482,14 @@ class QRCodeGenerator:
         size_control_frame.pack(fill=tk.X, pady=(5, 5))
 
         # Size scale
-        size_scale = ttk.Scale(size_control_frame, from_=100, to=1000, variable=self.size_var,
-                               orient=tk.HORIZONTAL, command=self.on_style_change)
+        size_scale = ttk.Scale(
+            size_control_frame,
+            from_=100,
+            to=1000,
+            variable=self.size_var,
+            orient=tk.HORIZONTAL,
+            command=self.on_style_change,
+        )
         size_scale.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=(0, 5))
 
         # Size entry for precise input
@@ -441,8 +504,14 @@ class QRCodeGenerator:
         # Border size
         ttk.Label(size_frame, text="Border Size:").pack(anchor=tk.W, pady=(10, 0))
         self.border_var = tk.IntVar(value=1)
-        border_scale = ttk.Scale(size_frame, from_=0, to=20, variable=self.border_var,
-                                 orient=tk.HORIZONTAL, command=self.on_style_change)
+        border_scale = ttk.Scale(
+            size_frame,
+            from_=0,
+            to=20,
+            variable=self.border_var,
+            orient=tk.HORIZONTAL,
+            command=self.on_style_change,
+        )
         border_scale.pack(fill=tk.X, pady=(5, 5))
         self.border_label = ttk.Label(size_frame, text="1 modules")
         self.border_label.pack(anchor=tk.W)
@@ -453,9 +522,19 @@ class QRCodeGenerator:
         error_frame = ttk.Frame(size_frame)
         error_frame.pack(fill=tk.X, pady=(5, 0))
 
-        for text, value in [("Low (L)", "L"), ("Medium (M)", "M"), ("Quartile (Q)", "Q"), ("High (H)", "H")]:
-            ttk.Radiobutton(error_frame, text=text, variable=self.error_correction_var,
-                            value=value, command=self.on_style_change).pack(anchor=tk.W)
+        for text, value in [
+            ("Low (L)", "L"),
+            ("Medium (M)", "M"),
+            ("Quartile (Q)", "Q"),
+            ("High (H)", "H"),
+        ]:
+            ttk.Radiobutton(
+                error_frame,
+                text=text,
+                variable=self.error_correction_var,
+                value=value,
+                command=self.on_style_change,
+            ).pack(anchor=tk.W)
 
         # Initially hide image mask frame
         self.toggle_image_mask_frame()
@@ -463,11 +542,17 @@ class QRCodeGenerator:
     def create_image_tab(self, parent):
         # Enable image overlay
         self.use_image_var = tk.BooleanVar()
-        ttk.Checkbutton(parent, text="Add center image overlay",
-                        variable=self.use_image_var, command=self.toggle_image_options).pack(anchor=tk.W, pady=(0, 10))
+        ttk.Checkbutton(
+            parent,
+            text="Add center image overlay",
+            variable=self.use_image_var,
+            command=self.toggle_image_options,
+        ).pack(anchor=tk.W, pady=(0, 10))
 
         # Image options frame
-        self.image_options_frame = ttk.LabelFrame(parent, text="Image Settings", padding=10)
+        self.image_options_frame = ttk.LabelFrame(
+            parent, text="Image Settings", padding=10
+        )
         self.image_options_frame.pack(fill=tk.X, pady=(0, 10))
 
         # Image path
@@ -482,28 +567,55 @@ class QRCodeGenerator:
         path_entry.pack(side=tk.LEFT, fill=tk.X, expand=True)
         path_entry.bind('<Control-a>', self.select_all_text)
 
-        ttk.Button(path_entry_frame, text="Browse", command=self.browse_image).pack(side=tk.RIGHT, padx=(5, 0))
+        ttk.Button(path_entry_frame, text="Browse", command=self.browse_image).pack(
+            side=tk.RIGHT, padx=(5, 0)
+        )
 
         # Image size
-        ttk.Label(self.image_options_frame, text="Image Size (% of QR):").pack(anchor=tk.W)
+        ttk.Label(self.image_options_frame, text="Image Size (% of QR):").pack(
+            anchor=tk.W
+        )
         self.image_size_var = tk.IntVar(value=20)
-        size_scale = ttk.Scale(self.image_options_frame, from_=5, to=50, variable=self.image_size_var,
-                               orient=tk.HORIZONTAL, command=self.on_image_change)
+        size_scale = ttk.Scale(
+            self.image_options_frame,
+            from_=5,
+            to=50,
+            variable=self.image_size_var,
+            orient=tk.HORIZONTAL,
+            command=self.on_image_change,
+        )
         size_scale.pack(fill=tk.X, pady=(5, 5))
         self.image_size_label = ttk.Label(self.image_options_frame, text="20%")
         self.image_size_label.pack(anchor=tk.W)
 
         # Background settings
-        bg_frame = ttk.LabelFrame(self.image_options_frame, text="Image Background", padding=5)
+        bg_frame = ttk.LabelFrame(
+            self.image_options_frame, text="Image Background", padding=5
+        )
         bg_frame.pack(fill=tk.X, pady=(10, 0))
 
         self.image_bg_var = tk.StringVar(value="match")
-        ttk.Radiobutton(bg_frame, text="Match QR background color", variable=self.image_bg_var,
-                        value="match", command=self.on_image_change).pack(anchor=tk.W)
-        ttk.Radiobutton(bg_frame, text="Custom color", variable=self.image_bg_var,
-                        value="custom", command=self.on_image_change).pack(anchor=tk.W)
-        ttk.Radiobutton(bg_frame, text="No background (transparent)", variable=self.image_bg_var,
-                        value="none", command=self.on_image_change).pack(anchor=tk.W)
+        ttk.Radiobutton(
+            bg_frame,
+            text="Match QR background color",
+            variable=self.image_bg_var,
+            value="match",
+            command=self.on_image_change,
+        ).pack(anchor=tk.W)
+        ttk.Radiobutton(
+            bg_frame,
+            text="Custom color",
+            variable=self.image_bg_var,
+            value="custom",
+            command=self.on_image_change,
+        ).pack(anchor=tk.W)
+        ttk.Radiobutton(
+            bg_frame,
+            text="No background (transparent)",
+            variable=self.image_bg_var,
+            value="none",
+            command=self.on_image_change,
+        ).pack(anchor=tk.W)
 
         # Custom background color
         custom_bg_frame = ttk.Frame(bg_frame)
@@ -511,11 +623,19 @@ class QRCodeGenerator:
         ttk.Label(custom_bg_frame, text="Custom background:").pack(side=tk.LEFT)
         self.image_bg_color = tk.StringVar(value="#FFFFFF")
 
-        self.image_bg_color_btn = tk.Button(custom_bg_frame, width=3, bg=self.image_bg_color.get(),
-                                            command=lambda: self.choose_color(self.image_bg_color, self.image_bg_color_btn))
+        self.image_bg_color_btn = tk.Button(
+            custom_bg_frame,
+            width=3,
+            bg=self.image_bg_color.get(),
+            command=lambda: self.choose_color(
+                self.image_bg_color, self.image_bg_color_btn
+            ),
+        )
         self.image_bg_color_btn.pack(side=tk.RIGHT, padx=(5, 0))
 
-        img_bg_entry = ttk.Entry(custom_bg_frame, textvariable=self.image_bg_color, width=8)
+        img_bg_entry = ttk.Entry(
+            custom_bg_frame, textvariable=self.image_bg_color, width=8
+        )
         img_bg_entry.pack(side=tk.RIGHT)
         img_bg_entry.bind('<KeyRelease>', self.on_image_change)
         img_bg_entry.bind('<Control-a>', self.select_all_text)
@@ -523,8 +643,14 @@ class QRCodeGenerator:
         # Padding
         ttk.Label(bg_frame, text="Background Padding:").pack(anchor=tk.W, pady=(10, 0))
         self.image_padding_var = tk.IntVar(value=0)
-        padding_scale = ttk.Scale(bg_frame, from_=0, to=30, variable=self.image_padding_var,
-                                  orient=tk.HORIZONTAL, command=self.on_image_change)
+        padding_scale = ttk.Scale(
+            bg_frame,
+            from_=0,
+            to=30,
+            variable=self.image_padding_var,
+            orient=tk.HORIZONTAL,
+            command=self.on_image_change,
+        )
         padding_scale.pack(fill=tk.X, pady=(5, 5))
         self.image_padding_label = ttk.Label(bg_frame, text="0 px")
         self.image_padding_label.pack(anchor=tk.W)
@@ -542,9 +668,15 @@ class QRCodeGenerator:
 
         btn_frame = ttk.Frame(file_frame)
         btn_frame.pack(fill=tk.X)
-        ttk.Button(btn_frame, text="Save Config", command=self.save_config).pack(side=tk.LEFT, padx=(0, 5))
-        ttk.Button(btn_frame, text="Load Config", command=self.load_config).pack(side=tk.LEFT, padx=(0, 5))
-        ttk.Button(btn_frame, text="Export QR", command=self.export_qr).pack(side=tk.LEFT)
+        ttk.Button(btn_frame, text="Save Config", command=self.save_config).pack(
+            side=tk.LEFT, padx=(0, 5)
+        )
+        ttk.Button(btn_frame, text="Load Config", command=self.load_config).pack(
+            side=tk.LEFT, padx=(0, 5)
+        )
+        ttk.Button(btn_frame, text="Export QR", command=self.export_qr).pack(
+            side=tk.LEFT
+        )
 
         # Quick actions
         action_frame = ttk.LabelFrame(parent, text="Quick Actions", padding=10)
@@ -557,18 +689,30 @@ class QRCodeGenerator:
         action_row1 = ttk.Frame(action_btn_frame)
         action_row1.pack(fill=tk.X, pady=(0, 5))
 
-        ttk.Button(action_row1, text="Copy Image", command=self.copy_image_to_clipboard).pack(side=tk.LEFT, padx=(0, 5))
-        ttk.Button(action_row1, text="Copy Text", command=self.copy_text_to_clipboard).pack(side=tk.LEFT, padx=(0, 5))
-        ttk.Button(action_row1, text="Share QR", command=self.share_qr).pack(side=tk.LEFT)
+        ttk.Button(
+            action_row1, text="Copy Image", command=self.copy_image_to_clipboard
+        ).pack(side=tk.LEFT, padx=(0, 5))
+        ttk.Button(
+            action_row1, text="Copy Text", command=self.copy_text_to_clipboard
+        ).pack(side=tk.LEFT, padx=(0, 5))
+        ttk.Button(action_row1, text="Share QR", command=self.share_qr).pack(
+            side=tk.LEFT
+        )
 
         # Second row of buttons
         action_row2 = ttk.Frame(action_btn_frame)
         action_row2.pack(fill=tk.X)
 
         if SCANNING_AVAILABLE:
-            ttk.Button(action_row2, text="Scan QR", command=self.scan_qr_file).pack(side=tk.LEFT)
+            ttk.Button(action_row2, text="Scan QR", command=self.scan_qr_file).pack(
+                side=tk.LEFT
+            )
         else:
-            ttk.Button(action_row2, text="Install Scanning", command=self.show_scanning_install_help).pack(side=tk.LEFT)
+            ttk.Button(
+                action_row2,
+                text="Install Scanning",
+                command=self.show_scanning_install_help,
+            ).pack(side=tk.LEFT)
 
     def create_preview_panel(self, parent):
         # Preview canvas
@@ -576,7 +720,9 @@ class QRCodeGenerator:
         self.canvas.pack(pady=(0, 10))
 
         # Generate button
-        ttk.Button(parent, text="Generate QR Code", command=self.generate_qr).pack(pady=(0, 10))
+        ttk.Button(parent, text="Generate QR Code", command=self.generate_qr).pack(
+            pady=(0, 10)
+        )
 
         # Status label
         self.status_label = ttk.Label(parent, text="Ready to generate QR code")
@@ -638,7 +784,9 @@ class QRCodeGenerator:
     def on_image_change(self, *args):
         try:
             self.image_size_label.config(text=f"{int(self.image_size_var.get())}%")
-            self.image_padding_label.config(text=f"{int(self.image_padding_var.get())} px")
+            self.image_padding_label.config(
+                text=f"{int(self.image_padding_var.get())} px"
+            )
         except:
             pass
         self.generate_qr()
@@ -665,7 +813,9 @@ class QRCodeGenerator:
         if hasattr(self, 'color_mask_var'):
             try:
                 # Check if ImageColorMask is selected
-                is_image_mask = self.color_mask_map.get(self.color_mask_var.get()) == "image"
+                is_image_mask = (
+                    self.color_mask_map.get(self.color_mask_var.get()) == "image"
+                )
 
                 # Set widget states
                 state = 'disabled' if is_image_mask else 'normal'
@@ -692,13 +842,19 @@ class QRCodeGenerator:
 
                     # Show explanation
                     if hasattr(self, 'color_info_label'):
-                        self.color_info_label.config(text="Colors taken from mask image", foreground="red")
+                        self.color_info_label.config(
+                            text="Colors taken from mask image", foreground="red"
+                        )
                 else:
                     # Restore normal button colors
                     if hasattr(self, 'fg_color_btn'):
-                        self.fg_color_btn.config(bg=self.fg_color.get(), relief='raised')
+                        self.fg_color_btn.config(
+                            bg=self.fg_color.get(), relief='raised'
+                        )
                     if hasattr(self, 'bg_color_btn'):
-                        self.bg_color_btn.config(bg=self.bg_color.get(), relief='raised')
+                        self.bg_color_btn.config(
+                            bg=self.bg_color.get(), relief='raised'
+                        )
 
                     # Hide explanation
                     if hasattr(self, 'color_info_label'):
@@ -715,7 +871,9 @@ class QRCodeGenerator:
                 self._toggle_widget_state(child, state)
         elif hasattr(widget, 'config'):
             try:
-                if isinstance(widget, (ttk.Entry, ttk.Button, ttk.Scale, ttk.Radiobutton)):
+                if isinstance(
+                    widget, (ttk.Entry, ttk.Button, ttk.Scale, ttk.Radiobutton)
+                ):
                     widget.config(state=state)
                 elif isinstance(widget, tk.Button):
                     widget.config(state=state)
@@ -733,7 +891,7 @@ class QRCodeGenerator:
         filename = filedialog.askopenfilename(
             title="Select Image",
             initialdir="./config",
-            filetypes=[("Image files", "*.png *.jpg *.jpeg *.gif *.bmp *.ico")]
+            filetypes=[("Image files", "*.png *.jpg *.jpeg *.gif *.bmp *.ico")],
         )
         if filename:
             self.image_path_var.set(filename)
@@ -743,7 +901,7 @@ class QRCodeGenerator:
         filename = filedialog.askopenfilename(
             title="Select Mask Image",
             initialdir="./config",
-            filetypes=[("Image files", "*.png *.jpg *.jpeg *.gif *.bmp *.ico")]
+            filetypes=[("Image files", "*.png *.jpg *.jpeg *.gif *.bmp *.ico")],
         )
         if filename:
             self.mask_image_path_var.set(filename)
@@ -856,14 +1014,18 @@ class QRCodeGenerator:
         hex_color = hex_color.lstrip('#')
         if len(hex_color) == 3:
             hex_color = ''.join(c * 2 for c in hex_color)
-        return tuple(int(hex_color[i:i + 2], 16) for i in (0, 2, 4))
+        return tuple(int(hex_color[i : i + 2], 16) for i in (0, 2, 4))
 
-    def mix_colors(self, color1: tuple[int, int, int], color2: tuple[int, int, int], weight: float = 0.5) -> tuple[int, int, int]:
+    def mix_colors(
+        self,
+        color1: tuple[int, int, int],
+        color2: tuple[int, int, int],
+        weight: float = 0.5,
+    ) -> tuple[int, int, int]:
         """Zwraca kolor będący mieszanką dwóch kolorów.
         weight=0.0 => color1, weight=1.0 => color2"""
         return tuple(
-            int(c1 * (1 - weight) + c2 * weight)
-            for c1, c2 in zip(color1, color2)
+            int(c1 * (1 - weight) + c2 * weight) for c1, c2 in zip(color1, color2)
         )
 
     def get_color_mask(self):
@@ -888,33 +1050,22 @@ class QRCodeGenerator:
         # print(f"after: {bg_color = }")
 
         if mask_type == "solid":
-            return SolidFillColorMask(
-                front_color=fg_color,
-                back_color=bg_color
-            )
+            return SolidFillColorMask(front_color=fg_color, back_color=bg_color)
         elif mask_type == "radial":
             return RadialGradiantColorMask(
-                back_color=bg_color,
-                center_color=middle_color,
-                edge_color=fg_color
+                back_color=bg_color, center_color=middle_color, edge_color=fg_color
             )
         elif mask_type == "square":
             return SquareGradiantColorMask(
-                back_color=bg_color,
-                center_color=middle_color,
-                edge_color=fg_color
+                back_color=bg_color, center_color=middle_color, edge_color=fg_color
             )
         elif mask_type == "horizontal":
             return HorizontalGradiantColorMask(
-                back_color=bg_color,
-                left_color=middle_color,
-                right_color=fg_color
+                back_color=bg_color, left_color=middle_color, right_color=fg_color
             )
         elif mask_type == "vertical":
             return VerticalGradiantColorMask(
-                back_color=bg_color,
-                top_color=middle_color,
-                bottom_color=fg_color
+                back_color=bg_color, top_color=middle_color, bottom_color=fg_color
             )
         elif mask_type == "image" and IMAGE_COLOR_MASK_AVAILABLE:
             # ImageColorMask requires a background image - FIXED VERSION
@@ -928,8 +1079,7 @@ class QRCodeGenerator:
                         # )
                         mask_image = self.load_image_from_path_or_url(mask_path)
                         return ImageColorMask(
-                            back_color=bg_color,
-                            color_mask_image=mask_image
+                            back_color=bg_color, color_mask_image=mask_image
                         )
 
                 # No mask image provided, fallback to solid
@@ -960,7 +1110,7 @@ class QRCodeGenerator:
                 'L': qrcode.constants.ERROR_CORRECT_L,
                 'M': qrcode.constants.ERROR_CORRECT_M,
                 'Q': qrcode.constants.ERROR_CORRECT_Q,
-                'H': qrcode.constants.ERROR_CORRECT_H
+                'H': qrcode.constants.ERROR_CORRECT_H,
             }
 
             # Create QR code instance
@@ -999,7 +1149,7 @@ class QRCodeGenerator:
                         image_factory=StyledPilImage,
                         color_mask=color_mask,
                         fill_color=fg_color,
-                        back_color=bg_color
+                        back_color=bg_color,
                     )
                 else:
                     qr_img = qr.make_image(fill_color=fg_color, back_color=bg_color)
@@ -1009,7 +1159,7 @@ class QRCodeGenerator:
                     module_drawer=RoundedModuleDrawer(),
                     color_mask=color_mask,
                     fill_color=fg_color,
-                    back_color=bg_color
+                    back_color=bg_color,
                 )
             elif theme == "circular":
                 qr_img = qr.make_image(
@@ -1017,19 +1167,20 @@ class QRCodeGenerator:
                     module_drawer=CircleModuleDrawer(),
                     color_mask=color_mask,
                     fill_color=fg_color,
-                    back_color=bg_color
+                    back_color=bg_color,
                 )
             elif theme == "gapped":
                 # Create gapped squares using SquareModuleDrawer with size ratio
                 try:
                     from qrcode.image.styles.moduledrawers import SquareModuleDrawer
                     from decimal import Decimal
+
                     qr_img = qr.make_image(
                         image_factory=StyledPilImage,
                         module_drawer=SquareModuleDrawer(size_ratio=Decimal(0.8)),
                         color_mask=color_mask,
                         fill_color=fg_color,
-                        back_color=bg_color
+                        back_color=bg_color,
                     )
                 except:
                     qr_img = qr.make_image(fill_color=fg_color, back_color=bg_color)
@@ -1040,7 +1191,7 @@ class QRCodeGenerator:
                         module_drawer=VerticalBarsDrawer(),
                         color_mask=color_mask,
                         fill_color=fg_color,
-                        back_color=bg_color
+                        back_color=bg_color,
                     )
                 except:
                     qr_img = qr.make_image(fill_color=fg_color, back_color=bg_color)
@@ -1051,7 +1202,7 @@ class QRCodeGenerator:
                         module_drawer=HorizontalBarsDrawer(),
                         color_mask=color_mask,
                         fill_color=fg_color,
-                        back_color=bg_color
+                        back_color=bg_color,
                     )
                 except:
                     qr_img = qr.make_image(fill_color=fg_color, back_color=bg_color)
@@ -1102,7 +1253,9 @@ class QRCodeGenerator:
                 background = Image.new('RGB', (bg_size, bg_size), bg_color)
 
                 # Handle transparency in overlay
-                if overlay.mode in ('RGBA', 'LA') or (overlay.mode == 'P' and 'transparency' in overlay.info):
+                if overlay.mode in ('RGBA', 'LA') or (
+                    overlay.mode == 'P' and 'transparency' in overlay.info
+                ):
                     background.paste(overlay, (padding, padding), overlay)
                 else:
                     background.paste(overlay, (padding, padding))
@@ -1115,20 +1268,27 @@ class QRCodeGenerator:
 
             # Paste overlay on QR code
             qr_img = qr_img.convert('RGBA')
-            overlay_pos = ((qr_size - overlay.size[0]) // 2, (qr_size - overlay.size[1]) // 2)
+            overlay_pos = (
+                (qr_size - overlay.size[0]) // 2,
+                (qr_size - overlay.size[1]) // 2,
+            )
             qr_img.paste(overlay, overlay_pos, overlay)
 
             return qr_img.convert('RGB')
 
         except Exception as e:
-            messagebox.showerror("Image Error", f"Failed to add image overlay: {str(e)}")
+            messagebox.showerror(
+                "Image Error", f"Failed to add image overlay: {str(e)}"
+            )
             return qr_img
 
     def update_preview(self):
         if self.qr_image:
             # Resize for preview (max 400x400)
             preview_size = min(400, self.qr_image.size[0])
-            preview_img = self.qr_image.resize((preview_size, preview_size), Image.Resampling.LANCZOS)
+            preview_img = self.qr_image.resize(
+                (preview_size, preview_size), Image.Resampling.LANCZOS
+            )
 
             self.preview_image = ImageTk.PhotoImage(preview_img)
 
@@ -1168,6 +1328,7 @@ class QRCodeGenerator:
                     # Use win32clipboard if available
                     try:
                         import win32clipboard
+
                         win32clipboard.OpenClipboard()
                         win32clipboard.EmptyClipboard()
                         win32clipboard.SetClipboardData(win32clipboard.CF_DIB, data)
@@ -1185,8 +1346,11 @@ $img = [System.Drawing.Image]::FromFile("{temp_file}")
 [System.Windows.Forms.Clipboard]::SetImage($img)
 $img.Dispose()
 '''
-                        subprocess.run(["powershell", "-Command", powershell_cmd],
-                                       capture_output=True, check=True)
+                        subprocess.run(
+                            ["powershell", "-Command", powershell_cmd],
+                            capture_output=True,
+                            check=True,
+                        )
                         os.unlink(temp_file)  # Clean up
                         success = True
 
@@ -1220,7 +1384,15 @@ end tell
 
                     # Try different Linux clipboard utilities
                     linux_commands = [
-                        ["xclip", "-selection", "clipboard", "-t", "image/png", "-i", temp_file],
+                        [
+                            "xclip",
+                            "-selection",
+                            "clipboard",
+                            "-t",
+                            "image/png",
+                            "-i",
+                            temp_file,
+                        ],
                         ["wl-copy", "--type", "image/png"],  # Wayland
                     ]
 
@@ -1263,22 +1435,28 @@ end tell
                     filepath = os.path.join(save_dir, filename)
                     self.qr_image.save(filepath)
 
-                    messagebox.showinfo("Image Saved",
-                                        f"Image clipboard not available.\n\n"
-                                        f"QR code saved to:\n{filepath}\n\n"
-                                        f"You can manually copy it from there.")
+                    messagebox.showinfo(
+                        "Image Saved",
+                        f"Image clipboard not available.\n\n"
+                        f"QR code saved to:\n{filepath}\n\n"
+                        f"You can manually copy it from there.",
+                    )
                     return
 
                 except Exception as e:
-                    messagebox.showerror("Error",
-                                         f"Failed to copy image to clipboard:\n{error_msg}\n\n"
-                                         f"Also failed to save fallback file: {str(e)}")
+                    messagebox.showerror(
+                        "Error",
+                        f"Failed to copy image to clipboard:\n{error_msg}\n\n"
+                        f"Also failed to save fallback file: {str(e)}",
+                    )
                     return
 
             if success:
                 messagebox.showinfo("Success", "QR code image copied to clipboard!")
             else:
-                messagebox.showerror("Error", f"Failed to copy image to clipboard:\n{error_msg}")
+                messagebox.showerror(
+                    "Error", f"Failed to copy image to clipboard:\n{error_msg}"
+                )
 
         except Exception as e:
             messagebox.showerror("Error", f"Unexpected error copying image: {str(e)}")
@@ -1307,6 +1485,7 @@ end tell
         if not success and CLIPBOARD_AVAILABLE:
             try:
                 import pyperclip
+
                 pyperclip.copy(content)
                 success = True
             except Exception as e:
@@ -1324,9 +1503,11 @@ end tell
                     success = True
                 elif system == "Linux":
                     # Try multiple Linux clipboard utilities
-                    for cmd in [['xclip', '-selection', 'clipboard'],
-                                ['xsel', '--clipboard', '--input'],
-                                ['wl-copy']]:  # Wayland support
+                    for cmd in [
+                        ['xclip', '-selection', 'clipboard'],
+                        ['xsel', '--clipboard', '--input'],
+                        ['wl-copy'],
+                    ]:  # Wayland support
                         try:
                             subprocess.run(cmd, input=content.encode(), check=True)
                             success = True
@@ -1342,11 +1523,16 @@ end tell
             try:
                 with open(temp_file, 'w', encoding='utf-8') as f:
                     f.write(content)
-                messagebox.showinfo("Clipboard Alternative",
-                                    f"Clipboard not available. Content saved to:\n{temp_file}\n\nYou can open this file and copy the content manually.")
+                messagebox.showinfo(
+                    "Clipboard Alternative",
+                    f"Clipboard not available. Content saved to:\n{temp_file}\n\nYou can open this file and copy the content manually.",
+                )
                 return
             except Exception as e:
-                messagebox.showerror("Error", f"All clipboard methods failed:\n{error_msg}\n\nFinal error: {str(e)}")
+                messagebox.showerror(
+                    "Error",
+                    f"All clipboard methods failed:\n{error_msg}\n\nFinal error: {str(e)}",
+                )
                 return
 
         if success:
@@ -1361,7 +1547,9 @@ end tell
 
     def export_qr(self):
         if not self.qr_image:
-            messagebox.showwarning("Warning", "No QR code to export. Generate one first.")
+            messagebox.showwarning(
+                "Warning", "No QR code to export. Generate one first."
+            )
             return
 
         filename = filedialog.asksaveasfilename(
@@ -1372,8 +1560,8 @@ end tell
                 ("PNG files", "*.png"),
                 ("JPEG files", "*.jpg"),
                 ("BMP files", "*.bmp"),
-                ("All files", "*.*")
-            ]
+                ("All files", "*.*"),
+            ],
         )
 
         if filename:
@@ -1390,7 +1578,9 @@ end tell
             config = {
                 'preset': self.preset_var.get(),
                 'theme': self.theme_var.get(),
-                'color_mask': getattr(self, 'color_mask_var', tk.StringVar(value="Solid Fill")).get(),
+                'color_mask': getattr(
+                    self, 'color_mask_var', tk.StringVar(value="Solid Fill")
+                ).get(),
                 'size': self.size_var.get(),
                 'border': self.border_var.get(),
                 'error_correction': self.error_correction_var.get(),
@@ -1402,15 +1592,17 @@ end tell
                 'image_bg': self.image_bg_var.get(),
                 'image_bg_color': self.image_bg_color.get(),
                 'image_padding': self.image_padding_var.get(),
-                'mask_image_path': getattr(self, 'mask_image_path_var', tk.StringVar()).get(),
-                'content': self.get_content_string()
+                'mask_image_path': getattr(
+                    self, 'mask_image_path_var', tk.StringVar()
+                ).get(),
+                'content': self.get_content_string(),
             }
 
             filename = filedialog.asksaveasfilename(
                 title="Save Configuration",
                 initialdir="./config/user_presets",
                 defaultextension=".json",
-                filetypes=[("JSON files", "*.json"), ("All files", "*.*")]
+                filetypes=[("JSON files", "*.json"), ("All files", "*.*")],
             )
 
             if filename:
@@ -1426,7 +1618,7 @@ end tell
         filename = filedialog.askopenfilename(
             title="Load Configuration",
             initialdir="./config/user_presets",
-            filetypes=[("JSON files", "*.json"), ("All files", "*.*")]
+            filetypes=[("JSON files", "*.json"), ("All files", "*.*")],
         )
 
         if filename:
@@ -1449,8 +1641,13 @@ end tell
                     # Color mask mapping
                     if hasattr(self, 'color_mask_var'):
                         mask_value = config.get('color_mask', 'solid')
-                        if hasattr(self, 'color_mask_reverse_map') and mask_value in self.color_mask_reverse_map:
-                            self.color_mask_var.set(self.color_mask_reverse_map[mask_value])
+                        if (
+                            hasattr(self, 'color_mask_reverse_map')
+                            and mask_value in self.color_mask_reverse_map
+                        ):
+                            self.color_mask_var.set(
+                                self.color_mask_reverse_map[mask_value]
+                            )
                         else:
                             self.color_mask_var.set(mask_value)
 
@@ -1502,7 +1699,9 @@ end tell
                     messagebox.showinfo("Success", "Configuration loaded successfully")
 
                 except Exception as e:
-                    messagebox.showerror("Configuration Error", f"Error applying configuration: {str(e)}")
+                    messagebox.showerror(
+                        "Configuration Error", f"Error applying configuration: {str(e)}"
+                    )
 
             except json.JSONDecodeError as e:
                 messagebox.showerror("Error", f"Invalid JSON file: {str(e)}")
@@ -1528,7 +1727,9 @@ end tell
     def share_qr(self):
         """Share QR code via various methods"""
         if not self.qr_image:
-            messagebox.showwarning("Warning", "No QR code to share. Generate one first.")
+            messagebox.showwarning(
+                "Warning", "No QR code to share. Generate one first."
+            )
             return
 
         # Create share dialog
@@ -1536,15 +1737,25 @@ end tell
         share_window.title("Share QR Code")
         share_window.geometry("300x200")
 
-        ttk.Label(share_window, text="Choose sharing method:", font=('Arial', 12, 'bold')).pack(pady=10)
+        ttk.Label(
+            share_window, text="Choose sharing method:", font=('Arial', 12, 'bold')
+        ).pack(pady=10)
 
         # Share options
-        ttk.Button(share_window, text="📁 Save & Open Folder",
-                   command=lambda: self.share_via_folder(share_window)).pack(pady=5, fill=tk.X, padx=20)
-        ttk.Button(share_window, text="📋 Copy Content",
-                   command=lambda: self.share_copy_content(share_window)).pack(pady=5, fill=tk.X, padx=20)
+        ttk.Button(
+            share_window,
+            text="📁 Save & Open Folder",
+            command=lambda: self.share_via_folder(share_window),
+        ).pack(pady=5, fill=tk.X, padx=20)
+        ttk.Button(
+            share_window,
+            text="📋 Copy Content",
+            command=lambda: self.share_copy_content(share_window),
+        ).pack(pady=5, fill=tk.X, padx=20)
 
-        ttk.Button(share_window, text="Cancel", command=share_window.destroy).pack(pady=10)
+        ttk.Button(share_window, text="Cancel", command=share_window.destroy).pack(
+            pady=10
+        )
 
     def share_via_folder(self, share_window):
         """Save QR code and open containing folder"""
@@ -1592,12 +1803,14 @@ end tell
 
         try:
             import cv2
+
             opencv_available = True
         except ImportError:
             pass
 
         try:
             import pyzbar
+
             pyzbar_available = True
         except ImportError:
             pass
@@ -1605,15 +1818,16 @@ end tell
         # Check system zbar library
         if platform.system() == "Linux":
             try:
-                result = subprocess.run(["pkg-config", "--exists", "zbar"],
-                                        capture_output=True)
+                result = subprocess.run(
+                    ["pkg-config", "--exists", "zbar"], capture_output=True
+                )
                 zbar_system_available = result.returncode == 0
             except:
                 # Fallback: check for library files
                 lib_paths = [
                     "/usr/lib/libzbar.so",
                     "/usr/lib/x86_64-linux-gnu/libzbar.so.0",
-                    "/usr/local/lib/libzbar.so"
+                    "/usr/local/lib/libzbar.so",
                 ]
                 zbar_system_available = any(os.path.exists(path) for path in lib_paths)
         else:
@@ -1623,7 +1837,9 @@ end tell
 
     def scan_qr_file(self):
         """Enhanced QR scanning with comprehensive dependency checking"""
-        opencv_available, pyzbar_available, zbar_system_available = self.check_scanning_dependencies()
+        opencv_available, pyzbar_available, zbar_system_available = (
+            self.check_scanning_dependencies()
+        )
 
         if not opencv_available or not pyzbar_available:
             missing = []
@@ -1665,7 +1881,9 @@ end tell
         # All dependencies available, proceed with scanning
         filename = filedialog.askopenfilename(
             title="Select QR Code Image",
-            filetypes=[("Image files", "*.png *.jpg *.jpeg *.gif *.bmp *.ico *.tiff *.webp")]
+            filetypes=[
+                ("Image files", "*.png *.jpg *.jpeg *.gif *.bmp *.ico *.tiff *.webp")
+            ],
         )
 
         if filename:
@@ -1686,7 +1904,9 @@ end tell
                             pil_image = pil_image.convert('RGB')
                         image = cv2.cvtColor(np.array(pil_image), cv2.COLOR_RGB2BGR)
                     except Exception:
-                        messagebox.showerror("Error", f"Could not read image file: {filename}")
+                        messagebox.showerror(
+                            "Error", f"Could not read image file: {filename}"
+                        )
                         return
 
                 # Decode QR codes
@@ -1700,8 +1920,23 @@ end tell
                     methods = [
                         ("Original", gray),
                         ("Gaussian Blur", cv2.GaussianBlur(gray, (5, 5), 0)),
-                        ("Threshold", cv2.threshold(gray, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)[1]),
-                        ("Adaptive Threshold", cv2.adaptiveThreshold(gray, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 11, 2))
+                        (
+                            "Threshold",
+                            cv2.threshold(
+                                gray, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU
+                            )[1],
+                        ),
+                        (
+                            "Adaptive Threshold",
+                            cv2.adaptiveThreshold(
+                                gray,
+                                255,
+                                cv2.ADAPTIVE_THRESH_GAUSSIAN_C,
+                                cv2.THRESH_BINARY,
+                                11,
+                                2,
+                            ),
+                        ),
                     ]
 
                     for method_name, processed in methods:
@@ -1710,13 +1945,15 @@ end tell
                             break
 
                     if not decoded_objects:
-                        messagebox.showinfo("No QR Codes Found",
-                                            "No QR codes found in the image.\n\n"
-                                            "Tips:\n"
-                                            "• Ensure the QR code is clearly visible\n"
-                                            "• Try a higher resolution image\n"
-                                            "• Make sure the image is not rotated\n"
-                                            "• Check that the QR code is not damaged")
+                        messagebox.showinfo(
+                            "No QR Codes Found",
+                            "No QR codes found in the image.\n\n"
+                            "Tips:\n"
+                            "• Ensure the QR code is clearly visible\n"
+                            "• Try a higher resolution image\n"
+                            "• Make sure the image is not rotated\n"
+                            "• Check that the QR code is not damaged",
+                        )
                         return
 
                 # Process results
@@ -1724,40 +1961,64 @@ end tell
                 for i, obj in enumerate(decoded_objects):
                     try:
                         content = obj.data.decode('utf-8')
-                        results.append({
-                            'content': content,
-                            'type': obj.type,
-                            'position': (obj.rect.left, obj.rect.top, obj.rect.width, obj.rect.height)
-                        })
+                        results.append(
+                            {
+                                'content': content,
+                                'type': obj.type,
+                                'position': (
+                                    obj.rect.left,
+                                    obj.rect.top,
+                                    obj.rect.width,
+                                    obj.rect.height,
+                                ),
+                            }
+                        )
                     except UnicodeDecodeError:
                         # Handle binary data
-                        results.append({
-                            'content': f"[Binary data: {len(obj.data)} bytes]",
-                            'type': obj.type,
-                            'position': (obj.rect.left, obj.rect.top, obj.rect.width, obj.rect.height)
-                        })
+                        results.append(
+                            {
+                                'content': f"[Binary data: {len(obj.data)} bytes]",
+                                'type': obj.type,
+                                'position': (
+                                    obj.rect.left,
+                                    obj.rect.top,
+                                    obj.rect.width,
+                                    obj.rect.height,
+                                ),
+                            }
+                        )
 
                 # Show results
                 if len(results) == 1:
                     content = results[0]['content']
                     qr_type = results[0]['type']
-                    messagebox.showinfo("QR Code Found", f"Type: {qr_type}\n\nContent:\n{content}")
+                    messagebox.showinfo(
+                        "QR Code Found", f"Type: {qr_type}\n\nContent:\n{content}"
+                    )
                 else:
                     result_text = f"Found {len(results)} QR codes:\n\n"
                     for i, result in enumerate(results, 1):
-                        result_text += f"{i}. {result['type']}: {result['content'][:100]}\n"
+                        result_text += (
+                            f"{i}. {result['type']}: {result['content'][:100]}\n"
+                        )
                         if len(result['content']) > 100:
                             result_text += "   ...\n"
                     messagebox.showinfo("Multiple QR Codes Found", result_text)
 
             except ImportError as e:
-                messagebox.showerror("Import Error", f"Required library not available: {e}")
+                messagebox.showerror(
+                    "Import Error", f"Required library not available: {e}"
+                )
             except Exception as e:
-                messagebox.showerror("Scanning Error", f"Failed to scan QR code: {str(e)}")
+                messagebox.showerror(
+                    "Scanning Error", f"Failed to scan QR code: {str(e)}"
+                )
 
     def show_scanning_install_help(self):
         """Enhanced installation help with step-by-step instructions"""
-        opencv_available, pyzbar_available, zbar_system_available = self.check_scanning_dependencies()
+        opencv_available, pyzbar_available, zbar_system_available = (
+            self.check_scanning_dependencies()
+        )
 
         # Create detailed help window
         help_window = tk.Toplevel(self.root)
@@ -1781,12 +2042,18 @@ end tell
         help_content += "=" * 50 + "\n\n"
 
         help_content += "📊 Current Status:\n"
-        help_content += f"  OpenCV: {'✅ Available' if opencv_available else '❌ Missing'}\n"
-        help_content += f"  PyZBar: {'✅ Available' if pyzbar_available else '❌ Missing'}\n"
+        help_content += (
+            f"  OpenCV: {'✅ Available' if opencv_available else '❌ Missing'}\n"
+        )
+        help_content += (
+            f"  PyZBar: {'✅ Available' if pyzbar_available else '❌ Missing'}\n"
+        )
         help_content += f"  ZBar System Library: {'✅ Available' if zbar_system_available else '❌ Missing'}\n\n"
 
         if opencv_available and pyzbar_available and zbar_system_available:
-            help_content += "🎉 All dependencies are installed! QR scanning should work.\n\n"
+            help_content += (
+                "🎉 All dependencies are installed! QR scanning should work.\n\n"
+            )
             help_content += "If scanning still doesn't work:\n"
             help_content += "• Restart the application\n"
             help_content += "• Try a clearer image\n"
