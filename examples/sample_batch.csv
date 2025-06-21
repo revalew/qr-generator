@@ -1,0 +1,4 @@
+content,filename,theme,color_mask,fg_color,bg_color,size
+https://www.python.org,python_website,rounded,radial,#3776ab,#ffffff,400
+WIFI:T:WPA;S:Example_WiFi;P:password123;H:false;,wifi_example,circular,horizontal,#8B4513,#F5DEB3,350
+mailto:contact@example.com,email_contact,classic,solid,#1f4e79,#ffffff,300

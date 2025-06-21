@@ -1,0 +1,44 @@
+# Enhanced QR Code Generator Requirements
+# Core dependencies for QR code generation with advanced styling
+
+# QR Code generation with comprehensive styling support
+qrcode[pil]==7.4.2
+
+# Image processing and manipulation
+Pillow>=10.0.0
+
+# Clipboard functionality (with fallback for Linux)
+pyperclip==1.8.2
+
+# QR code scanning functionality
+# Note: These may not work on Python 3.13 yet - use Python 3.11 or 3.12 if needed
+opencv-python-headless>=4.8.0
+pyzbar>=0.1.9
+
+# Optional: Additional image format support
+# Uncomment if you need support for more image formats
+# pillow-heif>=0.10.0  # HEIF/HEIC support
+# pillow-avif>=1.0.0   # AVIF support
+
+# Development dependencies (uncomment for development)
+# pytest>=7.4.0
+# black>=23.0.0
+# flake8>=6.0.0
+# mypy>=1.5.0
+
+# Linux clipboard alternatives (system dependencies)
+# Install these system packages on Linux if pyperclip doesn't work:
+# Ubuntu/Debian: sudo apt-get install xclip xsel
+# CentOS/RHEL: sudo yum install xclip xsel
+# Arch Linux: sudo pacman -S xclip xsel
+
+# Linux zbar library for QR scanning
+# Install system package if pyzbar fails:
+# Ubuntu/Debian: sudo apt-get install libzbar0
+# CentOS/RHEL: sudo yum install zbar
+# Arch Linux: sudo pacman -S zbar
+
+# macOS dependencies (install with Homebrew if needed)
+# brew install zbar
+
+# Windows should work out of the box with the above packages

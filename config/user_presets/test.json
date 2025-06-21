@@ -1,0 +1,18 @@
+{
+  "preset": "url",
+  "theme": "Rounded Corners",
+  "color_mask": "Image Color Mask",
+  "size": 800,
+  "border": 1,
+  "error_correction": "Q",
+  "fg_color": "#000000",
+  "bg_color": "#FFFFFF",
+  "use_image": true,
+  "image_path": "/run/media/maks/Dokumenty 2/0PROGRAMOWANIE Projekty/qr-generator/config/LogoPlaceHolders192.png",
+  "image_size": 20,
+  "image_bg": "match",
+  "image_bg_color": "#ff5722",
+  "image_padding": 0,
+  "mask_image_path": "/run/media/maks/Dokumenty 2/0PROGRAMOWANIE Projekty/qr-generator/config/cosmos_2.jpg",
+  "content": "https://placeholders-studio.github.io/placeholders/"
+}

@@ -1,0 +1,11 @@
+[
+  {
+    "content": "https://github.com",
+    "filename": "github_qr",
+    "theme": "rounded",
+    "color_mask": "vertical",
+    "fg_color": "#24292e",
+    "bg_color": "#ffffff",
+    "size": 500
+  }
+]
