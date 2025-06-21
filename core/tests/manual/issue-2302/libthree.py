@@ -10,6 +10,7 @@ from pyscript.js_modules import lsgeo, line2, linemat
 
 from multipyjs import MICROPYTHON, new, call, to_js, create_proxy
 
+
 @dataclass
 class SoundPlayer:
     sound: THREE.Audio = field()
@@ -43,6 +44,7 @@ class SoundPlayer:
             self.stop()
         return 0.0
 
+
 def get_renderer():
     renderer = new(THREE.WebGLRenderer, antialias=True)
     renderer.setSize(window.innerWidth, window.innerHeight)
@@ -57,6 +59,7 @@ def get_renderer():
     document.getElementById("threejs").appendChild(renderer.domElement)
 
     initial = {0: "115px", 1: "calc(100vh - 120px)"}
+
     @create_proxy
     def split_element_style(dimension, size, gutter_size, index):
         if index in initial:
@@ -75,20 +78,22 @@ def get_renderer():
     )
     return renderer
 
+
 def get_ortho_camera(view_size):
     aspect_ratio = window.innerWidth / window.innerHeight
     camera = new(
         THREE.OrthographicCamera,
         -view_size * aspect_ratio,  # Left
-        view_size * aspect_ratio,   # Right
-        view_size,                  # Top
-        -view_size,                 # Bottom
-        -view_size,                 # Near plane
-        view_size,                  # Far plane
+        view_size * aspect_ratio,  # Right
+        view_size,  # Top
+        -view_size,  # Bottom
+        -view_size,  # Near plane
+        view_size,  # Far plane
     )
     camera.updateProjectionMatrix()
     camera.position.set(0, 0, 0)
     return camera
+
 
 def get_loading_manager():
     loading_mgr = new(THREE.LoadingManager)
@@ -97,22 +102,26 @@ def get_loading_manager():
     @create_proxy
     def on_start(url, itemsLoaded, itemsTotal):
         print(f'[{itemsLoaded}/{itemsTotal}] Started loading file: {url}')
+
     loading_mgr.onStart = on_start
 
     @create_proxy
     def on_progress(url, itemsLoaded, itemsTotal):
         print(f'[{itemsLoaded}/{itemsTotal}] Loading file: {url}')
+
     loading_mgr.onProgress = on_progress
 
     @create_proxy
     def on_error(url):
         print(f'There was a problem loading {url}')
+
     loading_mgr.onError = on_error
 
     @create_proxy
     def on_load():
         print('Loading assets complete!')
         ev.set()
+
     loading_mgr.onLoad = on_load
 
     return loading_mgr, ev
@@ -122,13 +131,14 @@ def get_perspective_camera():
     aspect_ratio = window.innerWidth / window.innerHeight
     camera = new(
         THREE.PerspectiveCamera,
-        45,             # fov
+        45,  # fov
         aspect_ratio,
-        0.25,           # near plane
-        300,            # far plane
+        0.25,  # near plane
+        300,  # far plane
     )
     camera.position.set(0, 0, 30)
     return camera
+
 
 def get_stats_gl(renderer):
     stats = new(StatsGL, trackGPU=True, horizontal=False)
@@ -138,18 +148,19 @@ def get_stats_gl(renderer):
     document.getElementById("stats").appendChild(stats.dom)
     return stats
 
+
 def bg_from_v(*vertices):
     geometry = new(THREE.BufferGeometry)
     vertices_f32a = new(Float32Array, vertices)
     attr = new(THREE.Float32BufferAttribute, vertices_f32a, 3)
     return geometry.setAttribute('position', attr)
 
+
 def bg_from_p(*points):
     buf = new(THREE.BufferGeometry)
-    buf.setFromPoints(
-        [new(THREE.Vector3, p[0], p[1], p[2]) for p in points]
-    )
+    buf.setFromPoints([new(THREE.Vector3, p[0], p[1], p[2]) for p in points])
     return buf
+
 
 def clear():
     # toggle stats and terminal?

@@ -881,7 +881,9 @@ class TestElements:
         assert el._dom_element.tagName == "LABEL"
         assert el.for_ == label_for, "The label should have the correct for attribute."
         # Ensure the label element is rendered with the correct "for" attribute
-        assert f'for="{label_for}"' in el.outerHTML, "The label should have the correct 'for' attribute in its HTML."
+        assert (
+            f'for="{label_for}"' in el.outerHTML
+        ), "The label should have the correct 'for' attribute in its HTML."
 
     def test_legend(self):
         self._create_el_and_basic_asserts("legend", "some text")

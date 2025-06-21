@@ -1,9 +1,11 @@
 import sys
+
 print("Starting test...")
 
 # Try NumPy
 try:
     import numpy as np
+
     arr = np.array([1, 2, 3])
     print(f"NumPy works: {arr.mean()}")
 except Exception as e:
@@ -13,6 +15,7 @@ except Exception as e:
 try:
     print("Testing PyGame...")
     import pygame
+
     screen = pygame.display.set_mode((200, 200))
     screen.fill((255, 0, 0))  # Fill with red
     pygame.display.flip()

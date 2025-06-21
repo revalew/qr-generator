@@ -40,7 +40,10 @@ async def test_device_enumeration():
         ), "Dictionary access should match property access"
 
 
-@upytest.skip("Waiting on a bug-fix in MicroPython, for this test to work.", skip_when=upytest.is_micropython)
+@upytest.skip(
+    "Waiting on a bug-fix in MicroPython, for this test to work.",
+    skip_when=upytest.is_micropython,
+)
 async def test_video_stream_acquisition():
     """Test video stream."""
     try:
@@ -63,7 +66,10 @@ async def test_video_stream_acquisition():
         ), f"Stream acquisition attempted but may require permissions: {str(e)}"
 
 
-@upytest.skip("Waiting on a bug-fix in MicroPython, for this test to work.", skip_when=upytest.is_micropython)
+@upytest.skip(
+    "Waiting on a bug-fix in MicroPython, for this test to work.",
+    skip_when=upytest.is_micropython,
+)
 async def test_custom_video_constraints():
     """Test loading video with custom constraints."""
     try:

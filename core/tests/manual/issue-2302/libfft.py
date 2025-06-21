@@ -1,6 +1,7 @@
 from dataclasses import dataclass, field
 import sys
 
+
 @dataclass
 class BeatSync:
     fft_res: int = field()
@@ -20,7 +21,10 @@ class BeatSync:
     _highest: int = 0
 
     def __post_init__(self):
-        self._bins = [int(13/16*self.fft_res/2)+17, int(13/16*self.fft_res/2)+18]
+        self._bins = [
+            int(13 / 16 * self.fft_res / 2) + 17,
+            int(13 / 16 * self.fft_res / 2) + 18,
+        ]
 
     def reset(self):
         self.beat = -1
@@ -47,6 +51,7 @@ class BeatSync:
             self.beat += 1
         self._prev = d
 
+
 @dataclass
 class FreqIntensity:
     freq: float = field()
@@ -64,7 +69,7 @@ class FreqIntensity:
 
     def __post_init__(self):
         self._bin_indexes = [
-            round((harmonic+1) * self.freq / self._sample_rate * self.fft_res / 2)
+            round((harmonic + 1) * self.freq / self._sample_rate * self.fft_res / 2)
             for harmonic in range(self._harmonics)
         ]
         print(self._bin_indexes)
@@ -72,12 +77,22 @@ class FreqIntensity:
     def update(self, data):
         intensity = 0.0
         for bin in range(self._harmonics):
-            intensity += data[self._bin_indexes[bin]]/(bin+1)
+            intensity += data[self._bin_indexes[bin]] / (bin + 1)
         self.intensity = intensity
-        self.intensity_slew = self._slew_factor * self.intensity_slew + (1 - self._slew_factor) * intensity
+        self.intensity_slew = (
+            self._slew_factor * self.intensity_slew
+            + (1 - self._slew_factor) * intensity
+        )
         self.max = max(intensity, self.max)
 
     @property
     def intensity_scaled(self):
-        raw = max(0, min(1.0, (self.intensity_slew - self.scale_min)/(self.scale_max - self.scale_min)))
+        raw = max(
+            0,
+            min(
+                1.0,
+                (self.intensity_slew - self.scale_min)
+                / (self.scale_max - self.scale_min),
+            ),
+        )
         return raw * raw
