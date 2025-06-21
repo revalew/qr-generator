@@ -63,8 +63,13 @@ A comprehensive GUI application for creating styled QR codes with advanced featu
 ```bash
 # Clone or download the project
 git clone https://github.com/revalew/qr-generator.git
-cd qr-generator
+```
 
+```bash
+cd qr-generator
+```
+
+```bash
 # Run the complete setup - handles everything automatically
 python setup.py
 ```
@@ -74,18 +79,36 @@ python setup.py
 ```bash
 # Create virtual environment
 python -m venv qr_env
+```
 
+```bash
 # Activate environment
 # Windows:
 qr_env\Scripts\activate
+```
+
+```bash
 # Linux/macOS:
 source qr_env/bin/activate
+```
 
+```bash
 # Install all dependencies
 pip install -r requirements.txt
 ```
 
 ### **Run the Application**
+
+```bash
+# Activate environment
+# Windows:
+qr_env\Scripts\activate
+```
+
+```bash
+# Linux/macOS:
+source qr_env/bin/activate
+```
 
 ```bash
 # After installation, run:
@@ -95,6 +118,17 @@ python qr_generator.py
 ## Usage
 
 ### **GUI Application**
+
+```bash
+# Activate environment
+# Windows:
+qr_env\Scripts\activate
+```
+
+```bash
+# Linux/macOS:
+source qr_env/bin/activate
+```
 
 ```bash
 python qr_generator.py
@@ -115,10 +149,14 @@ python qr_generator.py
 ```bash
 # Batch generation from CSV/JSON
 python qr_utils.py batch examples/sample_batch.csv
+```
 
+```bash
 # Scan QR codes from images (requires opencv + pyzbar)
 python qr_utils.py scan --file qr_image.png --analyze
+```
 
+```bash
 # Create sample files
 python qr_utils.py samples --all
 ```
