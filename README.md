@@ -62,7 +62,7 @@ A comprehensive GUI application for creating styled QR codes with advanced featu
 
 ```bash
 # Clone or download the project
-git clone <repository-url>
+git clone https://github.com/revalew/qr-generator.git
 cd qr-generator
 
 # Run the complete setup - handles everything automatically
