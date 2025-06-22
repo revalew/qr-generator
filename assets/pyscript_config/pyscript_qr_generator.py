@@ -188,7 +188,7 @@ class EnhancedQRGenerator:
             "copy-image-btn-2": self.copy_image,
             "copy-text-btn": self.copy_text,
             "share-btn": self.share_qr,
-            "print-btn": self.print_qr,
+            # "print-btn": self.print_qr,
             "print-btn-2": self.print_qr_fallback,
             "save-config-btn": self.save_config,
             "load-config-btn": self.load_config,
@@ -488,11 +488,11 @@ class EnhancedQRGenerator:
         format_info = {
             "png": "PNG: Best quality, supports transparency, larger file size",
             "jpeg": "JPEG: Good compression, no transparency, smaller file size",
-            "svg": "SVG: Vector format, infinite scalability, perfect for print",
+            # "svg": "SVG: Vector format, infinite scalability, perfect for print",
             "webp": "WebP: Modern format, excellent compression, good quality",
             "bmp": "BMP: Uncompressed, large file size, maximum quality",
             "tiff": "TIFF: Professional format, lossless compression, large file",
-            "ico": "ICO: Icon format for Windows, multiple sizes, up to 256px (NOT Recommended)",
+            # "ico": "ICO: Icon format for Windows, multiple sizes, up to 256px (NOT Recommended)",
         }
 
         info_text = format_info.get(format_value, "")
@@ -1154,7 +1154,7 @@ class EnhancedQRGenerator:
             self.show_status(f"❌ Download failed: {str(e)}", "error")
 
     def generate_svg_qr(self):
-        """Generate SVG version of current QR code - FIXED FOR PROPER SCALING"""
+        """Generate SVG version of current QR code - WITH THEME, MASK AND OVERLAY SUPPORT"""
         try:
             # Get current content
             content = self.current_content
@@ -1188,12 +1188,55 @@ class EnhancedQRGenerator:
                 error_correction=error_levels.get(
                     error_level, qrcode.constants.ERROR_CORRECT_Q
                 ),
-                box_size=20,  # ✅ Zwiększone z 10 na 20 dla lepszej jakości
+                box_size=20,
                 border=border,
             )
 
             qr.add_data(content)
             qr.make(fit=True)
+
+            theme_select = document.getElementById("theme-select")
+            mask_select = document.getElementById("color-mask-select")
+            use_overlay = document.getElementById("use-image-overlay")
+
+            has_complex_styles = False
+
+            # Sprawdź theme
+            if theme_select and theme_select.value != "classic":
+                has_complex_styles = True
+
+            # Sprawdź mask
+            if mask_select and mask_select.value not in ["solid"]:
+                has_complex_styles = True
+
+            # Sprawdź overlay
+            if use_overlay and use_overlay.checked and self.overlay_image:
+                has_complex_styles = True
+
+            if has_complex_styles:
+                # console.log("Complex styles detected - generating PNG-based SVG")
+
+                # Użyj obecnego PNG QR z wszystkimi stylami
+                if self.current_qr_image:
+                    # Konwertuj PNG na SVG (embedded)
+                    img_buffer = io.BytesIO()
+                    self.current_qr_image.save(img_buffer, format="PNG")
+                    img_data = base64.b64encode(img_buffer.getvalue()).decode()
+
+                    # Utwórz SVG z embedded PNG
+                    qr_size = self.current_qr_image.size[0]
+                    svg_data = f"""<?xml version="1.0" encoding="UTF-8"?>
+    <svg width="100%" height="100%" viewBox="0 0 {qr_size} {qr_size}" 
+        preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg">
+    <image x="0" y="0" width="{qr_size}" height="{qr_size}" 
+            href="data:image/png;base64,{img_data}"/>
+    </svg>"""
+                    return svg_data
+                else:
+                    # console.log("No current QR image available")
+                    return None
+
+            # console.log("Simple styles - generating native SVG")
 
             # Generate SVG - FIXED: Handle both bytes and string output
             img = qr.make_image(image_factory=SvgPathImage)
@@ -1230,7 +1273,7 @@ class EnhancedQRGenerator:
                     pass
 
             if not svg_data:
-                console.log("Failed to extract SVG data")
+                # console.log("Failed to extract SVG data")
                 return None
 
             import re
@@ -1255,7 +1298,6 @@ class EnhancedQRGenerator:
             svg_data = svg_data.replace('fill="#000000"', f'fill="{fg_color}"')
             svg_data = svg_data.replace('fill="#000"', f'fill="{fg_color}"')
 
-            # ✅ Lepsze dodawanie tła
             if bg_color.lower() not in ["#ffffff", "#fff", "white"]:
                 # Znajdź tag <svg> i dodaj rect jako tło
                 viewbox_match = re.search(r'viewBox="([^"]*)"', svg_data)
@@ -1379,13 +1421,13 @@ class EnhancedQRGenerator:
             self.show_status("❌ Sharing failed", "error")
 
     def print_qr(self, event):
-        """Print QR code using SVG for best quality - IMPROVED VERSION"""
+        """Print QR code using SVG for best quality"""
         if not self.current_qr_image:
             self.show_status("❌ Please generate a QR code first", "error")
             return
 
         # 🔧 EASY SIZE CONTROL - Change this value to adjust QR code size
-        qr_size_cm = 12  # Size in centimeters (12cm = ~4.7 inches)
+        qr_size_cm = 12  # Size in centimeters
 
         try:
             # Try SVG first (best quality for printing)
@@ -1469,7 +1511,9 @@ class EnhancedQRGenerator:
                 print_window.print()
                 print_window.close()
 
-                self.show_status("✅ Print dialog opened (SVG quality)", "success")
+                self.show_status(
+                    "✅ Print dialog opened (SVG quality with all styles)", "success"
+                )
 
             else:
                 # Fallback to PNG if SVG fails
@@ -1481,10 +1525,13 @@ class EnhancedQRGenerator:
             self.print_qr_fallback(event)
 
     def print_qr_fallback(self, event):
-        """Fallback print function using PNG - SIMPLE VERSION"""
+        """Fallback print function using PNG - SINGLE PAGE VERSION"""
+        if not self.current_qr_image:
+            self.show_status("❌ Please generate a QR code first", "error")
+            return
 
         # 🔧 EASY SIZE CONTROL - Change this value to adjust QR code size
-        qr_size_cm = 12  # Size in centimeters (12cm = ~4.7 inches)
+        qr_size_cm = 12  # Size in centimeters
 
         try:
             # Create print window with PNG
@@ -1499,48 +1546,67 @@ class EnhancedQRGenerator:
                 <!DOCTYPE html>
                 <html>
                 <head>
-                    <title>QR Code</title>
+                    <title>QR_code</title>
                     <style>
                         @page {{
                             margin: 2cm;
                             size: A4;
                         }}
-                        body {{
+                        html, body {{
                             margin: 0;
                             padding: 0;
-                            display: flex;
-                            flex-direction: column;
-                            align-items: center;
-                            justify-content: center;
-                            min-height: 100vh;
+                            width: 100%;
+                            height: auto;
                             font-family: Arial, sans-serif;
                         }}
                         .qr-container {{
+                            width: 100%;
                             text-align: center;
+                            padding-top: 3cm;
                             page-break-inside: avoid;
+                            page-break-after: avoid;
                         }}
                         .qr-code {{
                             width: {qr_size_cm}cm;
                             height: {qr_size_cm}cm;
                             max-width: {qr_size_cm}cm;
                             max-height: {qr_size_cm}cm;
+                            display: block;
+                            margin: 0 auto;
                         }}
                         .footer {{
                             margin-top: 1cm;
                             font-size: 10px;
                             color: #888;
+                            text-align: center;
+                            page-break-inside: avoid;
                         }}
                         @media print {{
-                            body {{
-                                margin: 0;
-                                padding: 0;
+                            html, body {{
+                                margin: 0 !important;
+                                padding: 0 !important;
+                                height: auto !important;
+                            }}
+                            .qr-container {{
+                                page-break-inside: avoid !important;
+                                page-break-after: avoid !important;
+                                padding-top: 2cm;
+                            }}
+                            .qr-code {{
+                                width: {qr_size_cm}cm !important;
+                                height: {qr_size_cm}cm !important;
+                                display: block !important;
+                                margin: 0 auto !important;
+                            }}
+                            .footer {{
+                                page-break-inside: avoid !important;
                             }}
                         }}
                     </style>
                 </head>
                 <body>
                     <div class="qr-container">
-                        <img src="{data_url}" alt="QR Code" class="qr-code" />
+                        <img src="{data_url}" alt="QR_code" class="qr-code" />
                         <div class="footer">
                             Generated with QR Generator - PNG Quality
                         </div>
@@ -1553,7 +1619,9 @@ class EnhancedQRGenerator:
             print_window.print()
             print_window.close()
 
-            self.show_status("✅ Print dialog opened (PNG fallback)", "success")
+            self.show_status(
+                "✅ Print dialog opened (PNG quality - single page)", "success"
+            )
 
         except Exception as e:
             console.log(f"Print error: {e}")
