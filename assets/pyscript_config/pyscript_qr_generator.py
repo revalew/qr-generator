@@ -198,6 +198,10 @@ class EnhancedQRGenerator:
             if element:
                 element.addEventListener("click", create_proxy(handler))
 
+        format_select = document.getElementById("export-format")
+        if format_select:
+            format_select.addEventListener("change", create_proxy(self.on_format_change))
+
     def setup_file_handlers(self):
         """Simple file upload handlers with working drag & drop"""
 
@@ -473,6 +477,26 @@ class EnhancedQRGenerator:
                 element.style.opacity = "0.5" if disabled else "1"
 
         self.generate_qr()
+
+    def on_format_change(self, event):
+        """Show format information when format changes"""
+        format_value = event.target.value
+        
+        format_info = {
+            "png": "PNG: Best quality, supports transparency, larger file size",
+            "jpeg": "JPEG: Good compression, no transparency, smaller file size", 
+            "svg": "SVG: Vector format, infinite scalability, perfect for print",
+            "webp": "WebP: Modern format, excellent compression, good quality",
+            "bmp": "BMP: Uncompressed, large file size, maximum quality",
+            "tiff": "TIFF: Professional format, lossless compression, large file",
+            "ico": "ICO: Icon format for Windows, multiple sizes, up to 256px (NOT Recommended)",
+        }
+        
+        info_text = format_info.get(format_value, "")
+        
+        # Update status with format info
+        if info_text:
+            self.show_status(f"ℹ️ {info_text}", "info")
 
     def update_slider_display(self, event, display_id, unit):
         """Update slider value display"""
@@ -1028,7 +1052,7 @@ class EnhancedQRGenerator:
             qr_display.innerHTML = f'<div class="loading-text">Error: {str(e)}</div>'
 
     def download_qr(self, event):
-        """Download QR code with custom filename"""
+        """Download QR code with custom filename and multiple formats"""
         if not self.current_qr_image:
             self.show_status("❌ Please generate a QR code first", "error")
             return
@@ -1041,23 +1065,75 @@ class EnhancedQRGenerator:
             filename = filename_input.value if filename_input else "my-qr-code"
             file_format = format_select.value if format_select else "png"
 
-            # Convert image to selected format
-            img_buffer = io.BytesIO()
+            # Handle SVG separately (vector format)
+            if file_format.upper() == "SVG":
+                svg_data = self.generate_svg_qr()
+                if svg_data:
+                    # Create SVG download
+                    blob = Blob.new([svg_data], {"type": "image/svg+xml"})
+                    url = URL.createObjectURL(blob)
+                    
+                    link = document.createElement("a")
+                    link.href = url
+                    link.download = f"{filename}.svg"
+                    document.body.appendChild(link)
+                    link.click()
+                    document.body.removeChild(link)
+                    URL.revokeObjectURL(url)
+                    
+                    self.show_status("✅ SVG QR code downloaded!", "success")
+                    return
+                else:
+                    self.show_status("❌ Failed to generate SVG", "error")
+                    return
 
+            # Handle raster formats
+            img_buffer = io.BytesIO()
+            
             if file_format.upper() == "JPEG":
-                # Convert to RGB for JPEG
+                # Convert to RGB for JPEG (no transparency)
                 rgb_img = self.current_qr_image.convert("RGB")
-                rgb_img.save(img_buffer, format="JPEG", quality=95)
+                rgb_img.save(img_buffer, format="JPEG", quality=95, optimize=True)
                 mime_type = "image/jpeg"
-            else:  # PNG or SVG (fallback to PNG)
-                self.current_qr_image.save(img_buffer, format="PNG")
+                
+            elif file_format.upper() == "BMP":
+                # BMP format
+                self.current_qr_image.save(img_buffer, format="BMP")
+                mime_type = "image/bmp"
+                
+            elif file_format.upper() == "TIFF":
+                # TIFF format with compression
+                self.current_qr_image.save(img_buffer, format="TIFF", compression="lzw")
+                mime_type = "image/tiff"
+                
+            elif file_format.upper() == "ICO":
+                # ICO format (icon file)
+                # ICO works best with smaller sizes
+                ico_size = min(256, self.current_qr_image.size[0])
+                ico_img = self.current_qr_image.resize((ico_size, ico_size), Image.Resampling.LANCZOS)
+                ico_img.save(img_buffer, format="ICO")
+                mime_type = "image/x-icon"
+                
+            elif file_format.upper() == "WEBP":
+                # WebP format (modern, good compression)
+                try:
+                    self.current_qr_image.save(img_buffer, format="WEBP", quality=90, lossless=True)
+                    mime_type = "image/webp"
+                except Exception as e:
+                    console.log(f"WebP not supported: {e}")
+                    # Fallback to PNG
+                    self.current_qr_image.save(img_buffer, format="PNG", optimize=True)
+                    mime_type = "image/png"
+                    file_format = "png"
+                    
+            else:  # PNG (default)
+                self.current_qr_image.save(img_buffer, format="PNG", optimize=True)
                 mime_type = "image/png"
 
-            # Create download
+            # Create download for raster formats
             img_data = base64.b64encode(img_buffer.getvalue()).decode()
             data_url = f"data:{mime_type};base64,{img_data}"
 
-            # Create download link
             link = document.createElement("a")
             link.href = data_url
             link.download = f"{filename}.{file_format.lower()}"
@@ -1065,11 +1141,113 @@ class EnhancedQRGenerator:
             link.click()
             document.body.removeChild(link)
 
-            self.show_status("✅ QR code downloaded!", "success")
+            self.show_status(f"✅ {file_format.upper()} QR code downloaded!", "success")
 
         except Exception as e:
             console.log(f"Download error: {e}")
             self.show_status(f"❌ Download failed: {str(e)}", "error")
+
+    def generate_svg_qr(self):
+        """Generate SVG version of current QR code - FIXED VERSION"""
+        try:
+            # Get current content
+            content = self.current_content
+            if not content:
+                return None
+
+            # Import SVG factory
+            from qrcode.image.svg import SvgPathImage
+            
+            # Get current settings
+            border = int(self.get_element_value("qr-border") or 1)
+            
+            # Get error correction
+            error_radios = document.querySelectorAll('input[name="error-correction"]')
+            error_level = "Q"
+            for radio in error_radios:
+                if radio.checked:
+                    error_level = radio.value
+                    break
+
+            error_levels = {
+                "L": qrcode.constants.ERROR_CORRECT_L,
+                "M": qrcode.constants.ERROR_CORRECT_M,
+                "Q": qrcode.constants.ERROR_CORRECT_Q,
+                "H": qrcode.constants.ERROR_CORRECT_H,
+            }
+
+            # Create QR code for SVG
+            qr = qrcode.QRCode(
+                version=1,
+                error_correction=error_levels.get(error_level, qrcode.constants.ERROR_CORRECT_Q),
+                box_size=10,
+                border=border,
+            )
+
+            qr.add_data(content)
+            qr.make(fit=True)
+
+            # Generate SVG - FIXED: Handle both bytes and string output
+            img = qr.make_image(image_factory=SvgPathImage)
+            
+            # Get SVG data - try multiple methods
+            svg_data = None
+            
+            # Method 1: Try to get string directly
+            try:
+                if hasattr(img, 'to_string'):
+                    svg_data = img.to_string()
+                    if isinstance(svg_data, bytes):
+                        svg_data = svg_data.decode('utf-8')
+            except:
+                pass
+                
+            # Method 2: Try BytesIO and decode
+            if not svg_data:
+                try:
+                    svg_buffer = io.BytesIO()
+                    img.save(svg_buffer)
+                    svg_bytes = svg_buffer.getvalue()
+                    svg_data = svg_bytes.decode('utf-8')
+                except:
+                    pass
+            
+            # Method 3: Try StringIO (fallback)
+            if not svg_data:
+                try:
+                    svg_buffer = io.StringIO()
+                    img.save(svg_buffer)
+                    svg_data = svg_buffer.getvalue()
+                except:
+                    pass
+            
+            if not svg_data:
+                console.log("Failed to extract SVG data")
+                return None
+            
+            # Apply colors to SVG
+            fg_color = self.get_element_value("fg-color") or "#000000"
+            bg_color = self.get_element_value("bg-color") or "#ffffff"
+            
+            # Simple color replacement in SVG
+            svg_data = svg_data.replace('fill="black"', f'fill="{fg_color}"')
+            svg_data = svg_data.replace('fill="#000000"', f'fill="{fg_color}"')
+            svg_data = svg_data.replace('fill="#000"', f'fill="{fg_color}"')
+            
+            # Add background if not white
+            if bg_color.lower() != "#ffffff":
+                # Try different SVG opening tag formats
+                if '<svg' in svg_data:
+                    svg_data = svg_data.replace(
+                        '<svg',
+                        f'<svg style="background-color:{bg_color}"'
+                    )
+                
+            return svg_data
+            
+        except Exception as e:
+            console.log(f"SVG generation error: {e}")
+            return None
 
     async def copy_image(self, event):
         """Copy QR image to clipboard"""
