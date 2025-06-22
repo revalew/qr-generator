@@ -1,18 +1,19 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>QR Generator - PyScript Edition</title>
     <!-- <link rel="icon" type="image/x-icon" sizes="16x16" href="%PUBLIC_URL%/favicon/LogoPlaceHolders16.ico"> -->
-     <link rel="icon" type="image/png" href="./assets/favicon.png" />
+    <link rel="icon" type="image/png" href="./assets/favicon.png" />
 
     <!-- PyScript CSS and JS - Using your local build -->
     <link rel="stylesheet" href="./assets/pyscript/core.css">
-<!--    <link rel="stylesheet" href="https://pyscript.net/releases/2025.5.1/core.css">-->
+    <!--    <link rel="stylesheet" href="https://pyscript.net/releases/2025.5.1/core.css">-->
 
     <script type="module" src="./assets/pyscript/core.js"></script>
-<!--    <script type="module" src="https://pyscript.net/releases/2025.5.1/core.js"></script>-->
+    <!--    <script type="module" src="https://pyscript.net/releases/2025.5.1/core.js"></script>-->
 
     <!-- Main Styles -->
     <link rel="stylesheet" href="./assets/css/main.css">
@@ -27,6 +28,7 @@
         loading.showModal();
     </script>
 </head>
+
 <body>
     <!-- Loading Dialog -->
     <dialog id="loading">
@@ -50,7 +52,8 @@
                 <button class="tab-btn active" data-tab="content">Content</button>
                 <button class="tab-btn" data-tab="style">Style</button>
                 <button class="tab-btn" data-tab="image">Image</button>
-                <button class="tab-btn" data-tab="advanced">Advanced</button>
+                <!-- <button class="tab-btn" data-tab="advanced">Advanced</button> -->
+                <button class="tab-btn" data-tab="advanced">Export</button>
             </nav>
 
             <!-- Content Tab -->
@@ -72,7 +75,8 @@
                 <div class="content-form active" id="general-form">
                     <div class="form-group">
                         <label for="general-text">Text Content:</label>
-                        <textarea id="general-text" placeholder="Enter your text content here..." rows="4">Welcome to QR Generator!</textarea>
+                        <textarea id="general-text" placeholder="Enter your text content here..."
+                            rows="4">Welcome to QR Generator!</textarea>
                     </div>
                 </div>
 
@@ -318,7 +322,7 @@
                         </div>
                     </div>
 
-<!--                    <div class="form-group" id="custom-bg-color-group" style="display: none;">-->
+                    <!--                    <div class="form-group" id="custom-bg-color-group" style="display: none;">-->
                     <div class="form-group" id="custom-bg-color-group">
                         <div class="color-row">
                             <label>Custom Background:</label>
@@ -339,13 +343,13 @@
 
             <!-- Advanced Tab -->
             <div class="tab-content" id="advanced-tab">
-                <div class="form-group">
+                <!-- <div class="form-group">
                     <label>File Operations:</label>
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
                         <button class="action-btn" id="save-config-btn">💾 Save Config</button>
                         <button class="action-btn" id="load-config-btn">📂 Load Config</button>
                     </div>
-                </div>
+                </div> -->
 
                 <!-- <div class="form-group">
                     <label>Batch Processing:</label>
@@ -369,15 +373,50 @@
                     <input type="file" id="scan-file-input" accept="image/*" style="display: none;">
                 </div> -->
 
-                <div class="form-group">
-                    <label>Export Options:</label>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px;">
+                <!-- <div class="form-group"
+                    style="display: flex; flex-direction: column; align-items: center; justify-content: center;">
+                    <label style="align-self: flex-start;">Export Options:</label>
+                    <label for="export-format">Format:</label>
+                    <label for="export-filename">Filename:</label>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 10px;">
                         <select id="export-format">
                             <option value="png">PNG</option>
                             <option value="jpeg">JPEG</option>
                             <option value="svg">SVG</option>
                         </select>
                         <input type="text" id="export-filename" placeholder="qr-code" value="my-qr-code">
+                    </div>
+                    <button class="action-btn" id="download-btn">Download</button>
+                </div> -->
+                <div class="form-group">
+                    <label>Export Options:</label>
+
+                    <div class="export-controls">
+                        <div class="export-row">
+                            <label for="export-format">Format:</label>
+                            <select id="export-format">
+                                <option value="png">PNG</option>
+                                <option value="jpeg">JPEG</option>
+                                <option value="svg">SVG</option>
+                            </select>
+                        </div>
+
+                        <div class="export-row">
+                            <label for="export-filename">Filename:</label>
+                            <input type="text" id="export-filename" placeholder="qr-code" value="my-qr-code">
+                        </div>
+
+                        <div class="export-button">
+                            <button class="action-btn primary" id="download-btn">Download</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="export-controls" style="display: flex; align-items: center; justify-content: center;">
+                    <div class="qr-actions">
+                        <button class="action-btn" id="generate-btn">Generate QR Code</button>
+                        <button class="action-btn" id="download-btn-2">Download</button>
+                        <button class="action-btn" id="copy-image-btn">Copy Image</button>
+                        <button class="action-btn" id="print-btn">Print</button>
                     </div>
                 </div>
             </div>
@@ -389,15 +428,16 @@
                 <div class="loading-text">🔄 Initializing Python environment...</div>
             </div>
 
-            <div class="qr-actions">
-                <button class="action-btn primary" id="generate-btn">🔄 Generate QR Code</button>
-                <button class="action-btn" id="download-btn">📥 Download</button>
-                <button class="action-btn" id="copy-image-btn">🖼️ Copy Image</button>
-<!--                <button class="action-btn" id="copy-text-btn">📝 Copy Text</button>-->
-<!--                <button class="action-btn" id="share-btn">🔗 Share</button>-->
-                <button class="action-btn" id="print-btn">🖨️ Print</button>
+            
+            <div class="qr-actions" style="justify-self: end;">
+                <!-- <button class="action-btn primary" id="generate-btn">Generate QR Code</button> -->
+                <button class="action-btn primary" id="download-btn-3">Download</button>
+                <button class="action-btn" id="copy-image-btn-2">Copy Image</button>
+                <!--                <button class="action-btn" id="copy-text-btn">Copy Text</button>-->
+                <!--                <button class="action-btn" id="share-btn">Share</button>-->
+                <!-- <button class="action-btn" id="print-btn">Print</button> -->
             </div>
-
+            
             <div id="status-area"></div>
         </div>
     </div>
@@ -407,14 +447,12 @@
     <input type="file" id="config-file-input" accept=".json" style="display: none;">
 
     <!-- PyScript Configuration -->
-<!--    <py-config>-->
+    <!--    <py-config>-->
 
-<!--    </py-config>-->
+    <!--    </py-config>-->
     <!-- Python Implementation and PyScript Configuration -->
-    <script
-            type="py"
-            src="./assets/pyscript_config/pyscript_qr_generator.py"
-            config="./assets/pyscript_config/pyscript.toml"
-    ></script>
+    <script type="py" src="./assets/pyscript_config/pyscript_qr_generator.py"
+        config="./assets/pyscript_config/pyscript.toml"></script>
 </body>
+
 </html>

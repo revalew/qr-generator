@@ -322,8 +322,12 @@ body {
 	padding: 25px;
 	border-radius: 12px;
 	box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
-	margin-bottom: 25px;
-	min-height: 300px;
+	/* margin-bottom: 25px; */
+	margin: 70px 0 25px 0;
+	width: 500px;
+	height: 500px;
+	max-width: 500px;
+	max-height: 500px;
 	display: flex;
 	align-items: center;
 	justify-content: center;
@@ -344,7 +348,7 @@ body {
 	grid-template-columns: repeat(2, 1fr);
 	gap: 10px;
 	width: 100%;
-	max-width: 400px;
+	max-width: 500px;
 }
 
 .action-btn {
@@ -377,10 +381,20 @@ body {
 }
 
 /* Status Messages */
-.status-message {
-	padding: 10px 15px;
-	border-radius: 6px;
+#status-area {
+	width: 100%;
+	max-width: 500px;
+	min-height: 120px;
+	padding: 10px 0px;
 	margin: 10px 0;
+	text-align: center;
+}
+
+.status-message {
+	width: 100%;
+	padding: 10px 15px;
+	margin: 10px 0;
+	border-radius: 6px;
 	font-size: 13px;
 	font-weight: 500;
 }
@@ -450,6 +464,50 @@ body {
 
 .tab-content::-webkit-scrollbar-thumb:hover {
 	background: #a8a8a8;
+}
+
+/* Export Options Styles */
+.export-controls {
+	background: #f8f9fa;
+	border-radius: 8px;
+	padding: 15px;
+	border: 1px solid #e9ecef;
+}
+
+.export-row {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	margin-bottom: 12px;
+}
+
+.export-row:last-of-type {
+	margin-bottom: 15px;
+}
+
+.export-row label {
+	min-width: 70px;
+	margin: 0;
+	font-size: 12px;
+	font-weight: 600;
+	color: #495057;
+}
+
+.export-row select,
+.export-row input {
+	flex: 1;
+	margin: 0;
+}
+
+.export-button {
+	display: flex;
+	justify-content: center;
+	margin-top: 5px;
+}
+
+.export-button .action-btn {
+	min-width: 120px;
+	font-weight: 600;
 }
 
 /* ########################################################### */
