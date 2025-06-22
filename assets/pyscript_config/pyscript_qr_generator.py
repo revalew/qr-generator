@@ -164,74 +164,150 @@ class EnhancedQRGenerator:
                 element.addEventListener('click', create_proxy(handler))
 
     def setup_file_handlers(self):
-        """Setup file upload handlers with improved drag & drop"""
+        """Simple file upload handlers with working drag & drop"""
         
-        # Add drag state tracking
-        self.drag_in_progress = False
-        self.current_drop_zone = None
-
-        # Overlay image upload
+        # 1. Smart global drag prevention - allow only in specific zones
+        def smart_drag_prevention(event):
+            # Check if we're in an allowed drop zone
+            target = event.target
+            current = target
+            
+            # Check up to 5 levels in DOM
+            for _ in range(5):
+                if not current:
+                    break
+                if (hasattr(current, 'id') and 
+                    current.id in ['overlay-image-upload', 'mask-image-upload']):
+                    # We're in allowed zone - DO NOT block
+                    return
+                if hasattr(current, 'parentElement'):
+                    current = current.parentElement
+                else:
+                    break
+            
+            # Not in allowed zone - block it
+            event.preventDefault()
+            event.stopPropagation()
+            return False
+        
+        # Add smart prevention to document only
+        for event_name in ['dragenter', 'dragover', 'dragleave', 'drop']:
+            document.addEventListener(event_name, create_proxy(smart_drag_prevention), True)
+        
+        # 2. Overlay image handlers
         overlay_upload = document.getElementById('overlay-image-upload')
         overlay_input = document.getElementById('overlay-image-input')
-
+        
         if overlay_upload and overlay_input:
-            overlay_upload.addEventListener('click', create_proxy(
-                lambda e: overlay_input.click()
-            ))
+            # Click handler
+            overlay_upload.addEventListener('click', create_proxy(lambda e: overlay_input.click()))
             overlay_input.addEventListener('change', create_proxy(self.handle_overlay_image))
-
-            # Improved drag and drop
-            overlay_upload.addEventListener('dragover', create_proxy(self.prevent_default_and_hover))
-            overlay_upload.addEventListener('dragenter', create_proxy(lambda e: self.on_drag_enter(e, 'overlay')))
-            overlay_upload.addEventListener('dragleave', create_proxy(self.on_drag_leave))
-            overlay_upload.addEventListener('drop', create_proxy(self.handle_overlay_drop))
-
-        # Mask image upload
+            
+            # Drag handlers - these will work because smart prevention allows them
+            def handle_overlay_dragenter(event):
+                event.preventDefault()
+                event.stopPropagation()
+                overlay_upload.classList.add('dragover')
+                # console.log("Overlay drag enter")
+            
+            def handle_overlay_dragover(event):
+                event.preventDefault()
+                event.stopPropagation()
+                overlay_upload.classList.add('dragover')
+            
+            def handle_overlay_dragleave(event):
+                event.preventDefault()
+                event.stopPropagation()
+                # Check if really leaving the element
+                rect = overlay_upload.getBoundingClientRect()
+                if (event.clientX < rect.left or event.clientX > rect.right or 
+                    event.clientY < rect.top or event.clientY > rect.bottom):
+                    overlay_upload.classList.remove('dragover')
+                    # console.log("Overlay drag leave")
+            
+            def handle_overlay_drop(event):
+                event.preventDefault()
+                event.stopPropagation()
+                overlay_upload.classList.remove('dragover')
+                # console.log("Overlay drop")
+                
+                files = event.dataTransfer.files
+                if files.length > 0:
+                    overlay_input.files = files
+                    overlay_input.dispatchEvent(window.Event.new('change'))
+            
+            # Add all drag event listeners
+            overlay_upload.addEventListener('dragenter', create_proxy(handle_overlay_dragenter))
+            overlay_upload.addEventListener('dragover', create_proxy(handle_overlay_dragover))
+            overlay_upload.addEventListener('dragleave', create_proxy(handle_overlay_dragleave))
+            overlay_upload.addEventListener('drop', create_proxy(handle_overlay_drop))
+        
+        # 3. Mask image handlers - identical logic
         mask_upload = document.getElementById('mask-image-upload')
         mask_input = document.getElementById('mask-image-input')
-
-        if mask_upload and mask_input:
-            mask_upload.addEventListener('click', create_proxy(
-                lambda e: mask_input.click()
-            ))
-            mask_input.addEventListener('change', create_proxy(self.handle_mask_image))
-
-            # Improved drag and drop
-            mask_upload.addEventListener('dragover', create_proxy(self.prevent_default_and_hover))
-            mask_upload.addEventListener('dragenter', create_proxy(lambda e: self.on_drag_enter(e, 'mask')))
-            mask_upload.addEventListener('dragleave', create_proxy(self.on_drag_leave))
-            mask_upload.addEventListener('drop', create_proxy(self.handle_mask_drop))
-
-        # SUPER AGRESYWNE globalne blokowanie
-        document.addEventListener('dragover', create_proxy(self.global_drag_prevent), True)
-        document.addEventListener('drop', create_proxy(self.global_drag_prevent), True)
-        document.addEventListener('dragstart', create_proxy(self.global_drag_prevent), True)
         
-        # Config file
+        if mask_upload and mask_input:
+            # Click handler
+            mask_upload.addEventListener('click', create_proxy(lambda e: mask_input.click()))
+            mask_input.addEventListener('change', create_proxy(self.handle_mask_image))
+            
+            # Drag handlers
+            def handle_mask_dragenter(event):
+                event.preventDefault()
+                event.stopPropagation()
+                mask_upload.classList.add('dragover')
+                # console.log("Mask drag enter")
+            
+            def handle_mask_dragover(event):
+                event.preventDefault()
+                event.stopPropagation()
+                mask_upload.classList.add('dragover')
+            
+            def handle_mask_dragleave(event):
+                event.preventDefault()
+                event.stopPropagation()
+                rect = mask_upload.getBoundingClientRect()
+                if (event.clientX < rect.left or event.clientX > rect.right or 
+                    event.clientY < rect.top or event.clientY > rect.bottom):
+                    mask_upload.classList.remove('dragover')
+                    # console.log("Mask drag leave")
+            
+            def handle_mask_drop(event):
+                event.preventDefault()
+                event.stopPropagation()
+                mask_upload.classList.remove('dragover')
+                # console.log("Mask drop")
+                
+                files = event.dataTransfer.files
+                if files.length > 0:
+                    mask_input.files = files
+                    mask_input.dispatchEvent(window.Event.new('change'))
+            
+            # Add all drag event listeners
+            mask_upload.addEventListener('dragenter', create_proxy(handle_mask_dragenter))
+            mask_upload.addEventListener('dragover', create_proxy(handle_mask_dragover))
+            mask_upload.addEventListener('dragleave', create_proxy(handle_mask_dragleave))
+            mask_upload.addEventListener('drop', create_proxy(handle_mask_drop))
+        
+        # 4. Other file handlers (click only)
         config_input = document.getElementById('config-file-input')
         if config_input:
             config_input.addEventListener('change', create_proxy(self.handle_config_file))
 
-        # Batch file upload
+        # Batch file
         batch_upload = document.getElementById('batch-file-upload')
         batch_input = document.getElementById('batch-file-input')
-
         if batch_upload and batch_input:
-            batch_upload.addEventListener('click', create_proxy(
-                lambda e: batch_input.click()
-            ))
+            batch_upload.addEventListener('click', create_proxy(lambda e: batch_input.click()))
             batch_input.addEventListener('change', create_proxy(self.handle_batch_file))
 
-        # Scan file upload
+        # Scan file
         scan_upload = document.getElementById('scan-file-upload')
         scan_input = document.getElementById('scan-file-input')
-
         if scan_upload and scan_input:
-            scan_upload.addEventListener('click', create_proxy(
-                lambda e: scan_input.click()
-            ))
+            scan_upload.addEventListener('click', create_proxy(lambda e: scan_input.click()))
             scan_input.addEventListener('change', create_proxy(self.handle_scan_file))
-
+    
     def switch_tab(self, event):
         """Switch between tabs"""
         # Remove active class from all tabs and contents
@@ -351,85 +427,6 @@ class EnhancedQRGenerator:
                 color_element.value = value
         self.generate_qr()
 
-    # File handling methods
-    # def prevent_default(self, event):
-    #     event.preventDefault()
-    #     event.stopPropagation()
-    def prevent_default_and_hover(self, event):
-        """Prevent default and show hover effect"""
-        event.preventDefault()
-        event.stopPropagation()
-        
-        try:
-            if hasattr(event.currentTarget, 'classList'):
-                event.currentTarget.classList.add('dragover')
-        except:
-            pass
-
-    # def global_drag_prevent(self, event):
-    #     """Prevent default drag behavior globally except in our drop zones"""
-    #     target = event.target
-        
-    #     # Check if we're in a designated drop zone
-    #     is_drop_zone = (
-    #         target.id in ['overlay-image-upload', 'mask-image-upload'] or
-    #         target.closest('#overlay-image-upload') or 
-    #         target.closest('#mask-image-upload')
-    #     )
-        
-    #     if not is_drop_zone:
-    #         event.preventDefault()
-    #         event.stopPropagation()
-    def global_drag_prevent(self, event):
-        """Prevent default drag behavior globally except in our drop zones"""
-        # Always prevent if we're not in a known drop zone
-        if not hasattr(self, 'current_drop_zone') or not self.current_drop_zone:
-            event.preventDefault()
-            event.stopPropagation()
-            return False
-
-    # def on_drag_enter(self, event):
-    #     event.preventDefault()
-    #     event.target.classList.add('dragover')
-    def on_drag_enter(self, event, zone_type=None):
-        """Handle drag enter with zone tracking"""
-        event.preventDefault()
-        event.stopPropagation()
-        
-        self.current_drop_zone = zone_type
-        
-        try:
-            if hasattr(event.currentTarget, 'classList'):
-                event.currentTarget.classList.add('dragover')
-        except:
-            pass
-        
-        console.log(f"Drag enter in {zone_type} zone")
-
-    # def on_drag_leave(self, event):
-    #     event.preventDefault()
-    #     event.target.classList.remove('dragover')
-    def on_drag_leave(self, event):
-        """Handle drag leave with proper cleanup"""
-        event.preventDefault()
-        event.stopPropagation()
-        
-        # Reset drop zone after a short delay
-        window.setTimeout(lambda: setattr(self, 'current_drop_zone', None), 50)
-        
-        # Only remove dragover if we're actually leaving the drop zone
-        rect = event.currentTarget.getBoundingClientRect()
-        x = event.clientX
-        y = event.clientY
-        
-        if (x < rect.left or x > rect.right or y < rect.top or y > rect.bottom):
-            try:
-                if hasattr(event.currentTarget, 'classList'):
-                    event.currentTarget.classList.remove('dragover')
-            except:
-                pass
-            console.log("Drag leave detected")
-
     async def handle_overlay_image(self, event):
         """
         Handle overlay image file selection
@@ -441,43 +438,6 @@ class EnhancedQRGenerator:
             for file in files:
                 await self.load_image_file(file, 'overlay')
             # await self.load_image_file(files, 'overlay')
-
-    async def handle_overlay_drop(self, event):
-        """Handle overlay image drag and drop with complete prevention"""
-        event.preventDefault()
-        event.stopPropagation()
-        
-        # Bezpieczne usuwanie klasy
-        try:
-            if hasattr(event.currentTarget, 'classList'):
-                event.currentTarget.classList.remove('dragover')
-            elif hasattr(event.currentTarget, 'className'):
-                # Fallback dla starszych przeglądarek
-                classes = str(event.currentTarget.className).replace('dragover', '').strip()
-                event.currentTarget.className = classes
-        except:
-            pass  # Ignoruj błędy z DOM
-        
-        # Clear drop zone tracking
-        self.current_drop_zone = None
-        
-        console.log("Overlay drop detected")
-        
-        try:
-            files = event.dataTransfer.files
-            console.log(f"Files dropped: {files.length}")
-            
-            if files.length > 0:
-                files_py = files.to_py()
-                for file in files_py:
-                    console.log(f"Processing file: {file.name}")
-                    await self.load_image_file(file, 'overlay')
-            else:
-                console.log("No files found in drop")
-                
-        except Exception as e:
-            console.log(f"Drop handling error: {e}")
-            self.show_status(f"❌ Error handling dropped file: {str(e)}", "error")
 
     async def handle_mask_image(self, event):
         """
@@ -493,89 +453,121 @@ class EnhancedQRGenerator:
                 await self.load_image_file(file, 'mask')
             # await self.load_image_file(files, 'mask')
 
-    async def handle_mask_drop(self, event):
-        """Handle mask image drag and drop with complete prevention"""
-        event.preventDefault()
-        event.stopPropagation()
-        
-        # Bezpieczne usuwanie klasy
-        try:
-            if hasattr(event.currentTarget, 'classList'):
-                event.currentTarget.classList.remove('dragover')
-            elif hasattr(event.currentTarget, 'className'):
-                classes = str(event.currentTarget.className).replace('dragover', '').strip()
-                event.currentTarget.className = classes
-        except:
-            pass
-        
-        # Clear drop zone tracking
-        self.current_drop_zone = None
-        
-        console.log("Mask drop detected")
-        
-        try:
-            files = event.dataTransfer.files
-            console.log(f"Files dropped: {files.length}")
-            
-            if files.length > 0:
-                files_py = files.to_py()
-                for file in files_py:
-                    console.log(f"Processing file: {file.name}")
-                    await self.load_image_file(file, 'mask')
-            else:
-                console.log("No files found in drop")
-                
-        except Exception as e:
-            console.log(f"Drop handling error: {e}")
-            self.show_status(f"❌ Error handling dropped file: {str(e)}", "error")
 
     async def load_image_file(self, file, image_type):
-        """Load image file using FileReader"""
+        """Load and optimize image file using FileReader with size limits"""
         try:
-            # Create a promise to handle FileReader
+            # console.log(f"Loading {image_type} image: {file.name}, size: {file.size} bytes")
+            
+            # Sprawdź rozmiar pliku (max 10MB)
+            if file.size > 10 * 1024 * 1024:
+                self.show_status(f"❌ File too large: {file.size / (1024*1024):.1f}MB (max 10MB)", "error")
+                return
+                
+            # Sprawdź typ pliku
+            if not file.type.startswith('image/'):
+                self.show_status(f"❌ Invalid file type: {file.type}", "error")
+                return
+
+            # Create a promise-based file reader
             def create_reader_promise():
                 from pyodide.ffi import create_once_callable
+                import asyncio
 
                 reader = FileReader.new()
+                future = asyncio.Future()
 
                 def on_load(event):
                     try:
-                        # Get base64 data
+                        # console.log("FileReader onload triggered")
                         result = event.target.result
-                        # console.log(f"{result = }")
-
-                        # Convert to PIL Image
+                        
+                        if not result:
+                            future.set_exception(Exception("No data received from FileReader"))
+                            return
+                        
+                        # Convert to PIL Image with optimization
                         import base64
-                        # Remove data URL prefix
                         base64_data = result.split(',')[1]
                         img_data = base64.b64decode(base64_data)
+                        # console.log(f"Decoded image data: {len(img_data)} bytes")
+                        
+                        # Load image
                         img = Image.open(io.BytesIO(img_data))
-
-                        # Store image
-                        if image_type == 'overlay':
-                            self.overlay_image = img
-                            upload_elem = document.getElementById('overlay-image-upload')
-                            upload_elem.querySelector('.file-upload-text').innerHTML = f'<p>✅ Image loaded: {file.name}</p>'
-                        elif image_type == 'mask':
-                            self.mask_image = img
-                            upload_elem = document.getElementById('mask-image-upload')
-                            upload_elem.querySelector('.file-upload-text').innerHTML = f'<p>✅ Mask loaded: {file.name}</p>'
-
-                        # Regenerate QR
-                        self.generate_qr()
-
+                        # console.log(f"Original image size: {img.size}")
+                        
+                        # Optimize image size for better performance
+                        max_size = 2048 if image_type == 'overlay' else 1024
+                        
+                        if img.width > max_size or img.height > max_size:
+                            # Resize keeping aspect ratio
+                            img.thumbnail((max_size, max_size), Image.Resampling.LANCZOS)
+                            # console.log(f"Resized image to: {img.size}")
+                        
+                        # Convert to RGB if necessary (for better compatibility)
+                        if img.mode not in ('RGB', 'RGBA'):
+                            if 'transparency' in img.info:
+                                img = img.convert('RGBA')
+                            else:
+                                img = img.convert('RGB')
+                            # console.log(f"Converted image mode to: {img.mode}")
+                        
+                        future.set_result(img)
+                        
                     except Exception as e:
-                        console.log(f"Image load error: {e}")
-                        self.show_status(f"Error loading image: {str(e)}", "error")
+                        console.log(f"Error in FileReader onload: {e}")
+                        future.set_exception(e)
+
+                def on_error(event):
+                    console.log("FileReader error occurred")
+                    future.set_exception(Exception("FileReader failed to load file"))
 
                 reader.onload = create_once_callable(on_load)
+                reader.onerror = create_once_callable(on_error)
+                
+                # console.log("Starting FileReader.readAsDataURL")
                 reader.readAsDataURL(file)
+                
+                return future
 
-            create_reader_promise()
+            # Use the reader promise
+            # console.log("Creating FileReader promise")
+            img = await create_reader_promise()
+            
+            # console.log(f"Successfully loaded {image_type} image")
+            
+            # Store image
+            if image_type == 'overlay':
+                self.overlay_image = img
+                upload_elem = document.getElementById('overlay-image-upload')
+                if upload_elem:
+                    text_elem = upload_elem.querySelector('.file-upload-text')
+                    if text_elem:
+                        text_elem.innerHTML = f'<p>✅ Image loaded: {file.name}</p><p>Size: {img.size[0]}x{img.size[1]}</p>'
+            elif image_type == 'mask':
+                self.mask_image = img
+                upload_elem = document.getElementById('mask-image-upload')
+                if upload_elem:
+                    text_elem = upload_elem.querySelector('.file-upload-text')
+                    if text_elem:
+                        text_elem.innerHTML = f'<p>✅ Mask loaded: {file.name}</p><p>Size: {img.size[0]}x{img.size[1]}</p>'
+
+            # Regenerate QR after a short delay to allow UI update
+            def delayed_generate():
+                try:
+                    self.generate_qr()
+                except Exception as e:
+                    console.log(f"Error in delayed QR generation: {e}")
+                    self.show_status(f"⚠️ Image loaded but QR generation failed: {str(e)}", "error")
+            
+            # Use setTimeout to avoid blocking
+            window.setTimeout(create_proxy(delayed_generate), 100)
+            
+            self.show_status(f"✅ {image_type.title()} image loaded successfully!", "success")
 
         except Exception as e:
             console.log(f"File handling error: {e}")
-            self.show_status(f"Error handling file: {str(e)}", "error")
+            self.show_status(f"❌ Error loading image: {str(e)}", "error")
 
     def get_content_string(self):
         """Get content string based on selected type"""
@@ -1040,29 +1032,6 @@ class EnhancedQRGenerator:
             else:
                 self.show_status("❌ Clipboard API not available", "error")
 
-            # # Convert image to blob
-            # img_buffer = io.BytesIO()
-            # self.current_qr_image.save(img_buffer, format='PNG')
-            # img_data = img_buffer.getvalue()
-            #
-            # # Create Uint8Array
-            # from js import Uint8Array
-            # uint8_array = Uint8Array.new(len(img_data))
-            # for i, byte in enumerate(img_data):
-            #     uint8_array[i] = byte
-            #
-            # # Create blob
-            # blob = Blob.new([uint8_array], {"type": "image/png"})
-            #
-            # # Use Clipboard API if available
-            # if hasattr(window.navigator, 'clipboard') and hasattr(window.navigator.clipboard, 'write'):
-            #     from js import ClipboardItem
-            #     clipboard_item = ClipboardItem.new({"image/png": blob})
-            #     window.navigator.clipboard.write([clipboard_item])
-            #     self.show_status("✅ Image copied to clipboard!", "success")
-            # else:
-            #     self.show_status("❌ Clipboard API not available", "error")
-
         except Exception as e:
             console.log(f"Copy image error: {e}")
             self.show_status(f"❌ Copy failed: {str(e)}", "error")
@@ -1302,14 +1271,29 @@ class EnhancedQRGenerator:
             self.show_status("⚠️ QR scanning coming soon!", "info")
 
     def show_status(self, message, status_type):
-        """Show status message"""
-        status_area = document.getElementById('status-area')
-        if status_area:
-            status_area.innerHTML = f'<div class="status-message status-{status_type}">{message}</div>'
+        """Show status message with better error handling"""
+        try:
+            status_area = document.getElementById('status-area')
+            if status_area:
+                status_area.innerHTML = f'<div class="status-message status-{status_type}">{message}</div>'
+                # console.log(f"Status: {message}")
 
-            # Auto-clear success/info messages
-            if status_type in ['success', 'info']:
-                window.setTimeout(lambda: self.clear_status(), 3000)
+                # Auto-clear success/info messages
+                if status_type in ['success', 'info']:
+                    def clear_status():
+                        try:
+                            if status_area:
+                                status_area.innerHTML = ''
+                        except:
+                            pass
+                            
+                    window.setTimeout(create_proxy(clear_status), 4000)
+            else:
+                console.log(f"Status area not found: {message}")
+                
+        except Exception as e:
+            console.log(f"Error showing status: {e}")
+            console.log(f"Original message was: {message}")
 
     def clear_status(self):
         """Clear status message"""
