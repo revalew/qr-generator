@@ -10,7 +10,7 @@ A comprehensive GUI application for creating styled QR codes with advanced featu
 
 <br/>
 
-### **Visual Styling**
+#### **Visual Styling**
 
 - **Themes**: Classic squares, rounded corners, circles, gapped squares, vertical/horizontal bars
 
@@ -24,7 +24,7 @@ A comprehensive GUI application for creating styled QR codes with advanced featu
 
 <br/>
 
-### **Content Types**
+#### **Content Types**
 
 - **General Text**: Any plain text content
 
@@ -42,7 +42,7 @@ A comprehensive GUI application for creating styled QR codes with advanced featu
 
 <br/>
 
-### **Image Overlays**
+#### **Image Overlays**
 
 - **Logo Integration**: Add center logos or images
 
@@ -56,7 +56,7 @@ A comprehensive GUI application for creating styled QR codes with advanced featu
 
 <br/>
 
-### **Advanced Features**
+#### **Advanced Features**
 
 - **Configuration Management**: Save and load custom presets
 
@@ -82,7 +82,7 @@ The web-based version of the application is available at [https://revalew.github
 
 <br/>
 
-### **Automatic Installation (Recommended)**
+#### **Automatic Installation (Recommended)**
 
 <br/>
 
@@ -106,7 +106,7 @@ python setup.py
 
 <br/>
 
-### **Manual Installation**
+#### **Manual Installation**
 
 <br/>
 
@@ -139,7 +139,7 @@ pip install -r requirements.txt
 
 <br/>
 
-### **Run the Application**
+#### **Run the Application**
 
 <br/>
 
@@ -169,7 +169,7 @@ python qr_generator.py
 
 <br/>
 
-### **GUI Application**
+#### **GUI Application**
 
 <br/>
 
@@ -206,7 +206,7 @@ python qr_generator.py
 
 <br/>
 
-### **Command Line Utilities**
+#### **Command Line Utilities**
 
 <br/>
 
@@ -231,7 +231,7 @@ python qr_utils.py samples --all
 
 <br/>
 
-### **Batch Generation**
+#### **Batch Generation**
 
 <br/>
 
@@ -302,7 +302,7 @@ qr-generator/
 
 <br/>
 
-### **Theme Selection**
+#### **Theme Selection**
 
 - **Classic**: Traditional squares, maximum compatibility
 
@@ -316,7 +316,7 @@ qr-generator/
 
 <br/>
 
-### **Color Combinations**
+#### **Color Combinations**
 
 - **Professional**: Navy (#1a365d) on white (#ffffff)
 
@@ -330,7 +330,7 @@ qr-generator/
 
 <br/>
 
-### **Error Correction Levels**
+#### **Error Correction Levels**
 
 - **L (~7%)**: Perfect printing conditions
 
@@ -342,7 +342,7 @@ qr-generator/
 
 <br/>
 
-### **Size Recommendations**
+#### **Size Recommendations**
 
 - **Business Cards**: 300-400px
 
@@ -360,7 +360,7 @@ qr-generator/
 
 <br/>
 
-### **Core Dependencies (Required)**
+#### **Core Dependencies (Required)**
 
 <br/>
 
@@ -372,7 +372,7 @@ qr-generator/
 
 <br/>
 
-### **Optional Dependencies**
+#### **Optional Dependencies**
 
 - **pyperclip** - Enhanced clipboard support
 
@@ -382,7 +382,7 @@ qr-generator/
 
 <br/>
 
-### **Linux System Dependencies**
+#### **Linux System Dependencies**
 
 <br/>
 
@@ -396,7 +396,7 @@ The setup script will automatically detect and offer to install:
 
 <br/>
 
-### **Troubleshooting**
+#### **Troubleshooting**
 
 <br/>
 
@@ -434,7 +434,7 @@ The setup script will automatically detect and offer to install:
 
 <br/>
 
-### **Business Card QR Code**
+#### **Business Card QR Code**
 
 <br/>
 
@@ -448,7 +448,7 @@ Error Correction: M
 
 <br/>
 
-### **WiFi Sharing**
+#### **WiFi Sharing**
 
 <br/>
 
@@ -463,7 +463,7 @@ Effect: Radial Gradient
 
 <br/>
 
-### **Website Promotion**
+#### **Website Promotion**
 
 <br/>
 
