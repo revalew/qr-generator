@@ -1172,7 +1172,6 @@ class QRCodeGenerator:
             elif theme == "gapped":
                 # Create gapped squares using SquareModuleDrawer with size ratio
                 try:
-                    from qrcode.image.styles.moduledrawers import SquareModuleDrawer
                     from decimal import Decimal
 
                     qr_img = qr.make_image(

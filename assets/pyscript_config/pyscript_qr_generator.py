@@ -1,7 +1,11 @@
 import qrcode
 from qrcode.image.styledpil import StyledPilImage
 from qrcode.image.styles.moduledrawers import (
-    RoundedModuleDrawer, CircleModuleDrawer, SquareModuleDrawer
+    RoundedModuleDrawer,
+    CircleModuleDrawer,
+    SquareModuleDrawer,
+    VerticalBarsDrawer,
+    HorizontalBarsDrawer,
 )
 from qrcode.image.styles.colormasks import (
     SolidFillColorMask, RadialGradiantColorMask, SquareGradiantColorMask,
@@ -646,14 +650,16 @@ class EnhancedQRGenerator:
         elif theme == 'gapped':
             try:
                 from decimal import Decimal
-                return SquareModuleDrawer(size_ratio=Decimal(0.8))
+                return SquareModuleDrawer(size_ratio=Decimal(0.6))
             except:
                 return SquareModuleDrawer()
-        elif theme in ['vertical_bars', 'horizontal_bars']:
+        elif theme == 'vertical_bars':
+            return VerticalBarsDrawer()
+        elif theme == 'horizontal_bars':
+            return HorizontalBarsDrawer()
+        else:
             # These would need to be implemented or imported
             return None
-
-        return None
 
     def add_image_overlay(self, qr_img):
         """Add image overlay to QR code"""
