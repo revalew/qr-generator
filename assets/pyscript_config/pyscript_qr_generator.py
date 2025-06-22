@@ -359,7 +359,12 @@ class EnhancedQRGenerator:
         """Prevent default and show hover effect"""
         event.preventDefault()
         event.stopPropagation()
-        event.currentTarget.classList.add('dragover')
+        
+        try:
+            if hasattr(event.currentTarget, 'classList'):
+                event.currentTarget.classList.add('dragover')
+        except:
+            pass
 
     # def global_drag_prevent(self, event):
     #     """Prevent default drag behavior globally except in our drop zones"""
@@ -392,7 +397,12 @@ class EnhancedQRGenerator:
         event.stopPropagation()
         
         self.current_drop_zone = zone_type
-        event.currentTarget.classList.add('dragover')
+        
+        try:
+            if hasattr(event.currentTarget, 'classList'):
+                event.currentTarget.classList.add('dragover')
+        except:
+            pass
         
         console.log(f"Drag enter in {zone_type} zone")
 
@@ -413,7 +423,11 @@ class EnhancedQRGenerator:
         y = event.clientY
         
         if (x < rect.left or x > rect.right or y < rect.top or y > rect.bottom):
-            event.currentTarget.classList.remove('dragover')
+            try:
+                if hasattr(event.currentTarget, 'classList'):
+                    event.currentTarget.classList.remove('dragover')
+            except:
+                pass
             console.log("Drag leave detected")
 
     async def handle_overlay_image(self, event):
@@ -429,14 +443,20 @@ class EnhancedQRGenerator:
             # await self.load_image_file(files, 'overlay')
 
     async def handle_overlay_drop(self, event):
-        """
-        Handle overlay image drag and drop
-
-        https://stackoverflow.com/questions/73105350/from-pyscript-how-can-i-access-the-file-that-i-load-from-html
-        """
+        """Handle overlay image drag and drop with complete prevention"""
         event.preventDefault()
         event.stopPropagation()
-        event.currentTarget.classList.remove('dragover')
+        
+        # Bezpieczne usuwanie klasy
+        try:
+            if hasattr(event.currentTarget, 'classList'):
+                event.currentTarget.classList.remove('dragover')
+            elif hasattr(event.currentTarget, 'className'):
+                # Fallback dla starszych przeglądarek
+                classes = str(event.currentTarget.className).replace('dragover', '').strip()
+                event.currentTarget.className = classes
+        except:
+            pass  # Ignoruj błędy z DOM
         
         # Clear drop zone tracking
         self.current_drop_zone = None
@@ -474,14 +494,19 @@ class EnhancedQRGenerator:
             # await self.load_image_file(files, 'mask')
 
     async def handle_mask_drop(self, event):
-        """
-        Handle mask image drag and drop
-
-        https://stackoverflow.com/questions/73105350/from-pyscript-how-can-i-access-the-file-that-i-load-from-html
-        """
+        """Handle mask image drag and drop with complete prevention"""
         event.preventDefault()
         event.stopPropagation()
-        event.currentTarget.classList.remove('dragover')
+        
+        # Bezpieczne usuwanie klasy
+        try:
+            if hasattr(event.currentTarget, 'classList'):
+                event.currentTarget.classList.remove('dragover')
+            elif hasattr(event.currentTarget, 'className'):
+                classes = str(event.currentTarget.className).replace('dragover', '').strip()
+                event.currentTarget.className = classes
+        except:
+            pass
         
         # Clear drop zone tracking
         self.current_drop_zone = None
