@@ -1,0 +1,762 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Generator - Python in Browser</title>
+    
+    <!-- PyScript CSS -->
+    <link rel="stylesheet" href="https://pyscript.net/releases/2024.1.1/core.css">
+<!--     <link rel="stylesheet" href="https://pyscript.net/latest/pyscript.css" />-->
+
+    <!-- CSS for examples -->
+    <link rel="stylesheet" href="./assets/css/examples.css" />
+
+    <!-- This script tag bootstraps PyScript -->
+    <script type="module" src="https://pyscript.net/releases/2024.1.1/core.js"></script>
+<!--     <script defer src="https://pyscript.net/latest/pyscript.js"></script>-->
+
+    <!-- for splashscreen -->
+    <style>
+        #loading { outline: none; border: none; background: transparent }
+    </style>
+    <script type="module">
+        const loading = document.getElementById('loading');
+        addEventListener('py:ready', () => loading.close());
+        loading.showModal();
+    </script>
+
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            min-height: 700px;
+        }
+
+        .controls {
+            padding: 40px;
+            background: #f8f9fa;
+            border-right: 1px solid #e9ecef;
+            overflow-y: auto;
+        }
+
+        .preview {
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: white;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #2d3748;
+            font-size: 14px;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .color-input-group {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .color-input-group input[type="color"] {
+            width: 50px;
+            height: 45px;
+            padding: 2px;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .preset-buttons {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+
+        .preset-btn {
+            padding: 8px 12px;
+            border: 2px solid #e2e8f0;
+            background: white;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 11px;
+            text-align: center;
+            font-weight: 500;
+        }
+
+        .preset-btn:hover {
+            border-color: #667eea;
+            background: #f7fafc;
+        }
+
+        .preset-btn.active {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+
+        .slider-group {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .slider-group input[type="range"] {
+            flex: 1;
+        }
+
+        .slider-value {
+            min-width: 60px;
+            text-align: center;
+            font-weight: 600;
+            color: #4a5568;
+            background: #edf2f7;
+            padding: 6px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+
+        .generate-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 20px;
+        }
+
+        .generate-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .qr-container {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .download-section {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .download-btn {
+            padding: 12px 20px;
+            border: 2px solid #667eea;
+            background: white;
+            color: #667eea;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .download-btn:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        .loading {
+            color: #667eea;
+            font-style: italic;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .error {
+            color: #e53e3e;
+            background: #fed7d7;
+            padding: 10px;
+            border-radius: 6px;
+            margin: 10px 0;
+            font-size: 14px;
+        }
+
+        .success {
+            color: #38a169;
+            background: #c6f6d5;
+            padding: 10px;
+            border-radius: 6px;
+            margin: 10px 0;
+            font-size: 14px;
+        }
+
+        .wifi-form {
+            display: none;
+        }
+
+        .wifi-form.active {
+            display: block;
+        }
+
+        .security-options {
+            display: flex;
+            gap: 15px;
+            margin-top: 10px;
+        }
+
+        .security-option {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .security-option input[type="radio"] {
+            width: auto;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                grid-template-columns: 1fr;
+                margin: 10px;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .controls, .preview {
+                padding: 20px;
+            }
+        }
+
+        .python-status {
+            background: #e6fffa;
+            border: 1px solid #38b2ac;
+            color: #234e52;
+            padding: 10px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            font-size: 13px;
+        }
+    </style>
+</head>
+<body>
+    <dialog id="loading">
+        <h1>Loading...</h1>
+    </dialog>
+
+    <div class="header">
+        <h1>🐍 QR Generator</h1>
+        <p>Your Python Desktop App Running in the Browser</p>
+    </div>
+
+    <div class="container">
+        <div class="controls">
+            <div class="python-status">
+                🔄 Loading Python environment... This may take a moment on first visit.
+            </div>
+
+            <div class="form-group">
+                <label>Content Type</label>
+                <div class="preset-buttons">
+                    <button type="button" class="preset-btn active" data-type="text">Text</button>
+                    <button type="button" class="preset-btn" data-type="url">URL</button>
+                    <button type="button" class="preset-btn" data-type="wifi">WiFi</button>
+                    <button type="button" class="preset-btn" data-type="email">Email</button>
+                    <button type="button" class="preset-btn" data-type="phone">Phone</button>
+                    <button type="button" class="preset-btn" data-type="sms">SMS</button>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="content">Content</label>
+                <textarea id="content" placeholder="Enter your text content here...">Welcome to PyScript QR Generator!</textarea>
+            </div>
+
+            <!-- WiFi Form -->
+            <div class="wifi-form" id="wifiForm">
+                <div class="form-group">
+                    <label for="wifiSSID">Network Name (SSID)</label>
+                    <input type="text" id="wifiSSID" placeholder="MyWiFiNetwork">
+                </div>
+                <div class="form-group">
+                    <label for="wifiPassword">Password</label>
+                    <input type="text" id="wifiPassword" placeholder="password123">
+                </div>
+                <div class="form-group">
+                    <label>Security Type</label>
+                    <div class="security-options">
+                        <div class="security-option">
+                            <input type="radio" id="wpa" name="security" value="WPA" checked>
+                            <label for="wpa">WPA</label>
+                        </div>
+                        <div class="security-option">
+                            <input type="radio" id="wep" name="security" value="WEP">
+                            <label for="wep">WEP</label>
+                        </div>
+                        <div class="security-option">
+                            <input type="radio" id="none" name="security" value="">
+                            <label for="none">None</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Theme</label>
+                <select id="theme">
+                    <option value="classic">Classic Squares</option>
+                    <option value="rounded">Rounded Corners</option>
+                    <option value="circular">Circles</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="size">QR Code Size</label>
+                <div class="slider-group">
+                    <input type="range" id="size" min="200" max="800" value="400" step="50">
+                    <span class="slider-value" id="sizeValue">400px</span>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="errorCorrection">Error Correction</label>
+                <select id="errorCorrection">
+                    <option value="L">Low (~7%)</option>
+                    <option value="M" selected>Medium (~15%)</option>
+                    <option value="Q">Quartile (~25%)</option>
+                    <option value="H">High (~30%)</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Foreground Color</label>
+                <div class="color-input-group">
+                    <input type="color" id="fgColor" value="#000000">
+                    <input type="text" id="fgColorText" value="#000000">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Background Color</label>
+                <div class="color-input-group">
+                    <input type="color" id="bgColor" value="#ffffff">
+                    <input type="text" id="bgColorText" value="#ffffff">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="border">Border Size</label>
+                <div class="slider-group">
+                    <input type="range" id="border" min="0" max="20" value="4">
+                    <span class="slider-value" id="borderValue">4</span>
+                </div>
+            </div>
+
+            <button class="generate-btn" id="generateBtn">Generate QR Code</button>
+            
+            <div id="status"></div>
+        </div>
+
+        <div class="preview">
+            <div class="qr-container">
+                <div id="qr-output">
+                    <div class="loading">🐍 Python is loading... Please wait</div>
+                </div>
+            </div>
+            
+            <div class="download-section">
+                <button class="download-btn" id="downloadBtn">📥 Download PNG</button>
+                <button class="download-btn" id="copyBtn">📋 Copy Text</button>
+                <button class="download-btn" id="shareBtn">🔗 Share</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- PyScript Configuration -->
+    <py-config>
+        packages = [
+            "qrcode", 
+            "pillow",
+            "micropip"
+        ]
+    </py-config>
+
+    <!-- Python Code -->
+    <script type="py">
+        import qrcode
+        from qrcode.image.styledpil import StyledPilImage
+        from qrcode.image.styles.moduledrawers import RoundedModuleDrawer, CircleModuleDrawer, SquareModuleDrawer
+        from qrcode.image.styles.colormasks import SolidFillColorMask, RadialGradiantColorMask
+        from PIL import Image
+        import io
+        import base64
+        from js import document, window, Blob, URL, console
+        from pyodide.ffi import create_proxy
+        import asyncio
+
+        class PyScriptQRGenerator:
+            def __init__(self):
+                self.current_qr_data = None
+                self.setup_ui()
+                
+            def setup_ui(self):
+                """Setup UI event handlers"""
+                # Update status
+                status_div = document.getElementById("status")
+                python_status = document.querySelector(".python-status")
+                python_status.innerHTML = "✅ Python environment loaded! Ready to generate QR codes."
+                python_status.style.background = "#e6fffa"
+                
+                # Content type buttons
+                preset_buttons = document.querySelectorAll(".preset-btn")
+                for btn in preset_buttons:
+                    btn.addEventListener("click", create_proxy(self.handle_preset_change))
+                
+                # Form inputs
+                inputs = ["content", "wifiSSID", "wifiPassword", "theme", "size", "errorCorrection", 
+                         "fgColor", "fgColorText", "bgColor", "bgColorText", "border"]
+                
+                for input_id in inputs:
+                    element = document.getElementById(input_id)
+                    if element:
+                        if input_id in ["size", "border"]:
+                            element.addEventListener("input", create_proxy(self.update_slider_display))
+                        element.addEventListener("input", create_proxy(self.auto_generate))
+                        element.addEventListener("change", create_proxy(self.auto_generate))
+                
+                # WiFi security radio buttons
+                security_radios = document.querySelectorAll('input[name="security"]')
+                for radio in security_radios:
+                    radio.addEventListener("change", create_proxy(self.auto_generate))
+                
+                # Color sync
+                document.getElementById("fgColor").addEventListener("input", create_proxy(self.sync_fg_color))
+                document.getElementById("fgColorText").addEventListener("input", create_proxy(self.sync_fg_color_text))
+                document.getElementById("bgColor").addEventListener("input", create_proxy(self.sync_bg_color))
+                document.getElementById("bgColorText").addEventListener("input", create_proxy(self.sync_bg_color_text))
+                
+                # Buttons
+                document.getElementById("generateBtn").addEventListener("click", create_proxy(self.generate_qr))
+                document.getElementById("downloadBtn").addEventListener("click", create_proxy(self.download_qr))
+                document.getElementById("copyBtn").addEventListener("click", create_proxy(self.copy_text))
+                document.getElementById("shareBtn").addEventListener("click", create_proxy(self.share_qr))
+                
+                # Generate initial QR
+                self.generate_qr()
+            
+            def handle_preset_change(self, event):
+                """Handle content type preset changes"""
+                # Remove active class from all buttons
+                buttons = document.querySelectorAll(".preset-btn")
+                for btn in buttons:
+                    btn.classList.remove("active")
+                
+                # Add active class to clicked button
+                event.target.classList.add("active")
+                
+                preset_type = event.target.dataset.type
+                content_area = document.getElementById("content")
+                wifi_form = document.getElementById("wifiForm")
+                
+                # Hide WiFi form by default
+                wifi_form.classList.remove("active")
+                content_area.style.display = "block"
+                
+                if preset_type == "text":
+                    content_area.placeholder = "Enter your text content here..."
+                    content_area.value = "Welcome to PyScript QR Generator!"
+                elif preset_type == "url":
+                    content_area.placeholder = "https://example.com"
+                    content_area.value = "https://github.com"
+                elif preset_type == "wifi":
+                    content_area.style.display = "none"
+                    wifi_form.classList.add("active")
+                elif preset_type == "email":
+                    content_area.placeholder = "mailto:someone@example.com"
+                    content_area.value = "mailto:contact@example.com?subject=Hello"
+                elif preset_type == "phone":
+                    content_area.placeholder = "tel:+1234567890"
+                    content_area.value = "tel:+1-555-123-4567"
+                elif preset_type == "sms":
+                    content_area.placeholder = "sms:+1234567890?body=Hello"
+                    content_area.value = "sms:+1-555-123-4567?body=Hello from PyScript!"
+                
+                self.generate_qr()
+            
+            def update_slider_display(self, event):
+                """Update slider value displays"""
+                element_id = event.target.id
+                value = event.target.value
+                
+                if element_id == "size":
+                    document.getElementById("sizeValue").textContent = f"{value}px"
+                elif element_id == "border":
+                    document.getElementById("borderValue").textContent = value
+            
+            def sync_fg_color(self, event):
+                document.getElementById("fgColorText").value = event.target.value
+                
+            def sync_fg_color_text(self, event):
+                value = event.target.value
+                if len(value) == 7 and value.startswith("#"):
+                    document.getElementById("fgColor").value = value
+                    
+            def sync_bg_color(self, event):
+                document.getElementById("bgColorText").value = event.target.value
+                
+            def sync_bg_color_text(self, event):
+                value = event.target.value
+                if len(value) == 7 and value.startswith("#"):
+                    document.getElementById("bgColor").value = value
+            
+            def auto_generate(self, event):
+                """Auto-generate QR on input changes"""
+                self.generate_qr()
+            
+            def get_content(self):
+                """Get content based on selected type"""
+                active_btn = document.querySelector(".preset-btn.active")
+                if not active_btn:
+                    return ""
+                    
+                preset_type = active_btn.dataset.type
+                
+                if preset_type == "wifi":
+                    ssid = document.getElementById("wifiSSID").value
+                    password = document.getElementById("wifiPassword").value
+                    
+                    # Get selected security type
+                    security_radios = document.querySelectorAll('input[name="security"]')
+                    security = ""
+                    for radio in security_radios:
+                        if radio.checked:
+                            security = radio.value
+                            break
+                    
+                    if not ssid:
+                        return ""
+                    return f"WIFI:T:{security};S:{ssid};P:{password};H:false;"
+                else:
+                    return document.getElementById("content").value
+            
+            def hex_to_rgb(self, hex_color):
+                """Convert hex color to RGB tuple"""
+                hex_color = hex_color.lstrip('#')
+                if len(hex_color) == 3:
+                    hex_color = ''.join(c * 2 for c in hex_color)
+                try:
+                    return tuple(int(hex_color[i:i + 2], 16) for i in (0, 2, 4))
+                except:
+                    return (0, 0, 0)  # Default to black on error
+            
+            def generate_qr(self, event=None):
+                """Generate QR code using your original logic"""
+                try:
+                    content = self.get_content()
+                    if not content:
+                        document.getElementById("qr-output").innerHTML = "<div class='loading'>Enter content to generate QR code</div>"
+                        return
+                    
+                    # Get settings
+                    size = int(document.getElementById("size").value)
+                    theme = document.getElementById("theme").value
+                    error_level = document.getElementById("errorCorrection").value
+                    fg_color = document.getElementById("fgColor").value
+                    bg_color = document.getElementById("bgColor").value
+                    border = int(document.getElementById("border").value)
+                    
+                    # Error correction mapping (like your original code)
+                    error_levels = {
+                        'L': qrcode.constants.ERROR_CORRECT_L,
+                        'M': qrcode.constants.ERROR_CORRECT_M,
+                        'Q': qrcode.constants.ERROR_CORRECT_Q,
+                        'H': qrcode.constants.ERROR_CORRECT_H
+                    }
+                    
+                    # Create QR code instance (like your original)
+                    qr = qrcode.QRCode(
+                        version=1,
+                        error_correction=error_levels.get(error_level, qrcode.constants.ERROR_CORRECT_M),
+                        box_size=10,
+                        border=border,
+                    )
+                    
+                    qr.add_data(content)
+                    qr.make(fit=True)
+                    
+                    # Apply theme (simplified version of your original themes)
+                    try:
+                        if theme == "rounded":
+                            qr_img = qr.make_image(
+                                image_factory=StyledPilImage,
+                                module_drawer=RoundedModuleDrawer(),
+                                fill_color=fg_color,
+                                back_color=bg_color
+                            )
+                        elif theme == "circular":
+                            qr_img = qr.make_image(
+                                image_factory=StyledPilImage,
+                                module_drawer=CircleModuleDrawer(),
+                                fill_color=fg_color,
+                                back_color=bg_color
+                            )
+                        else:  # classic
+                            qr_img = qr.make_image(fill_color=fg_color, back_color=bg_color)
+                    except Exception as theme_error:
+                        console.log(f"Theme error: {theme_error}")
+                        # Fallback to basic QR
+                        qr_img = qr.make_image(fill_color=fg_color, back_color=bg_color)
+                    
+                    # Resize to target size (like your original)
+                    qr_img = qr_img.resize((size, size), Image.Resampling.LANCZOS)
+                    
+                    # Convert to base64 for display
+                    img_buffer = io.BytesIO()
+                    qr_img.save(img_buffer, format='PNG')
+                    img_data = base64.b64encode(img_buffer.getvalue()).decode()
+                    
+                    # Store for download
+                    self.current_qr_data = f"data:image/png;base64,{img_data}"
+                    
+                    # Display in browser
+                    img_html = f'<img src="{self.current_qr_data}" alt="QR Code" style="max-width: 100%; border-radius: 10px;">'
+                    document.getElementById("qr-output").innerHTML = img_html
+                    
+                    # Update status
+                    document.getElementById("status").innerHTML = '<div class="success">✅ QR code generated successfully!</div>'
+                    
+                except Exception as e:
+                    console.log(f"QR generation error: {e}")
+                    document.getElementById("qr-output").innerHTML = f'<div class="error">❌ Error: {str(e)}</div>'
+                    document.getElementById("status").innerHTML = f'<div class="error">❌ Generation failed: {str(e)}</div>'
+            
+            def download_qr(self, event):
+                """Download QR code as PNG"""
+                if not self.current_qr_data:
+                    return
+                
+                try:
+                    # Create download link
+                    link = document.createElement("a")
+                    link.href = self.current_qr_data
+                    link.download = "qr-code.png"
+                    document.body.appendChild(link)
+                    link.click()
+                    document.body.removeChild(link)
+                    
+                    document.getElementById("status").innerHTML = '<div class="success">✅ QR code downloaded!</div>'
+                except Exception as e:
+                    document.getElementById("status").innerHTML = f'<div class="error">❌ Download failed: {str(e)}</div>'
+            
+            def copy_text(self, event):
+                """Copy QR content to clipboard"""
+                content = self.get_content()
+                if not content:
+                    return
+                
+                try:
+                    window.navigator.clipboard.writeText(content)
+                    document.getElementById("status").innerHTML = '<div class="success">✅ Content copied to clipboard!</div>'
+                except:
+                    document.getElementById("status").innerHTML = '<div class="error">❌ Clipboard access not available</div>'
+            
+            def share_qr(self, event):
+                """Share QR code"""
+                content = self.get_content()
+                if not content:
+                    return
+                
+                try:
+                    if hasattr(window.navigator, 'share'):
+                        share_data = {
+                            'title': 'QR Code',
+                            'text': f'Check out this QR code: {content}',
+                            'url': window.location.href
+                        }
+                        window.navigator.share(share_data)
+                    else:
+                        # Fallback: copy link to clipboard
+                        share_url = f"{window.location.href}?content={window.encodeURIComponent(content)}"
+                        window.navigator.clipboard.writeText(share_url)
+                        document.getElementById("status").innerHTML = '<div class="success">✅ Share link copied to clipboard!</div>'
+                except Exception as e:
+                    document.getElementById("status").innerHTML = f'<div class="error">❌ Sharing failed: {str(e)}</div>'
+
+        # Initialize the QR generator
+        qr_generator = PyScriptQRGenerator()
+    </script>
+</body>
+</html>

@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Generator - PyScript Edition</title>
+
+    <!-- PyScript CSS and JS - Using your local build -->
+    <link rel="stylesheet" href="./assets/pyscript/core.css">
+<!--    <link rel="stylesheet" href="https://pyscript.net/releases/2025.5.1/core.css">-->
+
+    <script type="module" src="./assets/pyscript/core.js"></script>
+<!--    <script type="module" src="https://pyscript.net/releases/2025.5.1/core.js"></script>-->
+
+    <!-- Main Styles -->
+    <link rel="stylesheet" href="./assets/css/main.css">
+
+    <!-- Loading Dialog Script -->
+    <script type="module">
+        const loading = document.getElementById('loading');
+        addEventListener('py:ready', () => {
+            loading.close();
+            console.log('PyScript ready!');
+        });
+        loading.showModal();
+    </script>
+</head>
+<body>
+    <!-- Loading Dialog -->
+    <dialog id="loading">
+        <h1>🐍 Loading Python Environment</h1>
+        <div class="loading-spinner"></div>
+        <p>Initializing QR Generator...</p>
+    </dialog>
+
+    <!-- Header -->
+    <header class="header">
+        <h1>🐍 QR Generator</h1>
+        <p>Complete Python Desktop App in the Browser • Powered by PyScript</p>
+    </header>
+
+    <!-- Main Container -->
+    <div class="main-container">
+        <!-- Controls Panel -->
+        <div class="controls-panel">
+            <!-- Tab Navigation -->
+            <nav class="tab-nav">
+                <button class="tab-btn active" data-tab="content">Content</button>
+                <button class="tab-btn" data-tab="style">Style</button>
+                <button class="tab-btn" data-tab="image">Image</button>
+                <button class="tab-btn" data-tab="advanced">Advanced</button>
+            </nav>
+
+            <!-- Content Tab -->
+            <div class="tab-content active" id="content-tab">
+                <div class="form-group">
+                    <label>Content Type:</label>
+                    <div class="preset-grid">
+                        <button class="preset-btn active" data-type="general">General Text</button>
+                        <button class="preset-btn" data-type="url">URL/Website</button>
+                        <button class="preset-btn" data-type="wifi">WiFi Credentials</button>
+                        <button class="preset-btn" data-type="vcard">Business Card</button>
+                        <button class="preset-btn" data-type="email">Email</button>
+                        <button class="preset-btn" data-type="phone">Phone Number</button>
+                        <button class="preset-btn" data-type="sms">SMS</button>
+                    </div>
+                </div>
+
+                <!-- General Text Form -->
+                <div class="content-form active" id="general-form">
+                    <div class="form-group">
+                        <label for="general-text">Text Content:</label>
+                        <textarea id="general-text" placeholder="Enter your text content here..." rows="4">Welcome to QR Generator!</textarea>
+                    </div>
+                </div>
+
+                <!-- URL Form -->
+                <div class="content-form" id="url-form">
+                    <div class="form-group">
+                        <label for="url-input">URL:</label>
+                        <input type="url" id="url-input" placeholder="https://example.com">
+                    </div>
+                </div>
+
+                <!-- WiFi Form -->
+                <div class="content-form" id="wifi-form">
+                    <div class="form-group">
+                        <label for="wifi-ssid">Network Name (SSID):</label>
+                        <input type="text" id="wifi-ssid" placeholder="MyWiFiNetwork">
+                    </div>
+                    <div class="form-group">
+                        <label for="wifi-password">Password:</label>
+                        <input type="password" id="wifi-password" placeholder="password123">
+                    </div>
+                    <div class="form-group">
+                        <label>Security Type:</label>
+                        <div class="radio-group">
+                            <div class="radio-option">
+                                <input type="radio" id="wifi-wpa" name="wifi-security" value="WPA" checked>
+                                <label for="wifi-wpa">WPA/WPA2</label>
+                            </div>
+                            <div class="radio-option">
+                                <input type="radio" id="wifi-wep" name="wifi-security" value="WEP">
+                                <label for="wifi-wep">WEP</label>
+                            </div>
+                            <div class="radio-option">
+                                <input type="radio" id="wifi-none" name="wifi-security" value="">
+                                <label for="wifi-none">None</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="radio-option">
+                            <input type="checkbox" id="wifi-hidden">
+                            <label for="wifi-hidden">Hidden Network</label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- vCard Form -->
+                <div class="content-form" id="vcard-form">
+                    <div class="form-group">
+                        <label for="vcard-name">Full Name:</label>
+                        <input type="text" id="vcard-name" placeholder="John Doe">
+                    </div>
+                    <div class="form-group">
+                        <label for="vcard-org">Organization:</label>
+                        <input type="text" id="vcard-org" placeholder="Tech Company">
+                    </div>
+                    <div class="form-group">
+                        <label for="vcard-phone">Phone:</label>
+                        <input type="tel" id="vcard-phone" placeholder="+1-555-123-4567">
+                    </div>
+                    <div class="form-group">
+                        <label for="vcard-email">Email:</label>
+                        <input type="email" id="vcard-email" placeholder="john@company.com">
+                    </div>
+                    <div class="form-group">
+                        <label for="vcard-url">Website:</label>
+                        <input type="url" id="vcard-url" placeholder="https://company.com">
+                    </div>
+                </div>
+
+                <!-- Email Form -->
+                <div class="content-form" id="email-form">
+                    <div class="form-group">
+                        <label for="email-to">Email Address:</label>
+                        <input type="email" id="email-to" placeholder="contact@example.com">
+                    </div>
+                    <div class="form-group">
+                        <label for="email-subject">Subject:</label>
+                        <input type="text" id="email-subject" placeholder="Hello">
+                    </div>
+                    <div class="form-group">
+                        <label for="email-body">Message:</label>
+                        <textarea id="email-body" placeholder="Your message here..." rows="3"></textarea>
+                    </div>
+                </div>
+
+                <!-- Phone Form -->
+                <div class="content-form" id="phone-form">
+                    <div class="form-group">
+                        <label for="phone-number">Phone Number:</label>
+                        <input type="tel" id="phone-number" placeholder="+1-555-123-4567">
+                    </div>
+                </div>
+
+                <!-- SMS Form -->
+                <div class="content-form" id="sms-form">
+                    <div class="form-group">
+                        <label for="sms-number">Phone Number:</label>
+                        <input type="tel" id="sms-number" placeholder="+1-555-123-4567">
+                    </div>
+                    <div class="form-group">
+                        <label for="sms-message">Message:</label>
+                        <textarea id="sms-message" placeholder="Your message here..." rows="3"></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Style Tab -->
+            <div class="tab-content" id="style-tab">
+                <div class="form-group">
+                    <label for="theme-select">Module Style:</label>
+                    <select id="theme-select">
+                        <option value="classic">Classic Squares</option>
+                        <option value="rounded">Rounded Corners</option>
+                        <option value="circular">Circles</option>
+                        <option value="gapped">Gapped Squares</option>
+                        <option value="vertical_bars">Vertical Bars</option>
+                        <option value="horizontal_bars">Horizontal Bars</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="color-mask-select">Color Effect:</label>
+                    <select id="color-mask-select">
+                        <option value="solid">Solid Fill</option>
+                        <option value="radial">Radial Gradient</option>
+                        <option value="square">Square Gradient</option>
+                        <option value="horizontal">Horizontal Gradient</option>
+                        <option value="vertical">Vertical Gradient</option>
+                        <option value="image">Image Color Mask</option>
+                    </select>
+                </div>
+
+                <!-- Image Color Mask Upload -->
+                <div class="form-group" id="mask-image-group" style="display: none;">
+                    <label>Mask Image:</label>
+                    <div class="file-upload" id="mask-image-upload">
+                        <div class="file-upload-text">
+                            <p>📁 Click to select or drag & drop an image</p>
+                            <p>Used as color source for the QR code</p>
+                        </div>
+                    </div>
+                    <input type="file" id="mask-image-input" accept="image/*" style="display: none;">
+                </div>
+
+                <div class="form-group">
+                    <label>Colors:</label>
+                    <div class="color-row">
+                        <label>Foreground:</label>
+                        <input type="color" id="fg-color" value="#000000">
+                        <input type="text" id="fg-color-text" value="#000000" maxlength="7">
+                    </div>
+                    <div class="color-row">
+                        <label>Background:</label>
+                        <input type="color" id="bg-color" value="#ffffff">
+                        <input type="text" id="bg-color-text" value="#ffffff" maxlength="7">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="qr-size">QR Code Size:</label>
+                    <div class="slider-group">
+                        <input type="range" id="qr-size" min="100" max="1000" value="800" step="50">
+                        <span class="slider-value" id="size-display">800px</span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="qr-border">Border Size:</label>
+                    <div class="slider-group">
+                        <input type="range" id="qr-border" min="0" max="20" value="1">
+                        <span class="slider-value" id="border-display">1</span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Error Correction:</label>
+                    <div class="radio-group">
+                        <div class="radio-option">
+                            <input type="radio" id="error-l" name="error-correction" value="L">
+                            <label for="error-l">Low (L)</label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" id="error-m" name="error-correction" value="M">
+                            <label for="error-m">Medium (M)</label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" id="error-q" name="error-correction" value="Q" checked>
+                            <label for="error-q">Quartile (Q)</label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" id="error-h" name="error-correction" value="H">
+                            <label for="error-h">High (H)</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Image Tab -->
+            <div class="tab-content" id="image-tab">
+                <div class="form-group">
+                    <div class="radio-option" style="flex-direction: column;">
+                        <input type="checkbox" id="use-image-overlay">
+                        <label for="use-image-overlay">Add center image overlay</label>
+                    </div>
+                </div>
+
+                <div id="image-overlay-options" style="display: none;">
+                    <div class="form-group">
+                        <label>Image Upload:</label>
+                        <div class="file-upload" id="overlay-image-upload">
+                            <div class="file-upload-text">
+                                <p>📁 Click to select or drag & drop an image</p>
+                                <p>Will be placed in the center of the QR code</p>
+                            </div>
+                        </div>
+                        <input type="file" id="overlay-image-input" accept="image/*" style="display: none;">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="image-size">Image Size (% of QR):</label>
+                        <div class="slider-group">
+                            <input type="range" id="image-size" min="5" max="50" value="20">
+                            <span class="slider-value" id="image-size-display">20%</span>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Image Background:</label>
+                        <div class="radio-group">
+                            <div class="radio-option">
+                                <input type="radio" id="img-bg-match" name="image-bg" value="match" checked>
+                                <label for="img-bg-match">Match QR background</label>
+                            </div>
+                            <div class="radio-option">
+                                <input type="radio" id="img-bg-custom" name="image-bg" value="custom">
+                                <label for="img-bg-custom">Custom color</label>
+                            </div>
+                            <div class="radio-option">
+                                <input type="radio" id="img-bg-none" name="image-bg" value="none">
+                                <label for="img-bg-none">Transparent</label>
+                            </div>
+                        </div>
+                    </div>
+
+<!--                    <div class="form-group" id="custom-bg-color-group" style="display: none;">-->
+                    <div class="form-group" id="custom-bg-color-group">
+                        <div class="color-row">
+                            <label>Custom Background:</label>
+                            <input type="color" id="image-bg-color" value="#ffffff">
+                            <input type="text" id="image-bg-color-text" value="#ffffff" maxlength="7">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="image-padding">Background Padding:</label>
+                        <div class="slider-group">
+                            <input type="range" id="image-padding" min="0" max="30" value="0">
+                            <span class="slider-value" id="padding-display">0px</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Advanced Tab -->
+            <div class="tab-content" id="advanced-tab">
+                <div class="form-group">
+                    <label>File Operations:</label>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+                        <button class="action-btn" id="save-config-btn">💾 Save Config</button>
+                        <button class="action-btn" id="load-config-btn">📂 Load Config</button>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Batch Processing:</label>
+                    <div class="file-upload" id="batch-file-upload">
+                        <div class="file-upload-text">
+                            <p>📊 Upload CSV/JSON for batch generation</p>
+                            <p>Generate multiple QR codes at once</p>
+                        </div>
+                    </div>
+                    <input type="file" id="batch-file-input" accept=".csv,.json" style="display: none;">
+                </div>
+
+                <div class="form-group">
+                    <label>QR Scanner:</label>
+                    <div class="file-upload" id="scan-file-upload">
+                        <div class="file-upload-text">
+                            <p>🔍 Upload image to scan QR code</p>
+                            <p>Extract content from existing QR codes</p>
+                        </div>
+                    </div>
+                    <input type="file" id="scan-file-input" accept="image/*" style="display: none;">
+                </div>
+
+                <div class="form-group">
+                    <label>Export Options:</label>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px;">
+                        <select id="export-format">
+                            <option value="png">PNG</option>
+                            <option value="jpeg">JPEG</option>
+                            <option value="svg">SVG</option>
+                        </select>
+                        <input type="text" id="export-filename" placeholder="qr-code" value="my-qr-code">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Preview Panel -->
+        <div class="preview-panel">
+            <div class="qr-display" id="qr-display">
+                <div class="loading-text">🔄 Initializing Python environment...</div>
+            </div>
+
+            <div class="qr-actions">
+                <button class="action-btn primary" id="generate-btn">🔄 Generate QR Code</button>
+                <button class="action-btn" id="download-btn">📥 Download</button>
+                <button class="action-btn" id="copy-image-btn">🖼️ Copy Image</button>
+<!--                <button class="action-btn" id="copy-text-btn">📝 Copy Text</button>-->
+<!--                <button class="action-btn" id="share-btn">🔗 Share</button>-->
+                <button class="action-btn" id="print-btn">🖨️ Print</button>
+            </div>
+
+            <div id="status-area"></div>
+        </div>
+    </div>
+
+
+    <!-- File inputs for config -->
+    <input type="file" id="config-file-input" accept=".json" style="display: none;">
+
+    <!-- PyScript Configuration -->
+<!--    <py-config>-->
+
+<!--    </py-config>-->
+    <!-- Python Implementation and PyScript Configuration -->
+    <script
+            type="py"
+            src="./assets/pyscript_config/pyscript_qr_generator.py"
+            config="./assets/pyscript_config/pyscript.toml"
+    ></script>
+</body>
+</html>
