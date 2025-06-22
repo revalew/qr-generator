@@ -4,6 +4,7 @@ from qrcode.image.styles.moduledrawers import (
     RoundedModuleDrawer,
     CircleModuleDrawer,
     SquareModuleDrawer,
+    GappedSquareModuleDrawer,
     VerticalBarsDrawer,
     HorizontalBarsDrawer,
 )
@@ -649,8 +650,9 @@ class EnhancedQRGenerator:
             return CircleModuleDrawer()
         elif theme == 'gapped':
             try:
-                from decimal import Decimal
-                return SquareModuleDrawer(size_ratio=Decimal(0.6))
+                # from decimal import Decimal
+                # return GappedSquareModuleDrawer(size_ratio=0.8)
+                return GappedSquareModuleDrawer()
             except:
                 return SquareModuleDrawer()
         elif theme == 'vertical_bars':

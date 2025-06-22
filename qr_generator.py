@@ -12,6 +12,9 @@ from qrcode.image.styles.moduledrawers import (
     RoundedModuleDrawer,
     CircleModuleDrawer,
     SquareModuleDrawer,
+    GappedSquareModuleDrawer,
+    VerticalBarsDrawer,
+    HorizontalBarsDrawer,
 )
 
 # Import color masks including ImageColorMask
@@ -1172,11 +1175,12 @@ class QRCodeGenerator:
             elif theme == "gapped":
                 # Create gapped squares using SquareModuleDrawer with size ratio
                 try:
-                    from decimal import Decimal
+                    # from decimal import Decimal
 
                     qr_img = qr.make_image(
                         image_factory=StyledPilImage,
-                        module_drawer=SquareModuleDrawer(size_ratio=Decimal(0.8)),
+                        # module_drawer=GappedSquareModuleDrawer(size_ratio=Decimal(0.8)),
+                        module_drawer=GappedSquareModuleDrawer(),
                         color_mask=color_mask,
                         fill_color=fg_color,
                         back_color=bg_color,
