@@ -393,7 +393,8 @@ class EnhancedQRGenerator:
             mask_group.style.display = 'block' if mask_type == 'image' else 'none'
 
         # Enable/disable color inputs for image mask
-        color_inputs = ['fg-color', 'fg-color-text', 'bg-color', 'bg-color-text']
+        # color_inputs = ['fg-color', 'fg-color-text', 'bg-color', 'bg-color-text']
+        color_inputs = ['fg-color', 'fg-color-text']
         disabled = mask_type == 'image'
 
         for input_id in color_inputs:
