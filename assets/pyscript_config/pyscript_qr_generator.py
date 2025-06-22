@@ -164,7 +164,11 @@ class EnhancedQRGenerator:
                 element.addEventListener('click', create_proxy(handler))
 
     def setup_file_handlers(self):
-        """Setup file upload handlers"""
+        """Setup file upload handlers with improved drag & drop"""
+        
+        # Add drag state tracking
+        self.drag_in_progress = False
+        self.current_drop_zone = None
 
         # Overlay image upload
         overlay_upload = document.getElementById('overlay-image-upload')
@@ -176,10 +180,9 @@ class EnhancedQRGenerator:
             ))
             overlay_input.addEventListener('change', create_proxy(self.handle_overlay_image))
 
-            # Drag and drop
-            # overlay_upload.addEventListener('dragover', create_proxy(self.prevent_default))
+            # Improved drag and drop
             overlay_upload.addEventListener('dragover', create_proxy(self.prevent_default_and_hover))
-            overlay_upload.addEventListener('dragenter', create_proxy(self.on_drag_enter))
+            overlay_upload.addEventListener('dragenter', create_proxy(lambda e: self.on_drag_enter(e, 'overlay')))
             overlay_upload.addEventListener('dragleave', create_proxy(self.on_drag_leave))
             overlay_upload.addEventListener('drop', create_proxy(self.handle_overlay_drop))
 
@@ -193,13 +196,17 @@ class EnhancedQRGenerator:
             ))
             mask_input.addEventListener('change', create_proxy(self.handle_mask_image))
 
-            # Drag and drop
-            # mask_upload.addEventListener('dragover', create_proxy(self.prevent_default))
+            # Improved drag and drop
             mask_upload.addEventListener('dragover', create_proxy(self.prevent_default_and_hover))
-            mask_upload.addEventListener('dragenter', create_proxy(self.on_drag_enter))
+            mask_upload.addEventListener('dragenter', create_proxy(lambda e: self.on_drag_enter(e, 'mask')))
             mask_upload.addEventListener('dragleave', create_proxy(self.on_drag_leave))
             mask_upload.addEventListener('drop', create_proxy(self.handle_mask_drop))
 
+        # SUPER AGRESYWNE globalne blokowanie
+        document.addEventListener('dragover', create_proxy(self.global_drag_prevent), True)
+        document.addEventListener('drop', create_proxy(self.global_drag_prevent), True)
+        document.addEventListener('dragstart', create_proxy(self.global_drag_prevent), True)
+        
         # Config file
         config_input = document.getElementById('config-file-input')
         if config_input:
@@ -224,10 +231,6 @@ class EnhancedQRGenerator:
                 lambda e: scan_input.click()
             ))
             scan_input.addEventListener('change', create_proxy(self.handle_scan_file))
-
-        # Global drag prevention (prevents browser from opening images)
-        document.addEventListener('dragover', create_proxy(self.global_drag_prevent))
-        document.addEventListener('drop', create_proxy(self.global_drag_prevent))
 
     def switch_tab(self, event):
         """Switch between tabs"""
@@ -358,24 +361,40 @@ class EnhancedQRGenerator:
         event.stopPropagation()
         event.currentTarget.classList.add('dragover')
 
+    # def global_drag_prevent(self, event):
+    #     """Prevent default drag behavior globally except in our drop zones"""
+    #     target = event.target
+        
+    #     # Check if we're in a designated drop zone
+    #     is_drop_zone = (
+    #         target.id in ['overlay-image-upload', 'mask-image-upload'] or
+    #         target.closest('#overlay-image-upload') or 
+    #         target.closest('#mask-image-upload')
+    #     )
+        
+    #     if not is_drop_zone:
+    #         event.preventDefault()
+    #         event.stopPropagation()
     def global_drag_prevent(self, event):
         """Prevent default drag behavior globally except in our drop zones"""
-        target = event.target
-        
-        # Check if we're in a designated drop zone
-        is_drop_zone = (
-            target.id in ['overlay-image-upload', 'mask-image-upload'] or
-            target.closest('#overlay-image-upload') or 
-            target.closest('#mask-image-upload')
-        )
-        
-        if not is_drop_zone:
+        # Always prevent if we're not in a known drop zone
+        if not hasattr(self, 'current_drop_zone') or not self.current_drop_zone:
             event.preventDefault()
             event.stopPropagation()
+            return False
 
-    def on_drag_enter(self, event):
+    # def on_drag_enter(self, event):
+    #     event.preventDefault()
+    #     event.target.classList.add('dragover')
+    def on_drag_enter(self, event, zone_type=None):
+        """Handle drag enter with zone tracking"""
         event.preventDefault()
-        event.target.classList.add('dragover')
+        event.stopPropagation()
+        
+        self.current_drop_zone = zone_type
+        event.currentTarget.classList.add('dragover')
+        
+        console.log(f"Drag enter in {zone_type} zone")
 
     # def on_drag_leave(self, event):
     #     event.preventDefault()
@@ -385,6 +404,9 @@ class EnhancedQRGenerator:
         event.preventDefault()
         event.stopPropagation()
         
+        # Reset drop zone after a short delay
+        window.setTimeout(lambda: setattr(self, 'current_drop_zone', None), 50)
+        
         # Only remove dragover if we're actually leaving the drop zone
         rect = event.currentTarget.getBoundingClientRect()
         x = event.clientX
@@ -392,6 +414,7 @@ class EnhancedQRGenerator:
         
         if (x < rect.left or x > rect.right or y < rect.top or y > rect.bottom):
             event.currentTarget.classList.remove('dragover')
+            console.log("Drag leave detected")
 
     async def handle_overlay_image(self, event):
         """
@@ -412,13 +435,29 @@ class EnhancedQRGenerator:
         https://stackoverflow.com/questions/73105350/from-pyscript-how-can-i-access-the-file-that-i-load-from-html
         """
         event.preventDefault()
-        event.target.classList.remove('dragover')
-
-        files = event.dataTransfer.files.to_py()
-        if files.length > 0:
-            for file in files:
-                await self.load_image_file(file, 'overlay')
-            # await self.load_image_file(files, 'overlay')
+        event.stopPropagation()
+        event.currentTarget.classList.remove('dragover')
+        
+        # Clear drop zone tracking
+        self.current_drop_zone = None
+        
+        console.log("Overlay drop detected")
+        
+        try:
+            files = event.dataTransfer.files
+            console.log(f"Files dropped: {files.length}")
+            
+            if files.length > 0:
+                files_py = files.to_py()
+                for file in files_py:
+                    console.log(f"Processing file: {file.name}")
+                    await self.load_image_file(file, 'overlay')
+            else:
+                console.log("No files found in drop")
+                
+        except Exception as e:
+            console.log(f"Drop handling error: {e}")
+            self.show_status(f"❌ Error handling dropped file: {str(e)}", "error")
 
     async def handle_mask_image(self, event):
         """
@@ -441,13 +480,29 @@ class EnhancedQRGenerator:
         https://stackoverflow.com/questions/73105350/from-pyscript-how-can-i-access-the-file-that-i-load-from-html
         """
         event.preventDefault()
-        event.target.classList.remove('dragover')
-
-        files = event.dataTransfer.files.to_py()
-        if files.length > 0:
-            for file in files:
-                await self.load_image_file(file, 'mask')
-            # await self.load_image_file(files, 'mask')
+        event.stopPropagation()
+        event.currentTarget.classList.remove('dragover')
+        
+        # Clear drop zone tracking
+        self.current_drop_zone = None
+        
+        console.log("Mask drop detected")
+        
+        try:
+            files = event.dataTransfer.files
+            console.log(f"Files dropped: {files.length}")
+            
+            if files.length > 0:
+                files_py = files.to_py()
+                for file in files_py:
+                    console.log(f"Processing file: {file.name}")
+                    await self.load_image_file(file, 'mask')
+            else:
+                console.log("No files found in drop")
+                
+        except Exception as e:
+            console.log(f"Drop handling error: {e}")
+            self.show_status(f"❌ Error handling dropped file: {str(e)}", "error")
 
     async def load_image_file(self, file, image_type):
         """Load image file using FileReader"""
