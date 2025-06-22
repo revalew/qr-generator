@@ -229,49 +229,49 @@ body {
 
 /* File Upload Areas */
 .file-upload {
-    border: 2px dashed #cbd5e0;
-    border-radius: 8px;
-    padding: 30px 20px; /* Zwiększone z 20px */
-    text-align: center;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    background: #f7fafc;
-    min-height: 100px; /* DODANE */
+	border: 2px dashed #cbd5e0;
+	border-radius: 8px;
+	padding: 30px 20px; /* Zwiększone z 20px */
+	text-align: center;
+	cursor: pointer;
+	transition: all 0.3s ease;
+	background: #f7fafc;
+	min-height: 100px; /* DODANE */
 }
 
 .file-upload:hover {
-    border-color: #667eea;
-    background: #edf2f7;
+	border-color: #667eea;
+	background: #edf2f7;
 }
 
 .file-upload.dragover {
-    border-color: #28a745; /* Zmienione z #667eea */
-    background: #f0fff0; /* Zmienione z #e6fffa */
-    border-style: solid; /* DODANE */
-    box-shadow: 0 0 15px rgba(40, 167, 69, 0.3); /* DODANE */
-    transform: scale(1.02); /* DODANE */
+	border-color: #28a745; /* Zmienione z #667eea */
+	background: #f0fff0; /* Zmienione z #e6fffa */
+	border-style: solid; /* DODANE */
+	box-shadow: 0 0 15px rgba(40, 167, 69, 0.3); /* DODANE */
+	transform: scale(1.02); /* DODANE */
 }
 
 .file-upload-text {
-    color: #4a5568;
-    font-size: 13px;
-    pointer-events: none; /* DODANE */
+	color: #4a5568;
+	font-size: 13px;
+	pointer-events: none; /* DODANE */
 }
 
 .file-upload-text p {
-    margin: 5px 0;
-    pointer-events: none;
+	margin: 5px 0;
+	pointer-events: none;
 }
 
 .file-upload.dragover .file-upload-text {
-    color: #28a745;
-    font-weight: bold;
+	color: #28a745;
+	font-weight: bold;
 }
 
 .file-upload * {
-    user-select: none;
-    -webkit-user-select: none;
-    -moz-user-select: none;
+	user-select: none;
+	-webkit-user-select: none;
+	-moz-user-select: none;
 }
 
 /* Hidden Forms */
@@ -299,6 +299,15 @@ body {
 .radio-option input[type='radio'] {
 	width: auto;
 	margin: 0;
+}
+
+.radio-option input[type='checkbox'] {
+	width: 20px;
+	height: 20px;
+	margin: 5px;
+	border: none;
+	border-radius: 4px;
+	cursor: pointer;
 }
 
 .radio-option label {
