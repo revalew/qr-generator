@@ -14,7 +14,7 @@ from qrcode.image.styles.colormasks import (
     SquareGradiantColorMask,
     HorizontalGradiantColorMask,
     VerticalGradiantColorMask,
-    ImageColorMask
+    ImageColorMask,
 )
 from PIL import Image, ImageDraw
 import io
@@ -189,6 +189,7 @@ class EnhancedQRGenerator:
             "copy-text-btn": self.copy_text,
             "share-btn": self.share_qr,
             "print-btn": self.print_qr,
+            "print-btn-2": self.print_qr_fallback,
             "save-config-btn": self.save_config,
             "load-config-btn": self.load_config,
         }
@@ -200,7 +201,9 @@ class EnhancedQRGenerator:
 
         format_select = document.getElementById("export-format")
         if format_select:
-            format_select.addEventListener("change", create_proxy(self.on_format_change))
+            format_select.addEventListener(
+                "change", create_proxy(self.on_format_change)
+            )
 
     def setup_file_handlers(self):
         """Simple file upload handlers with working drag & drop"""
@@ -481,19 +484,19 @@ class EnhancedQRGenerator:
     def on_format_change(self, event):
         """Show format information when format changes"""
         format_value = event.target.value
-        
+
         format_info = {
             "png": "PNG: Best quality, supports transparency, larger file size",
-            "jpeg": "JPEG: Good compression, no transparency, smaller file size", 
+            "jpeg": "JPEG: Good compression, no transparency, smaller file size",
             "svg": "SVG: Vector format, infinite scalability, perfect for print",
             "webp": "WebP: Modern format, excellent compression, good quality",
             "bmp": "BMP: Uncompressed, large file size, maximum quality",
             "tiff": "TIFF: Professional format, lossless compression, large file",
             "ico": "ICO: Icon format for Windows, multiple sizes, up to 256px (NOT Recommended)",
         }
-        
+
         info_text = format_info.get(format_value, "")
-        
+
         # Update status with format info
         if info_text:
             self.show_status(f"ℹ️ {info_text}", "info")
@@ -803,7 +806,6 @@ class EnhancedQRGenerator:
         fg_color = self.hex_to_rgb(self.get_element_value("fg-color"))
         bg_color = self.hex_to_rgb(self.get_element_value("bg-color"))
 
-
         try:
             if mask_type == "solid":
                 return SolidFillColorMask(front_color=fg_color, back_color=bg_color)
@@ -1072,7 +1074,7 @@ class EnhancedQRGenerator:
                     # Create SVG download
                     blob = Blob.new([svg_data], {"type": "image/svg+xml"})
                     url = URL.createObjectURL(blob)
-                    
+
                     link = document.createElement("a")
                     link.href = url
                     link.download = f"{filename}.svg"
@@ -1080,7 +1082,7 @@ class EnhancedQRGenerator:
                     link.click()
                     document.body.removeChild(link)
                     URL.revokeObjectURL(url)
-                    
+
                     self.show_status("✅ SVG QR code downloaded!", "success")
                     return
                 else:
@@ -1089,35 +1091,39 @@ class EnhancedQRGenerator:
 
             # Handle raster formats
             img_buffer = io.BytesIO()
-            
+
             if file_format.upper() == "JPEG":
                 # Convert to RGB for JPEG (no transparency)
                 rgb_img = self.current_qr_image.convert("RGB")
                 rgb_img.save(img_buffer, format="JPEG", quality=95, optimize=True)
                 mime_type = "image/jpeg"
-                
+
             elif file_format.upper() == "BMP":
                 # BMP format
                 self.current_qr_image.save(img_buffer, format="BMP")
                 mime_type = "image/bmp"
-                
+
             elif file_format.upper() == "TIFF":
                 # TIFF format with compression
                 self.current_qr_image.save(img_buffer, format="TIFF", compression="lzw")
                 mime_type = "image/tiff"
-                
+
             elif file_format.upper() == "ICO":
                 # ICO format (icon file)
                 # ICO works best with smaller sizes
                 ico_size = min(256, self.current_qr_image.size[0])
-                ico_img = self.current_qr_image.resize((ico_size, ico_size), Image.Resampling.LANCZOS)
+                ico_img = self.current_qr_image.resize(
+                    (ico_size, ico_size), Image.Resampling.LANCZOS
+                )
                 ico_img.save(img_buffer, format="ICO")
                 mime_type = "image/x-icon"
-                
+
             elif file_format.upper() == "WEBP":
                 # WebP format (modern, good compression)
                 try:
-                    self.current_qr_image.save(img_buffer, format="WEBP", quality=90, lossless=True)
+                    self.current_qr_image.save(
+                        img_buffer, format="WEBP", quality=90, lossless=True
+                    )
                     mime_type = "image/webp"
                 except Exception as e:
                     console.log(f"WebP not supported: {e}")
@@ -1125,7 +1131,7 @@ class EnhancedQRGenerator:
                     self.current_qr_image.save(img_buffer, format="PNG", optimize=True)
                     mime_type = "image/png"
                     file_format = "png"
-                    
+
             else:  # PNG (default)
                 self.current_qr_image.save(img_buffer, format="PNG", optimize=True)
                 mime_type = "image/png"
@@ -1148,7 +1154,7 @@ class EnhancedQRGenerator:
             self.show_status(f"❌ Download failed: {str(e)}", "error")
 
     def generate_svg_qr(self):
-        """Generate SVG version of current QR code - FIXED VERSION"""
+        """Generate SVG version of current QR code - FIXED FOR PROPER SCALING"""
         try:
             # Get current content
             content = self.current_content
@@ -1157,10 +1163,10 @@ class EnhancedQRGenerator:
 
             # Import SVG factory
             from qrcode.image.svg import SvgPathImage
-            
+
             # Get current settings
             border = int(self.get_element_value("qr-border") or 1)
-            
+
             # Get error correction
             error_radios = document.querySelectorAll('input[name="error-correction"]')
             error_level = "Q"
@@ -1176,11 +1182,13 @@ class EnhancedQRGenerator:
                 "H": qrcode.constants.ERROR_CORRECT_H,
             }
 
-            # Create QR code for SVG
+            # Create QR code for SVG with larger box_size for better quality
             qr = qrcode.QRCode(
                 version=1,
-                error_correction=error_levels.get(error_level, qrcode.constants.ERROR_CORRECT_Q),
-                box_size=10,
+                error_correction=error_levels.get(
+                    error_level, qrcode.constants.ERROR_CORRECT_Q
+                ),
+                box_size=20,  # ✅ Zwiększone z 10 na 20 dla lepszej jakości
                 border=border,
             )
 
@@ -1189,29 +1197,29 @@ class EnhancedQRGenerator:
 
             # Generate SVG - FIXED: Handle both bytes and string output
             img = qr.make_image(image_factory=SvgPathImage)
-            
+
             # Get SVG data - try multiple methods
             svg_data = None
-            
+
             # Method 1: Try to get string directly
             try:
-                if hasattr(img, 'to_string'):
+                if hasattr(img, "to_string"):
                     svg_data = img.to_string()
                     if isinstance(svg_data, bytes):
-                        svg_data = svg_data.decode('utf-8')
+                        svg_data = svg_data.decode("utf-8")
             except:
                 pass
-                
+
             # Method 2: Try BytesIO and decode
             if not svg_data:
                 try:
                     svg_buffer = io.BytesIO()
                     img.save(svg_buffer)
                     svg_bytes = svg_buffer.getvalue()
-                    svg_data = svg_bytes.decode('utf-8')
+                    svg_data = svg_bytes.decode("utf-8")
                 except:
                     pass
-            
+
             # Method 3: Try StringIO (fallback)
             if not svg_data:
                 try:
@@ -1220,31 +1228,48 @@ class EnhancedQRGenerator:
                     svg_data = svg_buffer.getvalue()
                 except:
                     pass
-            
+
             if not svg_data:
                 console.log("Failed to extract SVG data")
                 return None
-            
+
+            import re
+
+            # Usunięcie atrybutów width i height z tagu <svg>
+            svg_data = re.sub(r'\s*width="[^"]*"', "", svg_data)
+            svg_data = re.sub(r'\s*height="[^"]*"', "", svg_data)
+
+            # Dodanie atrybutów pozwalających na skalowanie
+            svg_data = re.sub(
+                r"<svg([^>]*?)>",
+                r'<svg\1 width="100%" height="100%" preserveAspectRatio="xMidYMid meet">',
+                svg_data,
+            )
+
             # Apply colors to SVG
             fg_color = self.get_element_value("fg-color") or "#000000"
             bg_color = self.get_element_value("bg-color") or "#ffffff"
-            
+
             # Simple color replacement in SVG
             svg_data = svg_data.replace('fill="black"', f'fill="{fg_color}"')
             svg_data = svg_data.replace('fill="#000000"', f'fill="{fg_color}"')
             svg_data = svg_data.replace('fill="#000"', f'fill="{fg_color}"')
-            
-            # Add background if not white
-            if bg_color.lower() != "#ffffff":
-                # Try different SVG opening tag formats
-                if '<svg' in svg_data:
-                    svg_data = svg_data.replace(
-                        '<svg',
-                        f'<svg style="background-color:{bg_color}"'
-                    )
-                
+
+            # ✅ Lepsze dodawanie tła
+            if bg_color.lower() not in ["#ffffff", "#fff", "white"]:
+                # Znajdź tag <svg> i dodaj rect jako tło
+                viewbox_match = re.search(r'viewBox="([^"]*)"', svg_data)
+                if viewbox_match:
+                    viewbox = viewbox_match.group(1)
+                    coords = viewbox.split()
+                    if len(coords) >= 4:
+                        width, height = coords[2], coords[3]
+                        bg_rect = f'<rect x="0" y="0" width="{width}" height="{height}" fill="{bg_color}"/>'
+                        # Wstaw rect zaraz po tagu <svg>
+                        svg_data = re.sub(r"(<svg[^>]*>)", r"\1" + bg_rect, svg_data)
+
             return svg_data
-            
+
         except Exception as e:
             console.log(f"SVG generation error: {e}")
             return None
@@ -1354,13 +1379,115 @@ class EnhancedQRGenerator:
             self.show_status("❌ Sharing failed", "error")
 
     def print_qr(self, event):
-        """Print QR code"""
+        """Print QR code using SVG for best quality - IMPROVED VERSION"""
         if not self.current_qr_image:
             self.show_status("❌ Please generate a QR code first", "error")
             return
 
+        # 🔧 EASY SIZE CONTROL - Change this value to adjust QR code size
+        qr_size_cm = 12  # Size in centimeters (12cm = ~4.7 inches)
+
         try:
-            # Create print window
+            # Try SVG first (best quality for printing)
+            svg_data = self.generate_svg_qr()
+
+            if svg_data:
+                # Use SVG for printing - much better quality
+                print_window = window.open("", "_blank")
+                print_window.document.write(
+                    f"""
+                    <!DOCTYPE html>
+                    <html>
+                    <head>
+                        <title>QR Code</title>
+                        <style>
+                            @page {{
+                                margin: 2cm;
+                                size: A4;
+                            }}
+                            body {{
+                                margin: 0;
+                                padding: 0;
+                                display: flex;
+                                flex-direction: column;
+                                align-items: center;
+                                justify-content: center;
+                                min-height: 100vh;
+                                font-family: Arial, sans-serif;
+                            }}
+                            .qr-container {{
+                                text-align: center;
+                                page-break-inside: avoid;
+                            }}
+                            .qr-code {{
+                                width: {qr_size_cm}cm !important;
+                                height: {qr_size_cm}cm !important;
+                                max-width: {qr_size_cm}cm !important;
+                                max-height: {qr_size_cm}cm !important;
+                                display: block;
+                            }}
+                            .qr-code svg {{
+                                width: 100% !important;
+                                height: 100% !important;
+                                display: block;
+                            }}
+                            .footer {{
+                                margin-top: 1cm;
+                                font-size: 10px;
+                                color: #888;
+                            }}
+                            @media print {{
+                                body {{
+                                    margin: 0;
+                                    padding: 0;
+                                }}
+                                .qr-code {{
+                                    width: {qr_size_cm}cm !important;
+                                    height: {qr_size_cm}cm !important;
+                                }}
+                                .qr-code svg {{
+                                    width: 100% !important;
+                                    height: 100% !important;
+                                }}
+                            }}
+                        </style>
+                    </head>
+                    <body>
+                        <div class="qr-container">
+                            <div class="qr-code">
+                                {svg_data}
+                            </div>
+                            <div class="footer">
+                                Generated with QR Generator - Vector Print Quality
+                            </div>
+                        </div>
+                    </body>
+                    </html>
+                """
+                )
+                print_window.document.close()
+                print_window.print()
+                print_window.close()
+
+                self.show_status("✅ Print dialog opened (SVG quality)", "success")
+
+            else:
+                # Fallback to PNG if SVG fails
+                self.print_qr_fallback(event)
+
+        except Exception as e:
+            console.log(f"SVG print error: {e}")
+            # Fallback to PNG
+            self.print_qr_fallback(event)
+
+    def print_qr_fallback(self, event):
+        """Fallback print function using PNG - SIMPLE VERSION"""
+
+        # 🔧 EASY SIZE CONTROL - Change this value to adjust QR code size
+        qr_size_cm = 12  # Size in centimeters (12cm = ~4.7 inches)
+
+        try:
+            # Create print window with PNG
             img_buffer = io.BytesIO()
             self.current_qr_image.save(img_buffer, format="PNG")
             img_data = base64.b64encode(img_buffer.getvalue()).decode()
@@ -1369,10 +1496,55 @@ class EnhancedQRGenerator:
             print_window = window.open("", "_blank")
             print_window.document.write(
                 f"""
+                <!DOCTYPE html>
                 <html>
-                <head><title>QR Code</title></head>
-                <body style="margin:0; display:flex; flex-direction:column; justify-content:center; align-items:center; min-height:100vh;">
-                    <img src="{data_url}" style="max-width:100%; max-height:100%;" />
+                <head>
+                    <title>QR Code</title>
+                    <style>
+                        @page {{
+                            margin: 2cm;
+                            size: A4;
+                        }}
+                        body {{
+                            margin: 0;
+                            padding: 0;
+                            display: flex;
+                            flex-direction: column;
+                            align-items: center;
+                            justify-content: center;
+                            min-height: 100vh;
+                            font-family: Arial, sans-serif;
+                        }}
+                        .qr-container {{
+                            text-align: center;
+                            page-break-inside: avoid;
+                        }}
+                        .qr-code {{
+                            width: {qr_size_cm}cm;
+                            height: {qr_size_cm}cm;
+                            max-width: {qr_size_cm}cm;
+                            max-height: {qr_size_cm}cm;
+                        }}
+                        .footer {{
+                            margin-top: 1cm;
+                            font-size: 10px;
+                            color: #888;
+                        }}
+                        @media print {{
+                            body {{
+                                margin: 0;
+                                padding: 0;
+                            }}
+                        }}
+                    </style>
+                </head>
+                <body>
+                    <div class="qr-container">
+                        <img src="{data_url}" alt="QR Code" class="qr-code" />
+                        <div class="footer">
+                            Generated with QR Generator - PNG Quality
+                        </div>
+                    </div>
                 </body>
                 </html>
             """
@@ -1381,7 +1553,7 @@ class EnhancedQRGenerator:
             print_window.print()
             print_window.close()
 
-            self.show_status("✅ Print dialog opened", "success")
+            self.show_status("✅ Print dialog opened (PNG fallback)", "success")
 
         except Exception as e:
             console.log(f"Print error: {e}")
