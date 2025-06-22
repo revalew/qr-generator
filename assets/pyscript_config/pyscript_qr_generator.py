@@ -177,7 +177,8 @@ class EnhancedQRGenerator:
             overlay_input.addEventListener('change', create_proxy(self.handle_overlay_image))
 
             # Drag and drop
-            overlay_upload.addEventListener('dragover', create_proxy(self.prevent_default))
+            # overlay_upload.addEventListener('dragover', create_proxy(self.prevent_default))
+            overlay_upload.addEventListener('dragover', create_proxy(self.prevent_default_and_hover))
             overlay_upload.addEventListener('dragenter', create_proxy(self.on_drag_enter))
             overlay_upload.addEventListener('dragleave', create_proxy(self.on_drag_leave))
             overlay_upload.addEventListener('drop', create_proxy(self.handle_overlay_drop))
@@ -193,7 +194,8 @@ class EnhancedQRGenerator:
             mask_input.addEventListener('change', create_proxy(self.handle_mask_image))
 
             # Drag and drop
-            mask_upload.addEventListener('dragover', create_proxy(self.prevent_default))
+            # mask_upload.addEventListener('dragover', create_proxy(self.prevent_default))
+            mask_upload.addEventListener('dragover', create_proxy(self.prevent_default_and_hover))
             mask_upload.addEventListener('dragenter', create_proxy(self.on_drag_enter))
             mask_upload.addEventListener('dragleave', create_proxy(self.on_drag_leave))
             mask_upload.addEventListener('drop', create_proxy(self.handle_mask_drop))
@@ -222,6 +224,10 @@ class EnhancedQRGenerator:
                 lambda e: scan_input.click()
             ))
             scan_input.addEventListener('change', create_proxy(self.handle_scan_file))
+
+        # Global drag prevention (prevents browser from opening images)
+        document.addEventListener('dragover', create_proxy(self.global_drag_prevent))
+        document.addEventListener('drop', create_proxy(self.global_drag_prevent))
 
     def switch_tab(self, event):
         """Switch between tabs"""
@@ -343,17 +349,49 @@ class EnhancedQRGenerator:
         self.generate_qr()
 
     # File handling methods
-    def prevent_default(self, event):
+    # def prevent_default(self, event):
+    #     event.preventDefault()
+    #     event.stopPropagation()
+    def prevent_default_and_hover(self, event):
+        """Prevent default and show hover effect"""
         event.preventDefault()
         event.stopPropagation()
+        event.currentTarget.classList.add('dragover')
+
+    def global_drag_prevent(self, event):
+        """Prevent default drag behavior globally except in our drop zones"""
+        target = event.target
+        
+        # Check if we're in a designated drop zone
+        is_drop_zone = (
+            target.id in ['overlay-image-upload', 'mask-image-upload'] or
+            target.closest('#overlay-image-upload') or 
+            target.closest('#mask-image-upload')
+        )
+        
+        if not is_drop_zone:
+            event.preventDefault()
+            event.stopPropagation()
 
     def on_drag_enter(self, event):
         event.preventDefault()
         event.target.classList.add('dragover')
 
+    # def on_drag_leave(self, event):
+    #     event.preventDefault()
+    #     event.target.classList.remove('dragover')
     def on_drag_leave(self, event):
+        """Handle drag leave with proper cleanup"""
         event.preventDefault()
-        event.target.classList.remove('dragover')
+        event.stopPropagation()
+        
+        # Only remove dragover if we're actually leaving the drop zone
+        rect = event.currentTarget.getBoundingClientRect()
+        x = event.clientX
+        y = event.clientY
+        
+        if (x < rect.left or x > rect.right or y < rect.top or y > rect.bottom):
+            event.currentTarget.classList.remove('dragover')
 
     async def handle_overlay_image(self, event):
         """
