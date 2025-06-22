@@ -822,26 +822,27 @@ class QRCodeGenerator:
 
                 # Set widget states
                 state = 'disabled' if is_image_mask else 'normal'
+                bg_state = 'normal'
 
                 # Toggle entry widgets
                 if hasattr(self, 'fg_entry'):
                     self.fg_entry.config(state=state)
                 if hasattr(self, 'bg_entry'):
-                    self.bg_entry.config(state=state)
+                    self.bg_entry.config(state=bg_state)
 
                 # Toggle color picker buttons
                 if hasattr(self, 'fg_color_btn'):
                     self.fg_color_btn.config(state=state)
                 if hasattr(self, 'bg_color_btn'):
-                    self.bg_color_btn.config(state=state)
+                    self.bg_color_btn.config(state=bg_state)
 
                 # Visual feedback and explanation
                 if is_image_mask:
                     # Gray out disabled buttons
                     if hasattr(self, 'fg_color_btn'):
                         self.fg_color_btn.config(bg='#d0d0d0', relief='flat')
-                    if hasattr(self, 'bg_color_btn'):
-                        self.bg_color_btn.config(bg='#d0d0d0', relief='flat')
+                    # if hasattr(self, 'bg_color_btn'):
+                    #     self.bg_color_btn.config(bg='#d0d0d0', relief='flat')
 
                     # Show explanation
                     if hasattr(self, 'color_info_label'):

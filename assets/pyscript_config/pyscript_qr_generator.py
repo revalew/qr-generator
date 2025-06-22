@@ -14,6 +14,7 @@ from qrcode.image.styles.colormasks import (
     SquareGradiantColorMask,
     HorizontalGradiantColorMask,
     VerticalGradiantColorMask,
+    ImageColorMask
 )
 from PIL import Image, ImageDraw
 import io
@@ -770,52 +771,60 @@ class EnhancedQRGenerator:
         """Get appropriate color mask"""
         mask_select = document.getElementById("color-mask-select")
         if not mask_select:
-            return None
+            # Fallback when no mask select element
+            return SolidFillColorMask(front_color=(0, 0, 0), back_color=(255, 255, 255))
+            # return None
 
         mask_type = mask_select.value
         fg_color = self.hex_to_rgb(self.get_element_value("fg-color"))
         bg_color = self.hex_to_rgb(self.get_element_value("bg-color"))
 
-        if mask_type == "solid":
-            return SolidFillColorMask(front_color=fg_color, back_color=bg_color)
 
-        elif mask_type == "radial":
-            middle_color = self.mix_colors(fg_color, bg_color)
-            return RadialGradiantColorMask(
-                back_color=bg_color, center_color=middle_color, edge_color=fg_color
-            )
-
-        elif mask_type == "square":
-            middle_color = self.mix_colors(fg_color, bg_color)
-            return SquareGradiantColorMask(
-                back_color=bg_color, center_color=middle_color, edge_color=fg_color
-            )
-
-        elif mask_type == "horizontal":
-            middle_color = self.mix_colors(fg_color, bg_color)
-            return HorizontalGradiantColorMask(
-                back_color=bg_color, left_color=middle_color, right_color=fg_color
-            )
-
-        elif mask_type == "vertical":
-            middle_color = self.mix_colors(fg_color, bg_color)
-            return VerticalGradiantColorMask(
-                back_color=bg_color, top_color=middle_color, bottom_color=fg_color
-            )
-
-        elif mask_type == "image" and self.mask_image:
-            try:
-                # Use the loaded mask image
-                from qrcode.image.styles.colormasks import ImageColorMask
-
-                return ImageColorMask(
-                    back_color=bg_color, color_mask_image=self.mask_image
-                )
-            except Exception as e:
-                console.log(f"Image mask error: {e}")
+        try:
+            if mask_type == "solid":
                 return SolidFillColorMask(front_color=fg_color, back_color=bg_color)
 
-        return None
+            elif mask_type == "radial":
+                middle_color = self.mix_colors(fg_color, bg_color)
+                return RadialGradiantColorMask(
+                    back_color=bg_color, center_color=middle_color, edge_color=fg_color
+                )
+
+            elif mask_type == "square":
+                middle_color = self.mix_colors(fg_color, bg_color)
+                return SquareGradiantColorMask(
+                    back_color=bg_color, center_color=middle_color, edge_color=fg_color
+                )
+
+            elif mask_type == "horizontal":
+                middle_color = self.mix_colors(fg_color, bg_color)
+                return HorizontalGradiantColorMask(
+                    back_color=bg_color, left_color=middle_color, right_color=fg_color
+                )
+
+            elif mask_type == "vertical":
+                middle_color = self.mix_colors(fg_color, bg_color)
+                return VerticalGradiantColorMask(
+                    back_color=bg_color, top_color=middle_color, bottom_color=fg_color
+                )
+
+            elif mask_type == "image" and self.mask_image:
+                try:
+                    return ImageColorMask(
+                        back_color=bg_color, color_mask_image=self.mask_image
+                    )
+                except Exception as e:
+                    console.log(f"Image mask error: {e}")
+                    # Fallback to solid when image mask fails
+                    return SolidFillColorMask(front_color=fg_color, back_color=bg_color)
+
+            # Fallback for unknown mask types
+            return SolidFillColorMask(front_color=fg_color, back_color=bg_color)
+
+        except Exception as e:
+            console.log(f"Color mask error: {e}")
+            # Fallback for any other errors
+            return SolidFillColorMask(front_color=(0, 0, 0), back_color=(255, 255, 255))
 
     def get_module_drawer(self):
         """Get appropriate module drawer"""
@@ -961,20 +970,31 @@ class EnhancedQRGenerator:
             qr.add_data(content)
             qr.make(fit=True)
 
-            # Get styling
-            color_mask = self.get_color_mask()
-            module_drawer = self.get_module_drawer()
+            # Get styling with fallback
+            try:
+                color_mask = self.get_color_mask()
+                module_drawer = self.get_module_drawer()
 
-            # Generate image
-            if module_drawer or color_mask:
-                qr_img = qr.make_image(
-                    image_factory=StyledPilImage,
-                    module_drawer=module_drawer,
-                    color_mask=color_mask,
-                    fill_color=fg_color,
-                    back_color=bg_color,
-                )
-            else:
+            except Exception as e:
+                console.log(f"Style error: {e}")
+                color_mask = None
+                module_drawer = None
+
+            # Generate image with safe fallback
+            try:
+                if module_drawer or color_mask:
+                    qr_img = qr.make_image(
+                        image_factory=StyledPilImage,
+                        module_drawer=module_drawer,
+                        color_mask=color_mask,
+                        fill_color=fg_color,
+                        back_color=bg_color,
+                    )
+                else:
+                    qr_img = qr.make_image(fill_color=fg_color, back_color=bg_color)
+            except Exception as e:
+                console.log(f"QR styling error: {e}, falling back to basic QR")
+                # Fallback to basic QR if styled generation fails
                 qr_img = qr.make_image(fill_color=fg_color, back_color=bg_color)
 
             # Resize to target size
