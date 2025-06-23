@@ -587,12 +587,14 @@ body {
 	}
 
 	.controls-panel {
+		min-height: 653px;
 		order: 1;
 	}
 
 	.preview-panel {
 		order: 2;
-		min-height: auto;
+		/* min-height: auto; */
+		min-height: 653px;
 		padding: 20px;
 	}
 
