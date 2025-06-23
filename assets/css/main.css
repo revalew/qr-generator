@@ -36,7 +36,7 @@ body {
 
 .main-container {
 	display: grid;
-	grid-template-columns: 500px 1fr;
+	grid-template-columns: 400px 1fr;
 	gap: 20px;
 	padding: 20px;
 	max-width: 1600px;
@@ -68,6 +68,7 @@ body {
 /* Tab Navigation */
 .tab-nav {
 	display: flex;
+	min-height: 50px;
 	background: #f8f9fa;
 	border-bottom: 1px solid #e9ecef;
 }
@@ -100,7 +101,8 @@ body {
 	padding: 25px;
 	flex: 1;
 	overflow-y: auto;
-	max-height: calc(100vh - 200px);
+	/* max-height: calc(100vh - 200px); */
+	min-height: 580px;
 }
 
 .tab-content.active {
@@ -231,12 +233,12 @@ body {
 .file-upload {
 	border: 2px dashed #cbd5e0;
 	border-radius: 8px;
-	padding: 30px 20px; /* Zwiększone z 20px */
+	padding: 30px 20px;
 	text-align: center;
 	cursor: pointer;
 	transition: all 0.3s ease;
 	background: #f7fafc;
-	min-height: 100px; /* DODANE */
+	min-height: 100px;
 }
 
 .file-upload:hover {
@@ -245,17 +247,17 @@ body {
 }
 
 .file-upload.dragover {
-	border-color: #28a745; /* Zmienione z #667eea */
-	background: #f0fff0; /* Zmienione z #e6fffa */
-	border-style: solid; /* DODANE */
-	box-shadow: 0 0 15px rgba(40, 167, 69, 0.3); /* DODANE */
-	transform: scale(1.02); /* DODANE */
+	border-color: #28a745;
+	background: #f0fff0;
+	border-style: solid;
+	box-shadow: 0 0 15px rgba(40, 167, 69, 0.3);
+	transform: scale(1.02);
 }
 
 .file-upload-text {
 	color: #4a5568;
 	font-size: 13px;
-	pointer-events: none; /* DODANE */
+	pointer-events: none;
 }
 
 .file-upload-text p {
@@ -324,20 +326,23 @@ body {
 	box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
 	/* margin-bottom: 25px; */
 	margin: 70px 0 25px 0;
-	width: 500px;
-	height: 500px;
+
+	width: 100%;
 	max-width: 500px;
-	max-height: 500px;
+	height: auto;
+	aspect-ratio: 1;
+
 	display: flex;
 	align-items: center;
 	justify-content: center;
 }
 
 .qr-display img {
-	width: 500px;
-	height: 500px;
+	width: 100%;
+	height: 100%;
 	max-width: 500px;
 	max-height: 500px;
+	object-fit: contain;
 	/* max-width: 100%;
     max-height: 100%; */
 	border-radius: 8px;
@@ -425,28 +430,6 @@ body {
 	padding: 20px;
 }
 
-/* Responsive Design */
-@media (max-width: 1200px) {
-	.main-container {
-		grid-template-columns: 1fr;
-		gap: 15px;
-		padding: 15px;
-	}
-
-	.controls-panel {
-		order: 2;
-	}
-
-	.preview-panel {
-		order: 1;
-		min-height: 400px;
-	}
-
-	.header h1 {
-		font-size: 2rem;
-	}
-}
-
 /* Custom Scrollbar */
 .tab-content::-webkit-scrollbar {
 	width: 6px;
@@ -511,22 +494,22 @@ body {
 }
 
 #export-format {
-    position: relative;
+	position: relative;
 }
 
 .format-info {
-    font-size: 11px;
-    color: #666;
-    margin-top: 5px;
-    line-height: 1.3;
+	font-size: 11px;
+	color: #666;
+	margin-top: 5px;
+	line-height: 1.3;
 }
 
 .format-info .format-desc {
-    display: none;
+	display: none;
 }
 
 .format-info .format-desc.active {
-    display: block;
+	display: block;
 }
 
 /* ########################################################### */
@@ -564,5 +547,210 @@ body {
 	}
 	100% {
 		transform: rotate(360deg);
+	}
+}
+
+/* ########################################################### */
+/* TABLET BREAKPOINT - 768px to 1200px */
+/* ########################################################### */
+@media (max-width: 1200px) and (min-width: 769px) {
+	.main-container {
+		grid-template-columns: 350px 1fr;
+		gap: 15px;
+		padding: 15px;
+	}
+
+	.qr-display {
+		max-width: 350px;
+	}
+
+	.qr-display img {
+		max-width: 350px;
+		max-height: 350px;
+	}
+
+	.qr-actions,
+	#status-area {
+		max-width: 350px;
+	}
+}
+
+/* ########################################################### */
+/* MOBILE BREAKPOINT - from 768px */
+/* ########################################################### */
+@media (max-width: 768px) {
+	/* Single column layout */
+	.main-container {
+		grid-template-columns: 1fr;
+		gap: 15px;
+		padding: 15px;
+	}
+
+	.controls-panel {
+		order: 1;
+	}
+
+	.preview-panel {
+		order: 2;
+		min-height: auto;
+		padding: 20px;
+	}
+
+	.header h1 {
+		font-size: 1.8rem;
+	}
+
+	.header p {
+		font-size: 1rem;
+	}
+
+	.header {
+		padding: 1rem 1rem;
+	}
+
+	/* QR Display - mobile size */
+	.qr-display {
+		max-width: 300px;
+		margin: 20px 0 20px 0;
+		padding: 15px;
+	}
+
+	.qr-display img {
+		max-width: 300px;
+		max-height: 300px;
+	}
+
+	/* QR Actions - mobile responsive */
+	.qr-actions,
+	#status-area {
+		max-width: 300px;
+	}
+
+	.tab-nav {
+		min-height: 38px;
+	}
+
+	/* Mobile tabs - smaller text */
+	.tab-btn {
+		padding: 12px 8px;
+		font-size: 11px;
+	}
+
+	/* Mobile form controls */
+	.tab-content {
+		padding: 20px;
+		/* max-height: 60vh; */
+	}
+
+	/* Preset buttons - mobile grid */
+	.preset-grid {
+		grid-template-columns: 1fr 1fr;
+		gap: 6px;
+	}
+
+	.preset-btn {
+		padding: 6px 8px;
+		font-size: 10px;
+	}
+
+	/* Remove fixed min-height on mobile to show preview below */
+	.tab-content {
+		padding: 20px;
+		/* Override the 580px */
+		/* min-height: auto !important; */
+		/* Limit height so preview is visible */
+		/* max-height: 60vh; */
+		position: relative;
+	}
+
+	/* Add subtle gradient at bottom to indicate more content below */
+	.tab-content::after {
+		content: '';
+		position: absolute;
+		bottom: 0;
+		left: 0;
+		right: 0;
+		height: 20px;
+		background: linear-gradient(to bottom, rgba(255, 255, 255, 0), rgba(255, 255, 255, 1));
+		pointer-events: none;
+		z-index: 1;
+	}
+
+	/* Add visual hint that there's content below */
+	.controls-panel::after {
+		content: '⬇️ Scroll down for QR preview';
+		display: block;
+		text-align: center;
+		padding: 10px;
+		font-size: 11px;
+		color: #8966ea;
+		background: rgba(102, 126, 234, 0.1);
+		border-radius: 0 0 15px 15px;
+		animation: pulse-hint 2s infinite;
+	}
+
+	/* Subtle pulse animation for the hint */
+	@keyframes pulse-hint {
+		0%,
+		100% {
+			opacity: 0.5;
+		}
+		50% {
+			opacity: 1;
+		}
+	}
+
+	/* Hide hint after user scrolls */
+	.controls-panel.scrolled::after {
+		display: none;
+	}
+}
+
+/* ########################################################### */
+/* VERY SMALL BREAKPOINT - until 480px */
+/* ########################################################### */
+@media (max-width: 480px) {
+	.main-container {
+		padding: 10px;
+		gap: 10px;
+	}
+
+	.qr-display {
+		max-width: 280px;
+		padding: 10px;
+		margin: 15px 0;
+	}
+
+	.qr-display img {
+		max-width: 280px;
+		max-height: 280px;
+	}
+
+	.qr-actions,
+	#status-area {
+		max-width: 280px;
+	}
+
+	.tab-btn {
+		padding: 10px 6px;
+		font-size: 10px;
+	}
+
+	/* Form elements - smaller */
+	.form-group input,
+	.form-group select,
+	.form-group textarea {
+		padding: 8px 10px;
+		font-size: 12px;
+	}
+
+	/* Export controls */
+	.export-controls {
+		padding: 12px;
+	}
+
+	.export-row {
+		gap: 8px;
+		margin-bottom: 10px;
 	}
 }

@@ -904,42 +904,52 @@ class EnhancedQRGenerator:
             # Resize overlay maintaining aspect ratio
             overlay = self.overlay_image.copy()
             overlay.thumbnail((overlay_size, overlay_size), Image.Resampling.LANCZOS)
+            
+            # Handle rectangular background properly
+            final_overlay = overlay  # This will be the final overlay to paste
 
             # Create background if needed
             if bg_type in ["match", "custom"]:
-                bg_size = overlay.size[0] + 2 * padding
+                # Calculate both width and height for rectangular background
+                bg_width = overlay.size[0] + 2 * padding
+                bg_height = overlay.size[1] + 2 * padding
 
                 if bg_type == "match":
                     bg_color = self.get_element_value("bg-color")
                 else:
                     bg_color = self.get_element_value("image-bg-color")
 
-                background = Image.new("RGB", (bg_size, bg_size), bg_color)
+                # Create rectangular background instead of square
+                background = Image.new("RGB", (bg_width, bg_height), bg_color)
+
+                # Center the overlay image on the rectangular background
+                overlay_x = (bg_width - overlay.size[0]) // 2
+                overlay_y = (bg_height - overlay.size[1]) // 2
 
                 # Handle transparency
                 if overlay.mode in ("RGBA", "LA") or (
                     overlay.mode == "P" and "transparency" in overlay.info
                 ):
-                    background.paste(overlay, (padding, padding), overlay)
+                    background.paste(overlay, (overlay_x, overlay_y), overlay)
                 else:
-                    background.paste(overlay, (padding, padding))
+                    background.paste(overlay, (overlay_x, overlay_y))
 
-                overlay = background
+                final_overlay = background
 
             # Convert images for transparency support
-            if overlay.mode != "RGBA":
-                overlay = overlay.convert("RGBA")
+            if final_overlay.mode != "RGBA":
+                final_overlay = final_overlay.convert("RGBA")
 
             qr_img = qr_img.convert("RGBA")
 
-            # Calculate position (center)
+            # Calculate position to center the final overlay (which might be rectangular)
             overlay_pos = (
-                (qr_size - overlay.size[0]) // 2,
-                (qr_size - overlay.size[1]) // 2,
+                (qr_size - final_overlay.size[0]) // 2,
+                (qr_size - final_overlay.size[1]) // 2,
             )
 
             # Paste overlay
-            qr_img.paste(overlay, overlay_pos, overlay)
+            qr_img.paste(final_overlay, overlay_pos, final_overlay)
 
             return qr_img.convert("RGB")
 

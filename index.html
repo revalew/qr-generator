@@ -21,11 +21,89 @@
     <!-- Loading Dialog Script -->
     <script type="module">
         const loading = document.getElementById('loading');
+        loading.showModal();
+        
+        // Shared function to center controls panel on mobile
+        function centerControlsPanelOnMobile() {
+            const isMobile = window.innerWidth <= 768;
+            if (isMobile) {
+                const controlsPanel = document.querySelector('.controls-panel');
+                if (controlsPanel) {
+                    // Calculate position to center the panel vertically
+                    const panelRect = controlsPanel.getBoundingClientRect();
+                    const viewportHeight = window.innerHeight;
+                    const panelHeight = panelRect.height;
+                    
+                    // Calculate scroll position to center the panel
+                    const currentScrollY = window.scrollY;
+                    const panelTop = panelRect.top + currentScrollY;
+                    const targetScrollY = panelTop - (viewportHeight - panelHeight) / 2;
+                    
+                    // Smooth scroll to calculated position
+                    window.scrollTo({
+                        top: Math.max(0, targetScrollY), // Don't scroll above page top
+                        behavior: 'smooth'
+                    });
+                }
+            }
+        }
+        
+        // Add scroll detection to hide mobile hint
+        let hasScrolled = false;
+        
+        function setupScrollHint() {
+            const isMobile = window.innerWidth <= 768;
+            if (isMobile && !hasScrolled) {
+                const controlsPanel = document.querySelector('.controls-panel');
+                
+                // Hide hint when user scrolls
+                function handleScroll() {
+                    if (window.scrollY > 50) { // User scrolled more than 50px
+                        hasScrolled = true;
+                        if (controlsPanel) {
+                            controlsPanel.classList.add('scrolled');
+                        }
+                        window.removeEventListener('scroll', handleScroll);
+                    }
+                }
+                
+                // Hide hint when user interacts with tabs
+                function handleTabInteraction() {
+                    hasScrolled = true;
+                    if (controlsPanel) {
+                        controlsPanel.classList.add('scrolled');
+                    }
+                }
+                
+                window.addEventListener('scroll', handleScroll, { passive: true });
+                
+                // Hide hint on tab clicks
+                const tabButtons = document.querySelectorAll('.tab-btn');
+                tabButtons.forEach(btn => {
+                    btn.addEventListener('click', handleTabInteraction);
+                });
+            }
+        }
+        
+        // After PyScript loads
         addEventListener('py:ready', () => {
             loading.close();
             console.log('PyScript ready!');
+            
+            // Center controls panel after small delay
+            setTimeout(() => {
+                centerControlsPanelOnMobile();
+                // setupScrollHint(); // Setup hint detection
+            }, 500);
         });
-        loading.showModal();
+
+        // On window resize
+        window.addEventListener('resize', () => {
+            setTimeout(() => {
+                centerControlsPanelOnMobile();
+                // setupScrollHint();
+            }, 200);
+        });
     </script>
 </head>
 
