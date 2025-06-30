@@ -1,0 +1,9 @@
+name = "QR code generator"
+description = "QR generator port for the web (GitHub Pages)"
+interpreter = "./pyodide/pyodide.mjs"
+packages = [
+    "micropip",
+    "../pyodide/qrcode-8.2-py3-none-any.whl",
+    "pillow",
+    "requests"
+]

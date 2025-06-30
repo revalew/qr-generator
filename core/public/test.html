@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PyScript REPL - Prosty</title>
+  <script type="module" src="./pyscript/core.js"></script>
+  <link rel="stylesheet" href="./pyscript/core.css">
+</head>
+<body>
+  <h1>PyScript REPL - Ultra Prosty</h1>
+  
+  <!-- Prosty REPL -->
+  <h2>✅ Prosty REPL (gwarantowane działanie)</h2>
+  <div>
+    <textarea id="code" rows="5" style="width: 100%; font-family: monospace; font-size: 14px; background: #222; color: lime; border: 1px solid #555; padding: 10px;">print("Hello PyScript!")
+x = 2 + 2
+print(f"2 + 2 = {x}")
+
+for i in range(3):
+    print(f"Liczba: {i}")</textarea>
+    <br><br>
+    <button onclick="runCode()" style="padding: 15px 30px; font-size: 16px; background: #007700; color: white; border: none; cursor: pointer;">🚀 URUCHOM KOD</button>
+    <button onclick="clearAll()" style="padding: 15px 30px; font-size: 16px; background: #770000; color: white; border: none; cursor: pointer; margin-left: 10px;">🗑️ WYCZYŚĆ</button>
+  </div>
+  
+  <h3>Output:</h3>
+  <div id="output" style="background: black; color: lime; padding: 15px; min-height: 200px; font-family: monospace; font-size: 14px; border: 2px solid #333; white-space: pre-wrap; overflow-y: auto; max-height: 400px;"></div>
+
+  <!-- Gotowe przykłady -->
+  <h2>📝 Gotowe Przykłady (kliknij aby uruchomić)</h2>
+  <div style="display: flex; gap: 10px; flex-wrap: wrap; margin: 10px 0;">
+    <button onclick="loadExample('basic')" style="padding: 10px; background: #333; color: white; border: 1px solid #555; cursor: pointer;">Podstawy</button>
+    <button onclick="loadExample('math')" style="padding: 10px; background: #333; color: white; border: 1px solid #555; cursor: pointer;">Matematyka</button>
+    <button onclick="loadExample('loops')" style="padding: 10px; background: #333; color: white; border: 1px solid #555; cursor: pointer;">Pętle</button>
+    <button onclick="loadExample('functions')" style="padding: 10px; background: #333; color: white; border: 1px solid #555; cursor: pointer;">Funkcje</button>
+    <button onclick="loadExample('imports')" style="padding: 10px; background: #333; color: white; border: 1px solid #555; cursor: pointer;">Importy</button>
+  </div>
+
+  <py-config>
+    interpreter = "./pyodide/pyodide.mjs"
+  </py-config>
+
+  <!-- Terminal Worker (działa na dole) -->
+  <script type="py" terminal worker>
+print("=== TERMINAL WORKER DZIAŁA ===")
+print("Scroll w dół aby zobaczyć ten output")
+  </script>
+
+  <!-- Main PyScript -->
+  <script type="py">
+from pyscript import document
+import sys
+import io
+from contextlib import redirect_stdout, redirect_stderr
+
+# Namespace dla kodu użytkownika
+user_globals = {'__builtins__': __builtins__}
+
+def add_output(text, color="lime"):
+    """Dodaj tekst do output"""
+    output_div = document.getElementById("output")
+    if output_div:
+        # Escape HTML
+        text = text.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+        output_div.innerHTML += f'<span style="color: {color};">{text}</span>'
+        output_div.scrollTop = output_div.scrollHeight
+
+def run_user_code():
+    """Uruchom kod z textarea"""
+    try:
+        code_elem = document.getElementById("code")
+        if not code_elem:
+            add_output("ERROR: Nie można znaleźć elementu code\n", "red")
+            return
+            
+        code = code_elem.value
+        if not code.strip():
+            add_output("ERROR: Brak kodu do wykonania\n", "red")
+            return
+        
+        add_output(f">>> Wykonuję kod:\n", "yellow")
+        add_output(f"{code}\n", "cyan")
+        add_output(f"{'='*50}\n", "white")
+        
+        # Przechwytaj stdout i stderr
+        stdout_capture = io.StringIO()
+        stderr_capture = io.StringIO()
+        
+        with redirect_stdout(stdout_capture), redirect_stderr(stderr_capture):
+            try:
+                # Spróbuj wykonać kod
+                exec(code, user_globals)
+            except Exception as e:
+                # Jeśli błąd podczas wykonania, wyświetl go
+                add_output(f"BŁĄD WYKONANIA: {str(e)}\n", "red")
+                import traceback
+                add_output(f"{traceback.format_exc()}\n", "red")
+                return
+        
+        # Pokaż stdout jeśli jest
+        stdout_text = stdout_capture.getvalue()
+        if stdout_text:
+            add_output(stdout_text, "lime")
+        
+        # Pokaż stderr jeśli jest  
+        stderr_text = stderr_capture.getvalue()
+        if stderr_text:
+            add_output(stderr_text, "red")
+            
+        if not stdout_text and not stderr_text:
+            add_output("(kod wykonany bez output)\n", "gray")
+            
+        add_output(f"{'='*50}\n", "white")
+        
+    except Exception as e:
+        add_output(f"BŁĄD SYSTEMU: {str(e)}\n", "red")
+
+def clear_output():
+    """Wyczyść output"""
+    output_div = document.getElementById("output")
+    if output_div:
+        output_div.innerHTML = ""
+    add_output("=== Output wyczyszczony ===\n", "yellow")
+
+def load_example_code(example_type):
+    """Załaduj przykładowy kod"""
+    examples = {
+        'basic': '''# Podstawy Python
+print("Hello World!")
+name = "PyScript"
+print(f"Witaj, {name}!")
+
+# Zmienne i typy
+liczba = 42
+tekst = "Python"
+lista = [1, 2, 3, 4, 5]
+
+print(f"Liczba: {liczba}")
+print(f"Tekst: {tekst}")
+print(f"Lista: {lista}")''',
+        
+        'math': '''# Operacje matematyczne
+import math
+
+a = 10
+b = 3
+
+print(f"{a} + {b} = {a + b}")
+print(f"{a} - {b} = {a - b}")
+print(f"{a} * {b} = {a * b}")
+print(f"{a} / {b} = {a / b:.2f}")
+print(f"{a} ** {b} = {a ** b}")
+
+print(f"Pierwiastek z {a} = {math.sqrt(a):.2f}")
+print(f"Sin(30°) = {math.sin(math.radians(30)):.2f}")
+print(f"Pi = {math.pi}")''',
+        
+        'loops': '''# Pętle i warunki
+print("=== Pętla for ===")
+for i in range(5):
+    print(f"Iteracja {i}")
+
+print("\\n=== Pętla while ===")
+count = 0
+while count < 3:
+    print(f"Count: {count}")
+    count += 1
+
+print("\\n=== Lista comprehension ===")
+kwadraty = [x**2 for x in range(1, 6)]
+print(f"Kwadraty: {kwadraty}")
+
+print("\\n=== Warunki ===")
+for num in [1, 2, 3, 4, 5]:
+    if num % 2 == 0:
+        print(f"{num} jest parzysta")
+    else:
+        print(f"{num} jest nieparzysta")''',
+        
+        'functions': '''# Funkcje
+def powitaj(imie):
+    return f"Cześć, {imie}!"
+
+def dodaj(a, b):
+    return a + b
+
+def fibonacci(n):
+    if n <= 1:
+        return n
+    return fibonacci(n-1) + fibonacci(n-2)
+
+# Testowanie funkcji
+print(powitaj("PyScript"))
+print(f"5 + 3 = {dodaj(5, 3)}")
+
+print("\\nCiąg Fibonacciego:")
+for i in range(8):
+    print(f"F({i}) = {fibonacci(i)}")
+
+# Funkcja lambda
+kwadrat = lambda x: x**2
+print(f"\\nKwadrat 7 = {kwadrat(7)}")
+
+# Map i filter
+liczby = [1, 2, 3, 4, 5]
+kwadraty = list(map(kwadrat, liczby))
+parzyste = list(filter(lambda x: x % 2 == 0, liczby))
+
+print(f"Liczby: {liczby}")
+print(f"Kwadraty: {kwadraty}")
+print(f"Parzyste: {parzyste}")''',
+        
+        'imports': '''# Importowanie modułów
+import sys
+import random
+import datetime
+import json
+
+print("=== Informacje o systemie ===")
+print(f"Wersja Python: {sys.version}")
+print(f"Platforma: {sys.platform}")
+
+print("\\n=== Liczby losowe ===")
+print(f"Losowa liczba 1-10: {random.randint(1, 10)}")
+print(f"Losowy element z listy: {random.choice(['a', 'b', 'c', 'd'])}")
+
+print("\\n=== Data i czas ===")
+now = datetime.datetime.now()
+print(f"Obecna data: {now.strftime('%Y-%m-%d %H:%M:%S')}")
+
+print("\\n=== JSON ===")
+data = {"name": "PyScript", "version": "2024", "awesome": True}
+json_string = json.dumps(data, indent=2)
+print("JSON:")
+print(json_string)
+
+parsed = json.loads(json_string)
+print(f"\\nSparsowane: {parsed['name']} jest awesome: {parsed['awesome']}")'''
+    }
+    
+    code_elem = document.getElementById("code")
+    if code_elem and example_type in examples:
+        code_elem.value = examples[example_type]
+
+# Udostępnij funkcje dla buttonów HTML
+import js
+js.window.runCode = run_user_code
+js.window.clearAll = clear_output
+js.window.loadExample = load_example_code
+
+# Powitanie
+add_output("=== PyScript REPL gotowy ===\n", "yellow")
+add_output("1. Wpisz kod Python w polu powyżej\n", "white")
+add_output("2. Kliknij 'URUCHOM KOD'\n", "white")
+add_output("3. Zobacz wyniki tutaj\n", "white")
+add_output("4. Lub kliknij przykład powyżej\n", "white")
+add_output(f"{'='*50}\n", "white")
+  </script>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      background: #111;
+      color: #ddd;
+    }
+    
+    h1, h2, h3 {
+      color: #fff;
+    }
+    
+    button:hover {
+      opacity: 0.8;
+      transform: scale(1.02);
+    }
+    
+    #code {
+      resize: vertical;
+    }
+    
+    #output {
+      font-family: 'Courier New', monospace;
+    }
+  </style>
+</body>
+</html>

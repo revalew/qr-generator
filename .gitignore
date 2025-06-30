@@ -150,3 +150,7 @@ core/src/plugins.js
 core/src/stdlib/pyscript.js
 core/src/3rd-party/*
 !core/src/3rd-party/READMEmd
+
+
+
+**/tar.bz2
